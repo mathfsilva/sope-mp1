@@ -307,7 +307,7 @@ int xmod(int argc,char *argv[]){
    else if(isdigit(argv[1][0])){
         mode=strtol(argv[1],0,8);
 
-        if(chmod(argv[2],mode)<0){
+        if(chmod(argv[argc - 1],mode)<0){
            printf("ERROR");
     }
    }
@@ -329,7 +329,7 @@ int xmod(int argc,char *argv[]){
         mode=strtol(mode_str,0,8);
         printf("%s\n",mode_str);
 
-        if(chmod(argv[2],mode)<0){
+        if(chmod(argv[argc - 1],mode)<0){
            printf("ERROR");
     } 
    }
@@ -338,7 +338,7 @@ int xmod(int argc,char *argv[]){
        if(isdigit(argv[2][0])){
            mode=strtol(argv[1],0,8);
 
-        if(chmod(argv[2],mode)<0){
+        if(chmod(argv[argc - 1],mode)<0){
            printf("ERROR");
     }
        }
@@ -356,7 +356,7 @@ int xmod(int argc,char *argv[]){
         mode=strtol(mode_str,0,8);
         printf("%s\n",mode_str);
 
-        if(chmod(argv[3],mode)<0){
+        if(chmod(argv[argc - 1],mode)<0){
            printf("ERROR");
     } 
        }
@@ -408,7 +408,9 @@ int main(int argc,char *argv[],char *envp[]){
         }
         else
         {
+            //printf("Hihi, it worked!!!!\n");
             memcpy(argv[argc - 1], buf, strlen(buf));
+            //printf("NOVO CAMINHO: %s\n", argv[argc - 1]);
         }
     }
 
