@@ -376,38 +376,24 @@ while ((ent = readdir(dir)) != NULL) {
 void checkLog(char *envp[]){
     
     //Check if LOG_FILENAME was defined by user
-    char *reg;
-    char log[]="LOG_FILENAME";
-    for(int i=1;envp[i]!=NULL;i++){
-        reg=strchr(envp[i],'=');
-        *reg=0;
-        if(strcmp(envp[i],log)==0){
-            reg=reg +1;
-            printf("%s\n",reg);
-        }
-    }
-
-    /*char const *text1="ABBA";
-
-    int fd=open("test.txt",O_CREAT|O_EXCL|O_TRUNC|O_WRONLY|O_SYNC,0600);
-    write(fd,text1,5);
-    close(fd);*/
-
+    char *reg=secure_getenv("LOG_FILENAME");
+    //printf("%s\n",reg);
+   
     int fd;
-    char const *text1="I'm here";
+    char const *text1="Holo Pat"; //Experiment
 
-    if(access("test.txt",F_OK)==0){
-        printf("File exists\n");
-        fd=open("test.txt",O_CREAT|O_TRUNC|O_WRONLY,0600);
+    if(access(reg,F_OK)==0){ //When file exists->Truncate it
+        //printf("File exists\n");
+        fd=open(reg,O_CREAT|O_TRUNC|O_WRONLY,0600);
         write(fd,text1,8);
         close(fd);
     }
     else{
-        printf("File doesn't exist\n");
-        fd = open("test.txt", O_CREAT | O_EXCL, 0644);
+        //If file doesn't exist->Create a new one
+        //printf("File doesn't exist\n");
+        fd = open(reg, O_CREAT | O_EXCL, 0644);
         write(fd,text1,8);
         close(fd);
-
     }
 }
 
