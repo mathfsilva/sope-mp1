@@ -10,42 +10,6 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-void all_plus_read(int &mode_u_r,int &mode_g_r,int &mode_o_r){
-    mode_u_r=4;
-    mode_g_r=4;
-    mode_o_r=4;
-}
-
-void all_plus_write(int &mode_u_w,int &mode_g_w,int &mode_o_w){
-    mode_u_w=2;
-    mode_g_w=2;
-    mode_o_w=2;
-}
-
-void all_plus_execute(int &mode_u_x,int &mode_g_x,int &mode_o_x){
-    mode_u_x=1;
-    mode_g_x=1;
-    mode_o_x=1;
-}
-
-void all_minus_read(int &mode_u_r,int &mode_g_r,int &mode_o_r){
-    mode_u_r=0;
-    mode_g_r=0;
-    mode_o_r=0;
-}
-
-void all_minus_write(int &mode_u_w,int &mode_g_w,int &mode_o_w){
-    mode_u_w=0;
-    mode_g_w=0;
-    mode_o_w=0;
-}
-
-void all_minus_execute(int &mode_u_x,int &mode_g_x,int &mode_o_x){
-    mode_u_x=0;
-    mode_g_x=0;
-    mode_o_x=0;
-}
-
 void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g_r,int &mode_g_w,int &mode_g_x,int &mode_o_r,int &mode_o_w,int &mode_o_x){
      int size=strlen(p);
      struct stat fs;
@@ -87,11 +51,10 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
        //Let's consider letters option first (u+w)
        //User
        if(p[0]=='u'){
-          int i=1;
-          while(i!=size){
-              if(p[i]=='+' || p[i]=='='){
-                  i++;
-                  if(p[i]=='r'){
+           int i=2;
+           if(p[1]=='+' || p[1]=='='){
+               while(i!=size){
+                   if(p[i]=='r'){
                       mode_u_r=4;
                       i++;
                   }
@@ -103,10 +66,10 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
                       mode_u_x=1;
                       i++;
                   }
-                  
-              }
-              if(p[i]=='-'){
-                  i++;
+               }
+           }
+           if(p[1]=='-'){
+               while(i!=size){
                   if(p[i]=='r'){
                       mode_u_r=0;
                       i++;
@@ -114,7 +77,6 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
                   if(p[i]=='w'){
                       mode_u_w=2;
                       i++;
-
                   }
                   if(p[i]=='x'){
                       mode_u_x=1;
@@ -127,10 +89,9 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
 
        //Group
        else if(p[0]=='g'){
-          int i=1;
-          while(i!=size){
-              if(p[i]=='+' || p[i]=='='){
-                  i++;
+           int i=2;
+              if(p[1]=='+' || p[1]=='='){
+                  while(i!=size){
                   if(p[i]=='r'){
                       mode_g_r=4;
                       i++;
@@ -142,11 +103,12 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
                   if(p[i]=='x'){
                       mode_g_x=1;
                       i++;
+                  }
                   }
                   
               }
-              if(p[i]=='-'){
-                  i++;
+              if(p[1]=='-'){
+                  while(i!=size){
                   if(p[i]=='r'){
                       mode_g_r=4;
                       i++;
@@ -154,23 +116,20 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
                   if(p[i]=='w'){
                       mode_g_w=2;
                       i++;
-
                   }
                   if(p[i]=='x'){
                       mode_g_x=1;
                       i++;
-
+                  }
                   }
               }
           }
-       }
 
        //Others
        else if(p[0]=='o'){
-          int i=1;
-          while(i!=size){
-              if(p[i]=='+' || p[i]=='='){
-                  i++;
+          int i=2;
+              if(p[1]=='+' || p[1]=='='){
+                  while(i!=size){
                   if(p[i]=='r'){
                       mode_o_r=4;
                       i++;
@@ -183,10 +142,10 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
                       mode_o_x=1;
                       i++;
                   }
-                  
               }
-              if(p[i]=='-'){
-                  i++;
+              }
+              if(p[1]=='-'){
+                  while(i!=size){
                   if(p[i]=='r'){
                       mode_o_r=4;
                       i++;
@@ -202,89 +161,59 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
 
                   }
               }
-          }
+              }
        }
 
        //All
        else if(p[0]=='a'){
-          int i=1;
-          while(i!=size){
-              if(p[i]=='+' || p[i] == '='){
-                  i++;
+           int i=2;
+              if(p[1]=='+' || p[1] == '='){
+                  while(i!=size){
                   if(p[i]=='r'){
-                      all_plus_read(mode_u_r,mode_g_r,mode_o_r);
+                      mode_u_r=4;
+                      mode_g_r=4;
+                      mode_o_r=4;
                       i++;
                   }
                   if(p[i]=='w'){
-                      all_plus_write(mode_u_w,mode_g_w,mode_o_w);
+                      mode_u_w=2;
+                      mode_g_w=2;
+                      mode_o_w=2;
                       i++;
                   }
                   if(p[i]=='x'){
-                      all_plus_execute(mode_u_x,mode_g_x,mode_o_x);
+                      mode_u_x=1;
+                      mode_g_x=1;
+                      mode_o_x=1;
                       i++;
+                  }
                   }
                   
               }
-              if(p[i]=='-'){
-                  i++;
+              if(p[1]=='-'){
+                  while(i!=size){
                   if(p[i]=='r'){
-                      all_minus_read(mode_u_r,mode_g_r,mode_o_r);
+                      mode_u_r=0;
+                      mode_g_r=0;
+                      mode_o_r=0;
                       i++;
                   }
                   if(p[i]=='w'){
-                      all_minus_write(mode_u_w,mode_g_w,mode_o_w);
+                      mode_u_w=0;
+                      mode_g_w=0;
+                      mode_o_w=0;
                       i++;
 
                   }
                   if(p[i]=='x'){
-                    all_minus_execute(mode_u_x,mode_g_x,mode_o_x);
+                    mode_u_x=0;
+                    mode_g_x=0;
+                    mode_o_x=0;
                     i++;
 
                   }
               }
           }
-       }
-
-       //No letter
-       else{
-           int i=0;
-           while(i!=size){
-            while(i!=size){
-              if(p[i]=='+' || p[i] == '='){
-                  i++;
-                  if(p[i]=='r'){
-                      all_plus_read(mode_u_r,mode_g_r,mode_o_r);
-                      i++;
-                  }
-                  if(p[i]=='w'){
-                      all_plus_write(mode_u_w,mode_g_w,mode_o_w);
-                      i++;
-                  }
-                  if(p[i]=='x'){
-                      all_plus_execute(mode_u_x,mode_g_x,mode_o_x);
-                      i++;
-                  }
-                  
-              }
-              if(p[i]=='-'){
-                  i++;
-                  if(p[i]=='r'){
-                      all_minus_read(mode_u_r,mode_g_r,mode_o_r);
-                      i++;
-                  }
-                  if(p[i]=='w'){
-                      all_minus_write(mode_u_w,mode_g_w,mode_o_w);
-                      i++;
-
-                  }
-                  if(p[i]=='x'){
-                    all_minus_execute(mode_u_x,mode_g_x,mode_o_x);
-                    i++;
-
-                  }
-              }
-          }
-       }
        }
 }
 
