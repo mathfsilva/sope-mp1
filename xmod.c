@@ -332,6 +332,14 @@ int xmod(int argc,char *argv[]){
    }
 
    if(argc==4){ //In case we have options
+       if(isdigit(argv[2][0])){
+           mode=strtol(argv[1],0,8);
+
+        if(chmod(argv[2],mode)<0){
+           printf("ERROR");
+    }
+       }
+       else{
        parse(argv[2],argv[3],mode_u_r,mode_u_w,mode_u_x,mode_g_r,mode_g_w,mode_g_x,mode_o_r,mode_o_w,mode_o_x);
 
         mode_u=mode_u_r+mode_u_w+mode_u_x;
@@ -348,6 +356,7 @@ int xmod(int argc,char *argv[]){
         if(chmod(argv[3],mode)<0){
            printf("ERROR");
     } 
+       }
 
    }
    //Symbolic Link check
@@ -376,7 +385,4 @@ int main(int argc,char *argv[]){ //, char*env
     }
 
     return 0;
-
-
-
 }
