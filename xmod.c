@@ -374,7 +374,7 @@ while ((ent = readdir(dir)) != NULL) {
     return 0;
 }
 
-void checkLog(char *envp[]){
+int checkLog(char *envp[]){
     
     //Check if LOG_FILENAME was defined by user
     char *reg=secure_getenv("LOG_FILENAME");
@@ -387,15 +387,16 @@ void checkLog(char *envp[]){
         //printf("File exists\n");
         fd=open(reg,O_CREAT|O_TRUNC|O_WRONLY,0600);
         write(fd,text1,8);
-        close(fd);
+        
     }
     else{
         //If file doesn't exist->Create a new one
         //printf("File doesn't exist\n");
         fd = open(reg, O_CREAT | O_EXCL, 0644);
         write(fd,text1,8);
-        close(fd);
+        
     }
+    return fd;
 }
 
 void checkSymlink(int argc, char *argv[]){
@@ -436,7 +437,7 @@ int main(int argc,char *argv[],char *envp[]){
         return 1;
     }
 
-    checkLog(envp);
+    int fd=checkLog(envp);
     checkSymlink(argc, argv);
 
 
@@ -445,12 +446,14 @@ int main(int argc,char *argv[],char *envp[]){
     }
 
 
+    close(fd);
     end=clock()-start;
     
 
     double time_taken = ((double)end)/(CLOCKS_PER_SEC/1000); // in miliseconds 
   
     printf("Process took %f miliseconds to execute \n", time_taken); 
+    
     
     //Should have a PROC_EXIT here
     return 0; 
