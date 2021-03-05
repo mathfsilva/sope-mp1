@@ -288,8 +288,6 @@ void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g
        }
 }
 
-
-
 int xmod(int argc,char *argv[]){
 
     char *options;
@@ -375,15 +373,8 @@ while ((ent = readdir(dir)) != NULL) {
     return 0;
 }
 
-int main(int argc,char *argv[],char *envp[]){ 
-    if(argc<3){ //chmod options permissions file_name
-                /*If no options are specified, chmod modifies the permissions of the file 
-                specified by file name to the permissions specified by permissions.
-                So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
-        printf("Not enough arguments\n");
-        return 1;
-    }
-
+void checkLog(char *envp[]){
+    
     //Check if LOG_FILENAME was defined by user
     char *reg;
     char log[]="LOG_FILENAME";
@@ -418,7 +409,9 @@ int main(int argc,char *argv[],char *envp[]){
         close(fd);
 
     }
+}
 
+void checkSymlink(int argc, char *argv[]){
      //Symlink check.
     struct stat buffer;
     int t = lstat(argv[argc - 1], &buffer);
@@ -438,6 +431,20 @@ int main(int argc,char *argv[],char *envp[]){
             //printf("NOVO CAMINHO: %s\n", argv[argc - 1]);
         }
     }
+}
+
+int main(int argc,char *argv[],char *envp[]){ 
+    if(argc<3){ //chmod options permissions file_name
+                /*If no options are specified, chmod modifies the permissions of the file 
+                specified by file name to the permissions specified by permissions.
+                So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
+        printf("Not enough arguments\n");
+        return 1;
+    }
+
+    checkLog(envp);
+    checkSymlink(argc, argv);
+
 
     if(xmod(argc,argv)){
         return 1;
