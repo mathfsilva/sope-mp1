@@ -62,90 +62,393 @@ int main(int argc,char *argv[]){ //, char*env
        struct stat fs;
        stat(argv[2],&fs); //Gets current permission
        int mode_u=0,mode_g=0,mode_o=0;
+       int mode_u_r=0,mode_u_w=0,mode_u_x=0;
+       int mode_g_r=0,mode_g_w=0,mode_g_x=0;
+       int mode_o_r=0,mode_o_w=0,mode_o_x=0;
+
        
        //User Permission
        if(fs.st_mode & S_IRUSR){
-           mode_u+=4;
+           mode_u_r+=4;
        }
        if(fs.st_mode & S_IWUSR){
-           mode_u+=2;
+           mode_u_w+=2;
        }
        if(fs.st_mode & S_IXUSR){
-           mode_u+=1;
+           mode_u_x+=1;
        }
        //Group Permission
         if(fs.st_mode & S_IRGRP){
-           mode_g+=4;
+           mode_g_r+=4;
        }
        if(fs.st_mode & S_IWGRP){
-           mode_g+=2;
+           mode_g_w+=2;
        }
        if(fs.st_mode & S_IXGRP){
-           mode_g+=1;
+           mode_g_x+=1;
        }
 
        //Others Permission
         if(fs.st_mode & S_IROTH){
-           mode_o+=4;
+           mode_o_r+=4;
        }
        if(fs.st_mode & S_IWOTH){
-           mode_o+=2;
+           mode_o_w+=2;
        }
        if(fs.st_mode & S_IXOTH){
-           mode_o+=1;
+           mode_o_x+=1;
        }
 
-       /*Let's consider letters option first (u+w)
+       //Let's consider letters option first (u+w)
+       //User
        if(argv[1][0]=='u'){
           int i=1;
-          while(i!=size-1){
+          while(i!=size){
               if(argv[1][i]=='+'){
                   i++;
                   if(argv[1][i]=='r'){
-                      mode_u+=4;
+                      mode_u_r=4;
+                      i++;
                   }
                   if(argv[1][i]=='w'){
-                      mode_u+=2;
+                      mode_u_w=2;
+                      i++;
                   }
                   if(argv[1][i]=='x'){
-                      mode_u+=1;
+                      mode_u_x=1;
+                      i++;
                   }
-                  i++;
+                  
               }
-
+            //Check how to stop from taking permission off of stuff that wasn't to begin with
               if(argv[1][i]=='-'){
                   i++;
                   if(argv[1][i]=='r'){
-                      mode_u-=4;
+                      mode_u_r=0;
+                      i++;
                   }
                   if(argv[1][i]=='w'){
-                      mode_u-=2;
+                      mode_u_w=2;
+                      i++;
+
                   }
                   if(argv[1][i]=='x'){
-                      mode_u-=1;
+                      mode_u_x=1;
+                      i++;
+
                   }
-                  i++;
               }
 
               if(argv[1][i]=='='){
-                  mode_u=0;
+                  mode_u_r=0,mode_u_w=0,mode_u_x=0;
                   i++;
                   if(argv[1][i]=='r'){
-                      mode_u+=4;
+                      mode_u_r=4;
+                      i++;
+
                   }
                   if(argv[1][i]=='w'){
-                      mode_u+=2;
+                      mode_u_w=2;
+                      i++;
+
                   }
                   if(argv[1][i]=='x'){
-                      mode_u+=1;
+                      mode_u_x=1;
+                      i++;
+
                   }
-                  i++;
               }
           }
        }
-*/
+
+       //Group
+       if(argv[1][0]=='g'){
+          int i=1;
+          while(i!=size){
+              if(argv[1][i]=='+'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_g_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_g_w=2;
+                      i++;
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_g_x=1;
+                      i++;
+                  }
+                  
+              }
+            //Check how to stop from taking permission off of stuff that wasn't to begin with
+              if(argv[1][i]=='-'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_g_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_g_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_g_x=1;
+                      i++;
+
+                  }
+              }
+
+              if(argv[1][i]=='='){
+                  mode_g_r=0,mode_g_w=0,mode_g_x=0;
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_g_r=4;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_g_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_g_x=1;
+                      i++;
+
+                  }
+              }
+          }
+       }
+
+       //Others
+       if(argv[1][0]=='o'){
+          int i=1;
+          while(i!=size){
+              if(argv[1][i]=='+'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_o_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_o_w=2;
+                      i++;
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_o_x=1;
+                      i++;
+                  }
+                  
+              }
+            //Check how to stop from taking permission off of stuff that wasn't to begin with
+              if(argv[1][i]=='-'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_o_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_o_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_o_x=1;
+                      i++;
+
+                  }
+              }
+
+              if(argv[1][i]=='='){
+                  mode_o_r=0,mode_o_w=0,mode_o_x=0;
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_o_r=4;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_o_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_o_x=1;
+                      i++;
+
+                  }
+              }
+          }
+       }
+
+       //All
+       if(argv[1][0]=='a'){
+          int i=1;
+          while(i!=size){
+              if(argv[1][i]=='+'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_u_r=4;
+                      mode_g_r=4;
+                      mode_o_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=2;
+                      mode_g_w=2;
+                      mode_o_w=2;
+                      i++;
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=1;
+                      mode_g_x=1;
+                      mode_o_x=1;
+                      i++;
+                  }
+                  
+              }
+            //Check how to stop from taking permission off of stuff that wasn't to begin with
+              if(argv[1][i]=='-'){
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_u_r=0;
+                      mode_g_r=0;
+                      mode_o_r=0;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=0;
+                      mode_g_w=0;
+                      mode_o_w=0;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=0;
+                      mode_g_x=0;
+                      mode_o_x=0;
+                      i++;
+
+                  }
+              }
+
+              if(argv[1][i]=='='){
+                  mode_u_r=0,mode_u_w=0,mode_u_x=0,mode_g_r=0,mode_g_w=0,mode_g_x=0,mode_o_r=0,mode_o_w=0,mode_o_x=0;
+                  i++;
+                  if(argv[1][i]=='r'){
+                      mode_u_r=4;
+                      mode_g_r=4;
+                      mode_o_r=4;                     
+                      i++;
+
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=2;
+                      mode_g_w=2;
+                      mode_o_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=1;
+                      mode_g_x=1;
+                      mode_o_x=1;
+                      i++;
+
+                  }
+              }
+          }
+       }
+
+       //No letter: starting with -
+       if(argv[1][0]=='-'){
+           int i=1;
+           while(i!=size){
+                if(argv[1][i]=='r'){
+                      mode_u_r=0;
+                      mode_g_r=0;
+                      mode_o_r=0;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=0;
+                      mode_g_w=0;
+                      mode_o_w=0;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=0;
+                      mode_g_x=0;
+                      mode_o_x=0;
+                      i++;
+
+                  }
+           }
+
+       }
+
+       //No letter starting with +
+       if(argv[1][0]=='+'){
+          int i=1;
+          while(i!=size){
+                  if(argv[1][i]=='r'){
+                      mode_u_r=4;
+                      mode_g_r=4;
+                      mode_o_r=4;
+                      i++;
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=2;
+                      mode_g_w=2;
+                      mode_o_w=2;
+                      i++;
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=1;
+                      mode_g_x=1;
+                      mode_o_x=1;
+                      i++;
+                  }
+                  
+              }
+       }
+
+       //No letter starting with =
+       if(argv[1][0]=='='){
+           int i=1;
+           while(i!=size){
+               mode_u_r=0,mode_u_w=0,mode_u_x=0,mode_g_r=0,mode_g_w=0,mode_g_x=0,mode_o_r=0,mode_o_w=0,mode_o_x=0;
+                  if(argv[1][i]=='r'){
+                      mode_u_r=4;
+                      mode_g_r=4;
+                      mode_o_r=4;                     
+                      i++;
+
+                  }
+                  if(argv[1][i]=='w'){
+                      mode_u_w=2;
+                      mode_g_w=2;
+                      mode_o_w=2;
+                      i++;
+
+                  }
+                  if(argv[1][i]=='x'){
+                      mode_u_x=1;
+                      mode_g_x=1;
+                      mode_o_x=1;
+                      i++;
+
+                  }
+              }
+           }
 
 
+        mode_u=mode_u_r+mode_u_w+mode_u_x;
+        mode_g=mode_g_r+mode_g_w+mode_g_x;
+        mode_o=mode_o_r+mode_o_w+mode_o_x;
 
 
 
@@ -159,14 +462,7 @@ int main(int argc,char *argv[]){ //, char*env
 
         if(chmod(argv[2],mode)<0){
            printf("ERROR");
-    }
-
-
-
-
-       
-
-      
+    } 
    }
    //Symbolic Link check
    /*
