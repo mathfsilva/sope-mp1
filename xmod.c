@@ -7,8 +7,9 @@
 #include <ctype.h>
 #include <string.h>
 #include <limits.h>
-#include <unistd.h>
 #include <fcntl.h>
+#include <time.h>
+
 
 void parse(char *p,char *f,int &mode_u_r,int &mode_u_w,int &mode_u_x,int &mode_g_r,int &mode_g_w,int &mode_g_x,int &mode_o_r,int &mode_o_w,int &mode_o_x){
      int size=strlen(p);
@@ -349,6 +350,10 @@ void checkSymlink(int argc, char *argv[]){
 }
 
 int main(int argc,char *argv[],char *envp[]){ 
+    clock_t start,end;
+    
+    start=clock();
+
     if(argc<3){ //chmod options permissions file_name
                 /*If no options are specified, chmod modifies the permissions of the file 
                 specified by file name to the permissions specified by permissions.
@@ -365,5 +370,13 @@ int main(int argc,char *argv[],char *envp[]){
         return 1;
     }
 
+
+    end=clock()-start;
+    
+
+     double time_taken = ((double)end)/(CLOCKS_PER_SEC/1000); // in miliseconds 
+  
+    printf("Process took %f miliseconds to execute \n", time_taken); 
+    
     return 0;
 }
