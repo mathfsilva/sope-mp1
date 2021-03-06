@@ -10,6 +10,8 @@
 #include <fcntl.h>
 #include <time.h>
 
+#include "file.h"
+
 char *getoldmode(char *p, char *f)
 {
     char *oldmode_str = (char *)malloc(3);
@@ -433,30 +435,46 @@ while ((ent = readdir(dir)) != NULL) {
     return 0;
 }
 
+bool aretheyequal(char *env,char const *arg){
+    for(int i = 0; arg[i] != '\0'; i++){
+        if(arg[i] != env[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
 int checkLog(char *envp[])
 {
 
     //Check if LOG_FILENAME was defined by user
+    for(int j=0;envp[j]!=NULL;j++){
+        if(aretheyequal(envp[j],"LOG_FILENAME")){
     char *reg = secure_getenv("LOG_FILENAME");
-    //printf("%s\n",reg);
+    printf("%s\n",reg);
 
     int fd;
     char const *text1 = "Holo Pat"; //Experiment
 
     if (access(reg, F_OK) == 0)
     { //When file exists->Truncate it
-        //printf("File exists\n");
+        printf("File exists\n");
         fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
         write(fd, text1, 8);
     }
     else
     {
         //If file doesn't exist->Create a new one
-        //printf("File doesn't exist\n");
+        printf("File doesn't exist\n");
+        printf("%s\n",reg);
         fd = open(reg, O_CREAT | O_EXCL, 0644);
         write(fd, text1, 8);
     }
     return fd;
+        }
+
+    }
+    return -1;
 }
 
 void checkSymlink(int argc, char *argv[])
@@ -500,9 +518,13 @@ int main(int argc, char *argv[], char *envp[])
 
     start = clock();
     int fd = checkLog(envp);
+    if(fd==-1){
+        return 1;
+    }
 
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-    eventHandler(0, argv, fd);
+    //eventHandler(0, argv, fd);
+    hello();
 
 
     if (argc < 3)
