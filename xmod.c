@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <time.h>
+#include "file.h"
 
 char *getoldmode(char *p, char *f)
 {
@@ -441,20 +442,20 @@ int checkLog(char *envp[])
     //printf("%s\n",reg);
 
     int fd;
-    char const *text1 = "Holo Pat"; //Experiment
+    //char const *text1 = "Holo Pat"; //Experiment
 
     if (access(reg, F_OK) == 0)
     { //When file exists->Truncate it
         //printf("File exists\n");
         fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-        write(fd, text1, 8);
+        //write(fd, text1, 8);
     }
     else
     {
         //If file doesn't exist->Create a new one
         //printf("File doesn't exist\n");
         fd = open(reg, O_CREAT | O_EXCL, 0644);
-        write(fd, text1, 8);
+        //write(fd, text1, 8);
     }
     return fd;
 }
@@ -482,17 +483,7 @@ void checkSymlink(int argc, char *argv[])
     }
 }
 
-void eventHandler(int code, char *argv[], int fd){
-    switch (code){
-        case 0:
-            char msg[] = "PROCESS CREATED; PID: ";
-            write(fd, msg, sizeof(msg)/sizeof(char));
-            char pid[5];
-            sprintf(pid, "%d", getpid());
-            write(fd, pid, sizeof(pid)/sizeof(int));
-            break;
-    }
-}
+
 
 int main(int argc, char *argv[], char *envp[])
 {
@@ -502,7 +493,7 @@ int main(int argc, char *argv[], char *envp[])
     int fd = checkLog(envp);
 
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-    eventHandler(0, argv, fd);
+    eventHandler(0, argc, argv, fd);
 
 
     if (argc < 3)
