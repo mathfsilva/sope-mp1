@@ -507,6 +507,7 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
+    
     clock_t start, end;
 
     start = clock();
@@ -514,7 +515,6 @@ int main(int argc, char *argv[], char *envp[])
     
 
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-
     eventHandler(0, argc, argv, reg);
 
 
