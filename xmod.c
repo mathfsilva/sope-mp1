@@ -545,5 +545,6 @@ int main(int argc, char *argv[], char *envp[])
     printf("Process took %f miliseconds to execute \n", time_taken);
 
     //Should have a PROC_EXIT here
+    eventHandler(1, argc, argv, reg);
     return 0;
 }
