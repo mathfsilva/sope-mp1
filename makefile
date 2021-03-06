@@ -5,3 +5,4 @@ xmod: xmod.c file.h file.c
 
 clean:
 	rm -f xmod
+
