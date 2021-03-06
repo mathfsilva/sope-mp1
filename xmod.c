@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <time.h>
+#include "file.h"
 
 #include "file.h"
 
@@ -444,37 +445,39 @@ bool aretheyequal(char *env,char const *arg){
     return true;
 }
 
-int checkLog(char *envp[])
+char *checkLog(char *envp[])
 {
 
     //Check if LOG_FILENAME was defined by user
     for(int j=0;envp[j]!=NULL;j++){
         if(aretheyequal(envp[j],"LOG_FILENAME")){
     char *reg = secure_getenv("LOG_FILENAME");
-    printf("%s\n",reg);
+    //printf("%s\n",reg);
 
     int fd;
-    char const *text1 = "Holo Pat"; //Experiment
+    //char const *text1 = "Holo Pat"; //Experiment
 
     if (access(reg, F_OK) == 0)
     { //When file exists->Truncate it
         printf("File exists\n");
         fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-        write(fd, text1, 8);
+        //write(fd, text1, 8);
+        close(fd);
     }
     else
     {
         //If file doesn't exist->Create a new one
         printf("File doesn't exist\n");
-        printf("%s\n",reg);
+        //printf("%s\n",reg);
         fd = open(reg, O_CREAT | O_EXCL, 0644);
-        write(fd, text1, 8);
+        //write(fd, text1, 8);
+        close(fd);
     }
-    return fd;
+    return reg;
         }
 
     }
-    return -1;
+    return NULL;
 }
 
 void checkSymlink(int argc, char *argv[])
@@ -500,31 +503,20 @@ void checkSymlink(int argc, char *argv[])
     }
 }
 
-void eventHandler(int code, char *argv[], int fd){
-    switch (code){
-        case 0:
-            char msg[] = "PROCESS CREATED; PID: ";
-            write(fd, msg, sizeof(msg)/sizeof(char));
-            char pid[5];
-            sprintf(pid, "%d", getpid());
-            write(fd, pid, sizeof(pid)/sizeof(int));
-            break;
-    }
-}
+
 
 int main(int argc, char *argv[], char *envp[])
 {
     clock_t start, end;
 
     start = clock();
-    int fd = checkLog(envp);
-    if(fd==-1){
-        return 1;
-    }
+    char *reg=checkLog(envp);
+    
 
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-    //eventHandler(0, argv, fd);
-    hello();
+
+    eventHandler(0, argc, argv, reg);
+
 
 
     if (argc < 3)
@@ -545,7 +537,7 @@ int main(int argc, char *argv[], char *envp[])
         return 1;
     }
 
-    close(fd);
+    
     end = clock() - start;
 
     double time_taken = ((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds

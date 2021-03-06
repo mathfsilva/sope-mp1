@@ -2,6 +2,6 @@
 #ifndef FILE_H
 #define FILE_H
 
-void hello();
+void eventHandler(int code, int argc, char *argv[], char*reg);
 
 #endif
