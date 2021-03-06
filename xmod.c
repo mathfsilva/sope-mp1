@@ -11,7 +11,11 @@
 #include <time.h>
 #include "file.h"
 
-#include "file.h"
+double calculate_time(clock_t start){
+    clock_t end=clock()-start;
+    double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
+    return time_taken;
+}
 
 char *getoldmode(char *p, char *f)
 {
@@ -509,13 +513,12 @@ int main(int argc, char *argv[], char *envp[])
 {
     
     clock_t start, end;
-
+    double time_taken;
     start = clock();
     char *reg=checkLog(envp);
-    
-
+    time_taken=calculate_time(start);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-    eventHandler(0, argc, argv, reg);
+    eventHandler(0, argc, argv, reg,time_taken);
 
 
 
@@ -537,14 +540,8 @@ int main(int argc, char *argv[], char *envp[])
         return 1;
     }
 
-    
-    end = clock() - start;
-
-    double time_taken = ((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
-
-    printf("Process took %f miliseconds to execute \n", time_taken);
-
+    time_taken=calculate_time(start);
     //Should have a PROC_EXIT here
-    eventHandler(1, argc, argv, reg);
+    eventHandler(1, argc, argv, reg,time_taken);
     return 0;
 }
