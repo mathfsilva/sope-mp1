@@ -516,9 +516,12 @@ int main(int argc, char *argv[], char *envp[])
     double time_taken;
     start = clock();
     char *reg=checkLog(envp);
+    int fd = open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
     time_taken=calculate_time(start);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
-    eventHandler(0, argc, argv, reg,time_taken);
+    //eventHandler(0, argc, argv, reg,time_taken);
+    write_PROC_CREATE(fd,argv,time_taken);
+
 
 
 
@@ -528,6 +531,8 @@ int main(int argc, char *argv[], char *envp[])
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
         printf("Not enough arguments\n");
+        time_taken=calculate_time(start);
+        write_PROC_EXIT(fd,time_taken,1);
         //PROC_EXIT here
         return 1;
     }
@@ -541,7 +546,8 @@ int main(int argc, char *argv[], char *envp[])
     }
 
     time_taken=calculate_time(start);
+    write_PROC_EXIT(fd,time_taken,0);
     //Should have a PROC_EXIT here
-    eventHandler(1, argc, argv, reg,time_taken);
+    //eventHandler(1, argc, argv, reg,time_taken);
     return 0;
 }
