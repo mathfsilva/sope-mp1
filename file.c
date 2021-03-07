@@ -84,8 +84,7 @@ void write_PROC_EXIT(int fd,double time_taken,int exit_code){
     close(fd);
 }
 
-/*
-void write_FILE_MODF(int fd,double time_taken,char*old_mode,char* new_mode){ //Might need to check if old_mode==new_mode in xmod.c before calling this
 
+void write_FILE_MODF(int fd,double time_taken,char*old_mode,char* new_mode,char*file_name){ 
+    //printf("Holo\n");
 }
-*/

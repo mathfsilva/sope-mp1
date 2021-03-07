@@ -339,11 +339,13 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
     return oldmode_str;
 }
 
-int xmod(int argc, char *argv[])
+int xmod(int argc, char *argv[],int fd,clock_t start)
 {
 
     char *options;
+    char*file_name;
     int mode;
+    double time_taken;
     char mode_str[3] = {'0', '0', '0'};
     int mode_u = 0, mode_g = 0, mode_o = 0;
     int mode_u_r = 0, mode_u_w = 0, mode_u_x = 0;
@@ -361,11 +363,18 @@ int xmod(int argc, char *argv[])
     {
         mode = strtol(argv[1], 0, 8);
         oldmode = getoldmode(argv[1], argv[2]);
-
-        //FILE_MODF here (reason why went to get oldmode)
+        
+        
         if (chmod(argv[argc - 1], mode) < 0)
         {
             printf("ERROR");
+        }
+        else{ //FILE_MODF here (reason why went to get oldmode)
+            if(strcmp(argv[1],oldmode)!=0){ //Think we only need to write if they are different
+            file_name=argv[argc-1];
+            time_taken=calculate_time(start);
+            write_FILE_MODF(fd,start,oldmode,argv[1],file_name);
+        }
         }
     }
     else
@@ -387,25 +396,37 @@ int xmod(int argc, char *argv[])
         mode = strtol(mode_str, 0, 8);
         printf("%s\n", mode_str);
 
-        //FILE_MODF here (reason why went to get oldmode)
         if (chmod(argv[argc - 1], mode) < 0)
         {
             printf("ERROR");
         }
+         else{ //FILE_MODF here (reason why went to get oldmode)
+            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
+            file_name=argv[argc-1];
+            time_taken=calculate_time(start);
+            write_FILE_MODF(fd,start,oldmode,mode_str,file_name);
+        }
+         }
     }
 
     if (argc == 4)
     { //In case we have options
         if (isdigit(argv[2][0]))
         {
-            mode = strtol(argv[1], 0, 8);
-            oldmode = getoldmode(argv[1], argv[2]);
+            mode = strtol(argv[2], 0, 8);
+            oldmode = getoldmode(argv[2], argv[3]);
 
-            //FILE_MODF here (reason why went to get oldmode)
             if (chmod(argv[argc - 1], mode) < 0)
             {
                 printf("ERROR");
             }
+             else{ //FILE_MODF here (reason why went to get oldmode)
+            if(strcmp(argv[2],oldmode)!=0){ //Think we only need to write if they are different
+            file_name=argv[argc-1];
+            time_taken=calculate_time(start);
+            write_FILE_MODF(fd,start,oldmode,argv[2],file_name);
+        }
+             }
         }
         else
         {
@@ -422,21 +443,19 @@ int xmod(int argc, char *argv[])
             mode = strtol(mode_str, 0, 8);
             printf("%s\n", mode_str);
 
-            //FILE_MODF here (reason why went to get oldmode)
             if (chmod(argv[argc - 1], mode) < 0)
             {
                 printf("ERROR");
             }
+             else{ //FILE_MODF here (reason why went to get oldmode)
+            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
+            file_name=argv[argc-1];
+            time_taken=calculate_time(start);
+            write_FILE_MODF(fd,start,oldmode,mode_str,file_name);
+        }
+             }
         }
     }
-    //Symbolic Link check
-    /*
-while ((ent = readdir(dir)) != NULL) {
-  if (ent->d_type == DT_LNK) { 
-            
-  }
-}   */
-
     return 0;
 }
 
@@ -507,8 +526,6 @@ void checkSymlink(int argc, char *argv[])
     }
 }
 
-
-
 int main(int argc, char *argv[], char *envp[])
 {
     
@@ -540,7 +557,7 @@ int main(int argc, char *argv[], char *envp[])
     
     checkSymlink(argc, argv);
 
-    if (xmod(argc, argv))
+    if (xmod(argc, argv,fd,start))
     {
         return 1;
     }
