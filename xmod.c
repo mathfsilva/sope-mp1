@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,7 +10,9 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <time.h>
+
 #include "file.h"
+#include "macros.h"
 
 typedef struct 
 {
@@ -37,56 +40,32 @@ char *getoldmode(char *p, char *f)
     char *oldmode_str = (char *)malloc(3);
     struct stat fs;
     stat(f, &fs); //Gets current permission
-    int mode_u_r = 0, mode_u_w = 0, mode_u_x = 0, mode_g_r = 0, mode_g_w = 0, mode_g_x = 0, mode_o_r = 0, mode_o_w = 0, mode_o_x = 0;
 
     //User Permission
-    if (fs.st_mode & S_IRUSR)
-    {
-        mode_u_r += 4;
-    }
-    if (fs.st_mode & S_IWUSR)
-    {
-        mode_u_w += 2;
-    }
-    if (fs.st_mode & S_IXUSR)
-    {
-        mode_u_x += 1;
-    }
-    //Group Permission
-    if (fs.st_mode & S_IRGRP)
-    {
-        mode_g_r += 4;
-    }
-    if (fs.st_mode & S_IWGRP)
-    {
-        mode_g_w += 2;
-    }
-    if (fs.st_mode & S_IXGRP)
-    {
-        mode_g_x += 1;
-    }
 
-    //Others Permission
-    if (fs.st_mode & S_IROTH)
-    {
-        mode_o_r += 4;
-    }
-    if (fs.st_mode & S_IWOTH)
-    {
-        mode_o_w += 2;
-    }
-    if (fs.st_mode & S_IXOTH)
-    {
-        mode_o_x += 1;
-    }
+    perm_mode old_mode_u;
+    perm_mode old_mode_g;
+    perm_mode old_mode_o;
 
-    int mode_u = mode_u_r + mode_u_w + mode_u_x;
-    int mode_g = mode_g_r + mode_g_w + mode_g_x;
-    int mode_o = mode_o_r + mode_o_w + mode_o_x;
+    old_mode_u.r = fs.st_mode & S_IRUSR;
+    old_mode_u.w = fs.st_mode & S_IWUSR;
+    old_mode_u.x = fs.st_mode & S_IXUSR;
 
-    oldmode_str[0] = mode_u + '0';
-    oldmode_str[1] = mode_g + '0';
-    oldmode_str[2] = mode_o + '0';
+    old_mode_g.r = fs.st_mode & S_IRGRP;
+    old_mode_g.w = fs.st_mode & S_IWGRP;
+    old_mode_g.x = fs.st_mode & S_IXGRP;
+
+    old_mode_o.r = fs.st_mode & S_IROTH;
+    old_mode_o.w = fs.st_mode & S_IWOTH;
+    old_mode_o.x = fs.st_mode & S_IXOTH;
+
+    int old_u = calcul_perm_mode(old_mode_u);
+    int old_g = calcul_perm_mode(old_mode_g);
+    int old_o = calcul_perm_mode(old_mode_o);
+
+    oldmode_str[0] = old_u + '0';
+    oldmode_str[1] = old_g + '0';
+    oldmode_str[2] = old_o + '0';
 
     return oldmode_str;
 }
@@ -198,10 +177,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
     int mode;
     double time_taken;
     char mode_str[3] = {'0', '0', '0'};
-    int mode_u = 0, mode_g = 0, mode_o = 0;
-    int mode_u_r = 0, mode_u_w = 0, mode_u_x = 0;
-    int mode_g_r = 0, mode_g_w = 0, mode_g_x = 0;
-    int mode_o_r = 0, mode_o_w = 0, mode_o_x = 0;
+    perm_mode mode_u,mode_g,mode_o;
     char *oldmode;
     if (argv[1][0] == '-' && (argv[1][1] == 'c' | argv[1][1] == 'R' | argv[1][1] == 'v'))
     { //Or argc==4
@@ -234,15 +210,14 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        oldmode = parse(argv[1], argv[2], mode_u_r, mode_u_w, mode_u_x, mode_g_r, mode_g_w, mode_g_x, mode_o_r, mode_o_w, mode_o_x);
+        oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        mode_u = mode_u_r + mode_u_w + mode_u_x;
-        mode_g = mode_g_r + mode_g_w + mode_g_x;
-        mode_o = mode_o_r + mode_o_w + mode_o_x;
-
-        mode_str[0] = mode_u + '0';
-        mode_str[1] = mode_g + '0';
-        mode_str[2] = mode_o + '0';
+        int modeu=calculate_mode(&mode_u);
+        int modeg=calculate_mode(&mode_g);
+        int modeo=calculate_mode(&mode_o);
+        mode_str[0] = modeu + '0';
+        mode_str[1] = modeg + '0';
+        mode_str[2] = modeo + '0';
 
         mode = strtol(mode_str, 0, 8);
         printf("%s\n", mode_str);
@@ -281,15 +256,14 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         }
         else
         {
-            oldmode = parse(argv[2], argv[3], mode_u_r, mode_u_w, mode_u_x, mode_g_r, mode_g_w, mode_g_x, mode_o_r, mode_o_w, mode_o_x);
+            oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-            mode_u = mode_u_r + mode_u_w + mode_u_x;
-            mode_g = mode_g_r + mode_g_w + mode_g_x;
-            mode_o = mode_o_r + mode_o_w + mode_o_x;
-
-            mode_str[0] = mode_u + '0';
-            mode_str[1] = mode_g + '0';
-            mode_str[2] = mode_o + '0';
+        int modeu=calculate_mode(&mode_u);
+        int modeg=calculate_mode(&mode_g);
+        int modeo=calculate_mode(&mode_o);
+        mode_str[0] = modeu + '0';
+        mode_str[1] = modeg + '0';
+        mode_str[2] = modeo + '0';
 
             mode = strtol(mode_str, 0, 8);
             printf("%s\n", mode_str);
