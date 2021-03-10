@@ -141,7 +141,7 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
                 case 'r':
                     mode_u->r = add_or_equal;
                     mode_g->r = add_or_equal;
-                    mode_o->r = add_or_equal;
+                    mode_o->r= add_or_equal;
                     break;
                 case 'w':
                     mode_u->w = add_or_equal;
@@ -149,9 +149,9 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
                     mode_o->w = add_or_equal;
                     break;
                 case 'x':
-                    mode_u->w = add_or_equal;
-                    mode_g->w = add_or_equal;
-                    mode_o->w = add_or_equal;
+                    mode_u->x = add_or_equal;
+                    mode_g->x = add_or_equal;
+                    mode_o->x = add_or_equal;
                     break;
                 default:
                 //TODO error
@@ -278,18 +278,20 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
 
 bool aretheyequal(char *env,char const *arg){
     for(int i = 0; arg[i] != '\0'; i++){
+        printf("%d\n",arg[i]);
         if(arg[i] != env[i]){
             return false;
         }
     }
+    //printf("Holo\n");
     return true;
 }
 
 char *checkLog(char *envp[])
 {
-
-    //Check if LOG_FILENAME was defined by user
+     //Check if LOG_FILENAME was defined by user
     for(int j=0;envp[j]!=NULL;j++){
+        //printf("%s\n",envp[j]);
         if(aretheyequal(envp[j],"LOG_FILENAME")){
     char *reg = secure_getenv("LOG_FILENAME");
     //printf("%s\n",reg);
