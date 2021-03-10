@@ -11,6 +11,21 @@
 #include <time.h>
 #include "file.h"
 
+typedef struct 
+{
+    bool r;
+    bool w;
+    bool x;
+}perm_mode;
+
+int calcul_perm_mode(perm_mode mode){
+    int val = 0;
+    val += mode.r ? 4 : 0;
+    val += mode.w ? 2 : 0;
+    val += mode.x ? 1 : 0;
+    return val
+}
+
 double calculate_time(clock_t start){
     clock_t end=clock()-start;
     double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
@@ -76,7 +91,7 @@ char *getoldmode(char *p, char *f)
     return oldmode_str;
 }
 
-char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &mode_g_r, int &mode_g_w, int &mode_g_x, int &mode_o_r, int &mode_o_w, int &mode_o_x)
+char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* mode_o)
 {
     int size = strlen(p);
     char *oldmode_str = (char *)malloc(3);
@@ -84,255 +99,91 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
     stat(f, &fs); //Gets current permission
 
     //User Permission
-    if (fs.st_mode & S_IRUSR)
-    {
-        mode_u_r += 4;
-    }
-    if (fs.st_mode & S_IWUSR)
-    {
-        mode_u_w += 2;
-    }
-    if (fs.st_mode & S_IXUSR)
-    {
-        mode_u_x += 1;
-    }
-    //Group Permission
-    if (fs.st_mode & S_IRGRP)
-    {
-        mode_g_r += 4;
-    }
-    if (fs.st_mode & S_IWGRP)
-    {
-        mode_g_w += 2;
-    }
-    if (fs.st_mode & S_IXGRP)
-    {
-        mode_g_x += 1;
-    }
 
-    //Others Permission
-    if (fs.st_mode & S_IROTH)
-    {
-        mode_o_r += 4;
-    }
-    if (fs.st_mode & S_IWOTH)
-    {
-        mode_o_w += 2;
-    }
-    if (fs.st_mode & S_IXOTH)
-    {
-        mode_o_x += 1;
-    }
+    mode_u.r = fs.st_mode & S_IRUSR;
+    mode_u.w = fs.st_mode & S_IWUSR;
+    mode_u.x = fs.st_mode & S_IXUSR;
 
-    int mode_u = mode_u_r + mode_u_w + mode_u_x;
-    int mode_g = mode_g_r + mode_g_w + mode_g_x;
-    int mode_o = mode_o_r + mode_o_w + mode_o_x;
+    mode_g.r = fs.st_mode & S_IRGRP;
+    mode_g.w = fs.st_mode & S_IWGRP;
+    mode_g.x = fs.st_mode & S_IXGRP;
 
-    oldmode_str[0] = mode_u + '0';
-    oldmode_str[1] = mode_g + '0';
-    oldmode_str[2] = mode_o + '0';
+    mode_o.r = fs.st_mode & S_IROTH;
+    mode_o.w = fs.st_mode & S_IWOTH;
+    mode_o.x = fs.st_mode & S_IXOTH;
+
+    int old_u = calcul_perm_mode(mode_u);
+    int old_g = calcul_perm_mode(mode_g);
+    int old_o = calcul_perm_mode(mode_o);
+
+    oldmode_str[0] = old_u + '0';
+    oldmode_str[1] = old_g + '0';
+    oldmode_str[2] = old_o + '0';
 
     //Let's consider letters option first (u+w)
     //User
-    if (p[0] == 'u')
-    {
-        int i = 2;
-        if (p[1] == '+' || p[1] == '=')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 1;
-                    i++;
-                }
-            }
+
+    perm_mode *temp_mode;
+
+    bool add_or_equal = p[1] == '+' || p[1] == '=';
+
+    if (p[0] != 'a'){
+
+        switch (p[0]){
+            case 'u':
+                temp_mode = mode_u;
+                break;
+            case 'g':
+                temp_mode = mode_g;
+                break;
+            case 'o':
+                temp_mode = mode_o;
+                break;
+            default:
+            //TODO error
+                break;
         }
-        if (p[1] == '-')
-        {
-            while (i != size)
+
+        for(int i = 2; i < size; i++){
+            switch (p[i])
             {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 0;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 1;
-                    i++;
-                }
+                case 'r':
+                    temp_mode.r = add_or_equal;
+                    break;
+                case 'w':
+                    temp_mode.w = add_or_equal;
+                    break;
+                case 'x':
+                    temp_mode.x = add_or_equal;
+                    break;
+                default:
+                //TODO error
+                    break;
             }
         }
     }
-
-    //Group
-    else if (p[0] == 'g')
-    {
-        int i = 2;
-        if (p[1] == '+' || p[1] == '=')
-        {
-            while (i != size)
+    else{
+        for(int i = 2; i < size; i++){
+            switch (p[i])
             {
-                if (p[i] == 'r')
-                {
-                    mode_g_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_g_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_g_x = 1;
-                    i++;
-                }
-            }
-        }
-        if (p[1] == '-')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_g_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_g_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_g_x = 1;
-                    i++;
-                }
-            }
-        }
-    }
-
-    //Others
-    else if (p[0] == 'o')
-    {
-        int i = 2;
-        if (p[1] == '+' || p[1] == '=')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_o_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_o_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_o_x = 1;
-                    i++;
-                }
-            }
-        }
-        if (p[1] == '-')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_o_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_o_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_o_x = 1;
-                    i++;
-                }
-            }
-        }
-    }
-
-    //All
-    else if (p[0] == 'a')
-    {
-        int i = 2;
-        if (p[1] == '+' || p[1] == '=')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 4;
-                    mode_g_r = 4;
-                    mode_o_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 2;
-                    mode_g_w = 2;
-                    mode_o_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 1;
-                    mode_g_x = 1;
-                    mode_o_x = 1;
-                    i++;
-                }
-            }
-        }
-        if (p[1] == '-')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 0;
-                    mode_g_r = 0;
-                    mode_o_r = 0;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 0;
-                    mode_g_w = 0;
-                    mode_o_w = 0;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 0;
-                    mode_g_x = 0;
-                    mode_o_x = 0;
-                    i++;
-                }
+                case 'r':
+                    mode_u.r = add_or_equal;
+                    mode_g.r = add_or_equal;
+                    mode_o.r = add_or_equal;
+                    break;
+                case 'w':
+                    mode_u.w = add_or_equal;
+                    mode_g.w = add_or_equal;
+                    mode_o.w = add_or_equal;
+                    break;
+                case 'x':
+                    mode_u.w = add_or_equal;
+                    mode_g.w = add_or_equal;
+                    mode_o.w = add_or_equal;
+                    break;
+                default:
+                //TODO error
+                    break;
             }
         }
     }
