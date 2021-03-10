@@ -278,7 +278,6 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
 
 bool aretheyequal(char *env,char const *arg){
     for(int i = 0; arg[i] != '\0'; i++){
-        printf("%d\n",arg[i]);
         if(arg[i] != env[i]){
             return false;
         }
@@ -293,7 +292,7 @@ char *checkLog(char *envp[])
     for(int j=0;envp[j]!=NULL;j++){
         //printf("%s\n",envp[j]);
         if(aretheyequal(envp[j],"LOG_FILENAME")){
-    char *reg = secure_getenv("LOG_FILENAME");
+    char *reg = getenv("LOG_FILENAME");
     //printf("%s\n",reg);
 
     int fd;
