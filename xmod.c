@@ -14,19 +14,12 @@
 #include "file.h"
 #include "macros.h"
 
-typedef struct 
-{
-    bool r;
-    bool w;
-    bool x;
-}perm_mode;
-
-int calcul_perm_mode(perm_mode mode){
+int calculate_mode(perm_mode mode){
     int val = 0;
     val += mode.r ? 4 : 0;
     val += mode.w ? 2 : 0;
     val += mode.x ? 1 : 0;
-    return val
+    return val;
 }
 
 double calculate_time(clock_t start){
@@ -59,9 +52,9 @@ char *getoldmode(char *p, char *f)
     old_mode_o.w = fs.st_mode & S_IWOTH;
     old_mode_o.x = fs.st_mode & S_IXOTH;
 
-    int old_u = calcul_perm_mode(old_mode_u);
-    int old_g = calcul_perm_mode(old_mode_g);
-    int old_o = calcul_perm_mode(old_mode_o);
+    int old_u = calculate_mode(old_mode_u);
+    int old_g = calculate_mode(old_mode_g);
+    int old_o = calculate_mode(old_mode_o);
 
     oldmode_str[0] = old_u + '0';
     oldmode_str[1] = old_g + '0';
@@ -79,21 +72,21 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
 
     //User Permission
 
-    mode_u.r = fs.st_mode & S_IRUSR;
-    mode_u.w = fs.st_mode & S_IWUSR;
-    mode_u.x = fs.st_mode & S_IXUSR;
+    mode_u->r = fs.st_mode & S_IRUSR;
+    mode_u->w = fs.st_mode & S_IWUSR;
+    mode_u->x = fs.st_mode & S_IXUSR;
 
-    mode_g.r = fs.st_mode & S_IRGRP;
-    mode_g.w = fs.st_mode & S_IWGRP;
-    mode_g.x = fs.st_mode & S_IXGRP;
+    mode_g->r = fs.st_mode & S_IRGRP;
+    mode_g->w = fs.st_mode & S_IWGRP;
+    mode_g->x = fs.st_mode & S_IXGRP;
 
-    mode_o.r = fs.st_mode & S_IROTH;
-    mode_o.w = fs.st_mode & S_IWOTH;
-    mode_o.x = fs.st_mode & S_IXOTH;
+    mode_o->r = fs.st_mode & S_IROTH;
+    mode_o->w = fs.st_mode & S_IWOTH;
+    mode_o->x = fs.st_mode & S_IXOTH;
 
-    int old_u = calcul_perm_mode(mode_u);
-    int old_g = calcul_perm_mode(mode_g);
-    int old_o = calcul_perm_mode(mode_o);
+    int old_u = calculate_mode(*mode_u);
+    int old_g = calculate_mode(*mode_g);
+    int old_o = calculate_mode(*mode_o);
 
     oldmode_str[0] = old_u + '0';
     oldmode_str[1] = old_g + '0';
@@ -127,13 +120,13 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
             switch (p[i])
             {
                 case 'r':
-                    temp_mode.r = add_or_equal;
+                    temp_mode->r = add_or_equal;
                     break;
                 case 'w':
-                    temp_mode.w = add_or_equal;
+                    temp_mode->w = add_or_equal;
                     break;
                 case 'x':
-                    temp_mode.x = add_or_equal;
+                    temp_mode->x = add_or_equal;
                     break;
                 default:
                 //TODO error
@@ -146,19 +139,19 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
             switch (p[i])
             {
                 case 'r':
-                    mode_u.r = add_or_equal;
-                    mode_g.r = add_or_equal;
-                    mode_o.r = add_or_equal;
+                    mode_u->r = add_or_equal;
+                    mode_g->r = add_or_equal;
+                    mode_o->r = add_or_equal;
                     break;
                 case 'w':
-                    mode_u.w = add_or_equal;
-                    mode_g.w = add_or_equal;
-                    mode_o.w = add_or_equal;
+                    mode_u->w = add_or_equal;
+                    mode_g->w = add_or_equal;
+                    mode_o->w = add_or_equal;
                     break;
                 case 'x':
-                    mode_u.w = add_or_equal;
-                    mode_g.w = add_or_equal;
-                    mode_o.w = add_or_equal;
+                    mode_u->w = add_or_equal;
+                    mode_g->w = add_or_equal;
+                    mode_o->w = add_or_equal;
                     break;
                 default:
                 //TODO error
@@ -212,9 +205,9 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
        */
         oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        int modeu=calculate_mode(&mode_u);
-        int modeg=calculate_mode(&mode_g);
-        int modeo=calculate_mode(&mode_o);
+        int modeu=calculate_mode(mode_u);
+        int modeg=calculate_mode(mode_g);
+        int modeo=calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
@@ -258,9 +251,9 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         {
             oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        int modeu=calculate_mode(&mode_u);
-        int modeg=calculate_mode(&mode_g);
-        int modeo=calculate_mode(&mode_o);
+        int modeu=calculate_mode(mode_u);
+        int modeg=calculate_mode(mode_g);
+        int modeo=calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
