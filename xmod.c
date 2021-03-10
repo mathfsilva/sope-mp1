@@ -12,6 +12,7 @@
 #include <time.h>
 
 #include "file.h"
+#include "signals.h"
 #include "macros.h"
 
 int calculate_mode(perm_mode mode){
@@ -289,6 +290,7 @@ bool aretheyequal(char *env,char const *arg){
 
 char *checkLog(char *envp[])
 {
+    printf("Hi\n");
      //Check if LOG_FILENAME was defined by user
     for(int j=0;envp[j]!=NULL;j++){
         //printf("%s\n",envp[j]);
@@ -357,9 +359,10 @@ int main(int argc, char *argv[], char *envp[])
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
     write_PROC_CREATE(fd,argv,time_taken);
-
-
-
+    subscribe_SIGINT(); //Ctrl+C interruption
+    printf("Back\n");
+    sleep(4);
+    printf("Awake\n");
 
     if (argc < 3)
     {   //chmod options permissions file_name

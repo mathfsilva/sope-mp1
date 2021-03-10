@@ -22,39 +22,49 @@ write_SIGNAL_SENT.
 #include <stdbool.h>
 #include <unistd.h>
 #include <signal.h>
+#include <stdlib.h>
 #include "file.h"
 
 void signals_handler(int signo)
 {
-    int pg=getpgrp();
-    kill(-pg,SIGSTOP);
+    printf("Sup\n");
+    //int pg=getpgrp();
+    printf("Still\n");
+    kill(getppid(),SIGSTOP); //This is working
+    printf("Gone\n");
     //write_SIGNALRECV(signal="SIGINT");--->figure out
     //write_SIGNALSEND(signal="SIGSTOP");
-
+ 
     bool valid=false;
+    printf("Value\n");
     while(!valid){
     printf("Are you sure you want to terminate this program?\n");
     char answer;
-    scanf("%s",answer);
+    scanf("%s",&answer);
     if(answer=='N' || answer=='n'){
         valid=true;
-        kill(-pg,SIGTERM);
+        kill(getppid(),SIGCONT); //Working 
         //write_SIGNALSEND("signal=SIGCONT");
+        printf("GO\n");
 
     }
     else if(answer=='Y' || answer=='y'){
+        printf("hi\n");
         valid=true;
-        kill(-pg,SIGTERM);
+        kill(getppid(),SIGTERM);
         //write_SIGNALSEND(signal="SIGTERM");
         //write_PROC_EXIT(exit status=1);
         //writes lines here
+        printf("EXIT\n");
         exit(1);
+        printf("Gone\n");
     }
     }
 }
 
 void subscribe_SIGINT(){
 
+  printf("Holo\n");
   struct sigaction interruption;
   interruption.sa_handler = signals_handler;
   interruption.sa_flags = 0;

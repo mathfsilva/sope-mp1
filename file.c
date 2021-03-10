@@ -52,7 +52,6 @@ void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken){
 
 int getfd(char*reg){
     int fd = open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
-    global_fd=fd;
     return fd;
 }
 
