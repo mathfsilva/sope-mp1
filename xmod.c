@@ -22,6 +22,7 @@ int calculate_mode(perm_mode mode){
     return val;
 }
 
+
 double calculate_time(clock_t start){
     clock_t end=clock()-start;
     double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
@@ -351,7 +352,7 @@ int main(int argc, char *argv[], char *envp[])
     double time_taken;
     start = clock();
     char *reg=checkLog(envp);
-    int fd = open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
+    int fd = getfd(reg);
     time_taken=calculate_time(start);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);

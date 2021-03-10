@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
+#include<time.h>
 #include "file.h"
 
 /*
@@ -47,6 +48,13 @@ void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken){
     }
 }
 */
+
+
+int getfd(char*reg){
+    int fd = open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
+    global_fd=fd;
+    return fd;
+}
 
 void write_PROC_CREATE(int fd,char *argv[],double time_taken){
     char t[sizeof(time_taken)]; 
@@ -108,4 +116,29 @@ void write_FILE_MODF(int fd,double time_taken,char*old_mode,char* new_mode,char*
     write(fd,"\n",sizeof("\n")-1);
 
 
+}
+
+void write_SIGNAL_RECV(int fd,double time_taken,char *signal){
+    char t[sizeof(time_taken)];
+    char const *msg=" SIGNAL_RECV ";
+    snprintf(t,9,"%f",time_taken); 
+    write(fd,t,sizeof(t)-1);
+    write(fd,msg,strlen(msg));
+    write(fd,signal,strlen(signal));
+    write(fd,"\n",sizeof("\n")-1);
+}
+
+void write_SIGNAL_SENT(int fd,double time_taken,char *signal){
+    char t[sizeof(time_taken)];
+    static size_t size = sizeof(getpid())/sizeof(char);
+    char const *msg=" SIGNAL_SENT ";
+    snprintf(t,9,"%f",time_taken); 
+    char pid[size];
+    snprintf(pid, size, "%d", getpid());
+    write(fd,t,sizeof(t)-1);
+    write(fd,msg,strlen(msg));
+    write(fd,signal,strlen(signal));
+    write(fd," : ",sizeof(" : ")-1);
+    write(fd,pid,sizeof(pid)-1);
+    write(fd,"\n",sizeof("\n")-1);
 }
