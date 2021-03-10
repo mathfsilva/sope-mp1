@@ -14,18 +14,11 @@
 #include "file.h"
 #include "macros.h"
 
-typedef struct 
-{
-    bool r;
-    bool w;
-    bool x;
-}perm_mode;
-
-int calcul_perm_mode(perm_mode *mode){
+int calculate_mode(perm_mode mode){
     int val = 0;
-    val += mode->r ? 4 : 0;
-    val += mode->w ? 2 : 0;
-    val += mode->x ? 1 : 0;
+    val += mode.r ? 4 : 0;
+    val += mode.w ? 2 : 0;
+    val += mode.x ? 1 : 0;
     return val;
 }
 
@@ -59,9 +52,9 @@ char *getoldmode(char *p, char *f)
     old_mode_o.w = fs.st_mode & S_IWOTH;
     old_mode_o.x = fs.st_mode & S_IXOTH;
 
-    int old_u = calcul_perm_mode(&old_mode_u);
-    int old_g = calcul_perm_mode(&old_mode_g);
-    int old_o = calcul_perm_mode(&old_mode_o);
+    int old_u = calculate_mode(old_mode_u);
+    int old_g = calculate_mode(old_mode_g);
+    int old_o = calculate_mode(old_mode_o);
 
     oldmode_str[0] = old_u + '0';
     oldmode_str[1] = old_g + '0';
@@ -91,9 +84,9 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
     mode_o->w = fs.st_mode & S_IWOTH;
     mode_o->x = fs.st_mode & S_IXOTH;
 
-    int old_u = calcul_perm_mode(mode_u);
-    int old_g = calcul_perm_mode(mode_g);
-    int old_o = calcul_perm_mode(mode_o);
+    int old_u = calculate_mode(*mode_u);
+    int old_g = calculate_mode(*mode_g);
+    int old_o = calculate_mode(*mode_o);
 
     oldmode_str[0] = old_u + '0';
     oldmode_str[1] = old_g + '0';
@@ -156,9 +149,9 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
                     mode_o->w = add_or_equal;
                     break;
                 case 'x':
-                    mode_u->x = add_or_equal;
-                    mode_g->x = add_or_equal;
-                    mode_o->x = add_or_equal;
+                    mode_u->w = add_or_equal;
+                    mode_g->w = add_or_equal;
+                    mode_o->w = add_or_equal;
                     break;
                 default:
                 //TODO error
@@ -175,7 +168,6 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
     char *options;
     char*file_name;
     int mode;
-    double time_taken;
     char mode_str[3] = {'0', '0', '0'};
     perm_mode mode_u,mode_g,mode_o;
     char *oldmode;
@@ -199,8 +191,8 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(argv[1],oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            time_taken=calculate_time(start);
-            write_FILE_MODF(fd,start,oldmode,argv[1],file_name);
+            double time_taken=calculate_time(start);
+            write_FILE_MODF(fd,time_taken,oldmode,argv[1],file_name);
         }
         }
     }
@@ -212,9 +204,9 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
        */
         oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        int modeu=calculate_mode(&mode_u);
-        int modeg=calculate_mode(&mode_g);
-        int modeo=calculate_mode(&mode_o);
+        int modeu=calculate_mode(mode_u);
+        int modeg=calculate_mode(mode_g);
+        int modeo=calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
@@ -229,8 +221,8 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
          else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            time_taken=calculate_time(start);
-            write_FILE_MODF(fd,start,oldmode,mode_str,file_name);
+            double time_taken=calculate_time(start);
+            write_FILE_MODF(fd,time_taken,oldmode,mode_str,file_name);
         }
          }
     }
@@ -249,8 +241,8 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
              else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(argv[2],oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            time_taken=calculate_time(start);
-            write_FILE_MODF(fd,start,oldmode,argv[2],file_name);
+            double time_taken=calculate_time(start);
+            write_FILE_MODF(fd,time_taken,oldmode,argv[2],file_name);
         }
              }
         }
@@ -258,9 +250,9 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         {
             oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        int modeu=calculate_mode(&mode_u);
-        int modeg=calculate_mode(&mode_g);
-        int modeo=calculate_mode(&mode_o);
+        int modeu=calculate_mode(mode_u);
+        int modeg=calculate_mode(mode_g);
+        int modeo=calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
@@ -275,8 +267,8 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
              else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            time_taken=calculate_time(start);
-            write_FILE_MODF(fd,start,oldmode,mode_str,file_name);
+            double time_taken=calculate_time(start);
+            write_FILE_MODF(fd,time_taken,oldmode,mode_str,file_name);
         }
              }
         }
@@ -332,7 +324,7 @@ void checkSymlink(int argc, char *argv[])
 {
     //Symlink check.
     struct stat buffer;
-    int t = lstat(argv[argc - 1], &buffer);
+    lstat(argv[argc - 1], &buffer);
     if (S_ISLNK(buffer.st_mode))
     {
         char buf[PATH_MAX]; /* PATH_MAX includes the \0 so +1 is not required */
@@ -354,7 +346,7 @@ void checkSymlink(int argc, char *argv[])
 int main(int argc, char *argv[], char *envp[])
 {
     
-    clock_t start, end;
+    clock_t start;
     double time_taken;
     start = clock();
     char *reg=checkLog(envp);

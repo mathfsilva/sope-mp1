@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <cstring>
+#include <string.h>
 #include "file.h"
 
 /*
@@ -99,7 +99,7 @@ void write_FILE_MODF(int fd,double time_taken,char*old_mode,char* new_mode,char*
     write(fd,t,sizeof(t)-1);
     write(fd,msg1,strlen(msg1));
     write(fd,pid,sizeof(pid)-1);
-    write(fd," ",sizeof(" ")-1);
+    write(fd,msg,strlen(msg));
     write(fd,file_name,strlen(file_name));
     write(fd,point,strlen(point));
     write(fd,old_mode,strlen(old_mode));
