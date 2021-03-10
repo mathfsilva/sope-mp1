@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -9,7 +10,9 @@
 #include <limits.h>
 #include <fcntl.h>
 #include <time.h>
+
 #include "file.h"
+#include "macros.h"
 
 double calculate_time(clock_t start){
     clock_t end=clock()-start;
@@ -22,61 +25,45 @@ char *getoldmode(char *p, char *f)
     char *oldmode_str = (char *)malloc(3);
     struct stat fs;
     stat(f, &fs); //Gets current permission
-    int mode_u_r = 0, mode_u_w = 0, mode_u_x = 0, mode_g_r = 0, mode_g_w = 0, mode_g_x = 0, mode_o_r = 0, mode_o_w = 0, mode_o_x = 0;
 
     //User Permission
-    if (fs.st_mode & S_IRUSR)
-    {
-        mode_u_r += 4;
-    }
-    if (fs.st_mode & S_IWUSR)
-    {
-        mode_u_w += 2;
-    }
-    if (fs.st_mode & S_IXUSR)
-    {
-        mode_u_x += 1;
-    }
-    //Group Permission
-    if (fs.st_mode & S_IRGRP)
-    {
-        mode_g_r += 4;
-    }
-    if (fs.st_mode & S_IWGRP)
-    {
-        mode_g_w += 2;
-    }
-    if (fs.st_mode & S_IXGRP)
-    {
-        mode_g_x += 1;
-    }
 
-    //Others Permission
-    if (fs.st_mode & S_IROTH)
-    {
-        mode_o_r += 4;
-    }
-    if (fs.st_mode & S_IWOTH)
-    {
-        mode_o_w += 2;
-    }
-    if (fs.st_mode & S_IXOTH)
-    {
-        mode_o_x += 1;
-    }
+    perm_mode old_mode_u;
+    perm_mode old_mode_g;
+    perm_mode old_mode_o;
 
-    int mode_u = mode_u_r + mode_u_w + mode_u_x;
-    int mode_g = mode_g_r + mode_g_w + mode_g_x;
-    int mode_o = mode_o_r + mode_o_w + mode_o_x;
+    old_mode_u.r = fs.st_mode & S_IRUSR;
+    old_mode_u.w = fs.st_mode & S_IWUSR;
+    old_mode_u.x = fs.st_mode & S_IXUSR;
 
-    oldmode_str[0] = mode_u + '0';
-    oldmode_str[1] = mode_g + '0';
-    oldmode_str[2] = mode_o + '0';
+    old_mode_g.r = fs.st_mode & S_IRGRP;
+    old_mode_g.w = fs.st_mode & S_IWGRP;
+    old_mode_g.x = fs.st_mode & S_IXGRP;
+
+    old_mode_o.r = fs.st_mode & S_IROTH;
+    old_mode_o.w = fs.st_mode & S_IWOTH;
+    old_mode_o.x = fs.st_mode & S_IXOTH;
+
+    int old_u = calcul_perm_mode(old_mode_u);
+    int old_g = calcul_perm_mode(old_mode_g);
+    int old_o = calcul_perm_mode(old_mode_o);
+
+    oldmode_str[0] = old_u + '0';
+    oldmode_str[1] = old_g + '0';
+    oldmode_str[2] = old_o + '0';
 
     return oldmode_str;
 }
 
-char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &mode_g_r, int &mode_g_w, int &mode_g_x, int &mode_o_r, int &mode_o_w, int &mode_o_x)
+int calculate_mode(perm_mode*mode){
+  int val = 0;
+  val += mode->r ? 4 : 0;
+  val += mode->w ? 2 : 0;
+  val += mode->x ? 1 : 0;
+  return val;
+}
+
+char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* mode_o)
 {
     int size = strlen(p);
     char *oldmode_str = (char *)malloc(3);
@@ -86,55 +73,55 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
     //User Permission
     if (fs.st_mode & S_IRUSR)
     {
-        mode_u_r += 4;
+        mode_u->r=true;
     }
     if (fs.st_mode & S_IWUSR)
     {
-        mode_u_w += 2;
+        mode_u->w=true;
     }
     if (fs.st_mode & S_IXUSR)
     {
-        mode_u_x += 1;
+        mode_u->x = true;
     }
     //Group Permission
     if (fs.st_mode & S_IRGRP)
     {
-        mode_g_r += 4;
+        mode_g->r = true;
     }
     if (fs.st_mode & S_IWGRP)
     {
-        mode_g_w += 2;
+        mode_g->w = true;
     }
     if (fs.st_mode & S_IXGRP)
     {
-        mode_g_x += 1;
+        mode_g->x = true;
     }
 
     //Others Permission
     if (fs.st_mode & S_IROTH)
     {
-        mode_o_r += 4;
+        mode_o->r = true;
     }
     if (fs.st_mode & S_IWOTH)
     {
-        mode_o_w += 2;
+        mode_o->w = true;
     }
     if (fs.st_mode & S_IXOTH)
     {
-        mode_o_x += 1;
+        mode_o->x = true;
     }
 
-    int mode_u = mode_u_r + mode_u_w + mode_u_x;
-    int mode_g = mode_g_r + mode_g_w + mode_g_x;
-    int mode_o = mode_o_r + mode_o_w + mode_o_x;
+    int modeu = calculate_mode(mode_u);
+    int modeg = calculate_mode(mode_g);
+    int modeo = calculate_mode(mode_o);
 
-    oldmode_str[0] = mode_u + '0';
-    oldmode_str[1] = mode_g + '0';
-    oldmode_str[2] = mode_o + '0';
+    oldmode_str[0] = modeu + '0';
+    oldmode_str[1] = modeg + '0';
+    oldmode_str[2] = modeo + '0';
 
     //Let's consider letters option first (u+w)
     //User
-    if (p[0] == 'u')
+    if (p[0] == 'u' || p[0]=='a')
     {
         int i = 2;
         if (p[1] == '+' || p[1] == '=')
@@ -143,17 +130,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_u_r = 4;
+                    mode_u->r = true;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_u_w = 2;
+                    mode_u->w = true;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_u_x = 1;
+                    mode_u->x = true;
                     i++;
                 }
             }
@@ -164,17 +151,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_u_r = 0;
+                    mode_u->r = false;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_u_w = 2;
+                    mode_u->w = false;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_u_x = 1;
+                    mode_u->x = false;
                     i++;
                 }
             }
@@ -182,7 +169,7 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
     }
 
     //Group
-    else if (p[0] == 'g')
+    else if (p[0] == 'g' || p[0]=='a')
     {
         int i = 2;
         if (p[1] == '+' || p[1] == '=')
@@ -191,17 +178,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_g_r = 4;
+                    mode_g->r = true;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_g_w = 2;
+                    mode_g->w = true;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_g_x = 1;
+                    mode_g->x = true;
                     i++;
                 }
             }
@@ -212,17 +199,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_g_r = 4;
+                    mode_g->r = false;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_g_w = 2;
+                    mode_g->w = false;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_g_x = 1;
+                    mode_g->x = false;
                     i++;
                 }
             }
@@ -230,7 +217,7 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
     }
 
     //Others
-    else if (p[0] == 'o')
+    else if (p[0] == 'o' || p[0]=='a')
     {
         int i = 2;
         if (p[1] == '+' || p[1] == '=')
@@ -239,17 +226,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_o_r = 4;
+                    mode_o->r = true;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_o_w = 2;
+                    mode_o->w = true;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_o_x = 1;
+                    mode_o->x = true;
                     i++;
                 }
             }
@@ -260,77 +247,17 @@ char *parse(char *p, char *f, int &mode_u_r, int &mode_u_w, int &mode_u_x, int &
             {
                 if (p[i] == 'r')
                 {
-                    mode_o_r = 4;
+                    mode_o->r = false;
                     i++;
                 }
                 if (p[i] == 'w')
                 {
-                    mode_o_w = 2;
+                    mode_o->w = false;
                     i++;
                 }
                 if (p[i] == 'x')
                 {
-                    mode_o_x = 1;
-                    i++;
-                }
-            }
-        }
-    }
-
-    //All
-    else if (p[0] == 'a')
-    {
-        int i = 2;
-        if (p[1] == '+' || p[1] == '=')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 4;
-                    mode_g_r = 4;
-                    mode_o_r = 4;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 2;
-                    mode_g_w = 2;
-                    mode_o_w = 2;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 1;
-                    mode_g_x = 1;
-                    mode_o_x = 1;
-                    i++;
-                }
-            }
-        }
-        if (p[1] == '-')
-        {
-            while (i != size)
-            {
-                if (p[i] == 'r')
-                {
-                    mode_u_r = 0;
-                    mode_g_r = 0;
-                    mode_o_r = 0;
-                    i++;
-                }
-                if (p[i] == 'w')
-                {
-                    mode_u_w = 0;
-                    mode_g_w = 0;
-                    mode_o_w = 0;
-                    i++;
-                }
-                if (p[i] == 'x')
-                {
-                    mode_u_x = 0;
-                    mode_g_x = 0;
-                    mode_o_x = 0;
+                    mode_o->x = false;
                     i++;
                 }
             }
@@ -347,10 +274,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
     int mode;
     double time_taken;
     char mode_str[3] = {'0', '0', '0'};
-    int mode_u = 0, mode_g = 0, mode_o = 0;
-    int mode_u_r = 0, mode_u_w = 0, mode_u_x = 0;
-    int mode_g_r = 0, mode_g_w = 0, mode_g_x = 0;
-    int mode_o_r = 0, mode_o_w = 0, mode_o_x = 0;
+    perm_mode mode_u,mode_g,mode_o;
     char *oldmode;
     if (argv[1][0] == '-' && (argv[1][1] == 'c' | argv[1][1] == 'R' | argv[1][1] == 'v'))
     { //Or argc==4
@@ -383,15 +307,14 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        oldmode = parse(argv[1], argv[2], mode_u_r, mode_u_w, mode_u_x, mode_g_r, mode_g_w, mode_g_x, mode_o_r, mode_o_w, mode_o_x);
+        oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-        mode_u = mode_u_r + mode_u_w + mode_u_x;
-        mode_g = mode_g_r + mode_g_w + mode_g_x;
-        mode_o = mode_o_r + mode_o_w + mode_o_x;
-
-        mode_str[0] = mode_u + '0';
-        mode_str[1] = mode_g + '0';
-        mode_str[2] = mode_o + '0';
+        int modeu=calculate_mode(&mode_u);
+        int modeg=calculate_mode(&mode_g);
+        int modeo=calculate_mode(&mode_o);
+        mode_str[0] = modeu + '0';
+        mode_str[1] = modeg + '0';
+        mode_str[2] = modeo + '0';
 
         mode = strtol(mode_str, 0, 8);
         printf("%s\n", mode_str);
@@ -430,15 +353,14 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         }
         else
         {
-            oldmode = parse(argv[2], argv[3], mode_u_r, mode_u_w, mode_u_x, mode_g_r, mode_g_w, mode_g_x, mode_o_r, mode_o_w, mode_o_x);
+            oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
 
-            mode_u = mode_u_r + mode_u_w + mode_u_x;
-            mode_g = mode_g_r + mode_g_w + mode_g_x;
-            mode_o = mode_o_r + mode_o_w + mode_o_x;
-
-            mode_str[0] = mode_u + '0';
-            mode_str[1] = mode_g + '0';
-            mode_str[2] = mode_o + '0';
+        int modeu=calculate_mode(&mode_u);
+        int modeg=calculate_mode(&mode_g);
+        int modeo=calculate_mode(&mode_o);
+        mode_str[0] = modeu + '0';
+        mode_str[1] = modeg + '0';
+        mode_str[2] = modeo + '0';
 
             mode = strtol(mode_str, 0, 8);
             printf("%s\n", mode_str);

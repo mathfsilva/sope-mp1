@@ -1,8 +1,7 @@
-all: xmod
+all: xmod	
 
-xmod: xmod.c file.h file.c
-	g++ -o xmod xmod.c file.h file.c
-
-clean:
+xmod: xmod.c file.h file.c	
+	cc -Wall xmod xmod.c file.h file.c
+	
+clean: 
 	rm -f xmod
-
