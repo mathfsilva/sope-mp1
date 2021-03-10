@@ -171,7 +171,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
     char mode_str[3] = {'0', '0', '0'};
     perm_mode mode_u,mode_g,mode_o;
     char *oldmode;
-    if (argv[1][0] == '-' && (argv[1][1] == 'c' | argv[1][1] == 'R' | argv[1][1] == 'v'))
+    if (argv[1][0] == '-' && ((argv[1][1] == 'c') | (argv[1][1] == 'R') | (argv[1][1] == 'v')))
     { //Or argc==4
         options = argv[1];
         printf("%s\n", options);
