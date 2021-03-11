@@ -15,19 +15,14 @@
 #include "signals.h"
 #include "macros.h"
 
+
+
 int calculate_mode(perm_mode mode){
     int val = 0;
     val += mode.r ? 4 : 0;
     val += mode.w ? 2 : 0;
     val += mode.x ? 1 : 0;
     return val;
-}
-
-
-double calculate_time(clock_t start){
-    clock_t end=clock()-start;
-    double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
-    return time_taken;
 }
 
 char *getoldmode(char *p, char *f)
@@ -164,7 +159,7 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
     return oldmode_str;
 }
 
-int xmod(int argc, char *argv[],int fd,clock_t start)
+int xmod(int argc, char *argv[])
 {
 
     char *options;
@@ -193,8 +188,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
         else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(argv[1],oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            double time_taken=calculate_time(start);
-            write_FILE_MODF(fd,time_taken,oldmode,argv[1],file_name);
+            write_FILE_MODF(oldmode,argv[1],file_name);
         }
         }
     }
@@ -223,8 +217,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
          else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            double time_taken=calculate_time(start);
-            write_FILE_MODF(fd,time_taken,oldmode,mode_str,file_name);
+            write_FILE_MODF(oldmode,mode_str,file_name);
         }
          }
     }
@@ -243,8 +236,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
              else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(argv[2],oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            double time_taken=calculate_time(start);
-            write_FILE_MODF(fd,time_taken,oldmode,argv[2],file_name);
+            write_FILE_MODF(oldmode,argv[2],file_name);
         }
              }
         }
@@ -269,8 +261,7 @@ int xmod(int argc, char *argv[],int fd,clock_t start)
              else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            double time_taken=calculate_time(start);
-            write_FILE_MODF(fd,time_taken,oldmode,mode_str,file_name);
+            write_FILE_MODF(oldmode,mode_str,file_name);
         }
              }
         }
@@ -349,16 +340,12 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
-    
-    clock_t start;
-    double time_taken;
     start = clock();
     char *reg=checkLog(envp);
-    int fd = getfd(reg);
-    time_taken=calculate_time(start);
+    getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
-    write_PROC_CREATE(fd,argv,time_taken);
+    write_PROC_CREATE(argv);
     subscribe_SIGINT(); //Ctrl+C interruption
     printf("Back\n");
     sleep(4);
@@ -370,8 +357,7 @@ int main(int argc, char *argv[], char *envp[])
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
         printf("Not enough arguments\n");
-        time_taken=calculate_time(start);
-        write_PROC_EXIT(fd,time_taken,1);
+        write_PROC_EXIT(1);
         //PROC_EXIT here
         return 1;
     }
@@ -379,13 +365,12 @@ int main(int argc, char *argv[], char *envp[])
     
     checkSymlink(argc, argv);
 
-    if (xmod(argc, argv,fd,start))
+    if (xmod(argc, argv))
     {
         return 1;
     }
 
-    time_taken=calculate_time(start);
-    write_PROC_EXIT(fd,time_taken,0);
+    write_PROC_EXIT(0);
     //Should have a PROC_EXIT here
     //eventHandler(1, argc, argv, reg,time_taken);
     return 0;

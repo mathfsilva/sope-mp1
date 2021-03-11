@@ -1,6 +1,8 @@
 #ifndef MACROS_H
 #define MACROS_H
 
+clock_t start;
+
 typedef struct 
 {
     bool r;
