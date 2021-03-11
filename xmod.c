@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
@@ -15,9 +16,8 @@
 #include "signals.h"
 #include "macros.h"
 
-
-
-int calculate_mode(perm_mode mode){
+int calculate_mode(perm_mode mode)
+{
     int val = 0;
     val += mode.r ? 4 : 0;
     val += mode.w ? 2 : 0;
@@ -60,7 +60,7 @@ char *getoldmode(char *p, char *f)
     return oldmode_str;
 }
 
-char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* mode_o)
+char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o)
 {
     int size = strlen(p);
     char *oldmode_str = (char *)malloc(3);
@@ -96,63 +96,68 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
 
     bool add_or_equal = p[1] == '+' || p[1] == '=';
 
-    if (p[0] != 'a'){
+    if (p[0] != 'a')
+    {
 
-        switch (p[0]){
-            case 'u':
-                temp_mode = mode_u;
-                break;
-            case 'g':
-                temp_mode = mode_g;
-                break;
-            case 'o':
-                temp_mode = mode_o;
-                break;
-            default:
+        switch (p[0])
+        {
+        case 'u':
+            temp_mode = mode_u;
+            break;
+        case 'g':
+            temp_mode = mode_g;
+            break;
+        case 'o':
+            temp_mode = mode_o;
+            break;
+        default:
             //TODO error
-                break;
+            break;
         }
 
-        for(int i = 2; i < size; i++){
+        for (int i = 2; i < size; i++)
+        {
             switch (p[i])
             {
-                case 'r':
-                    temp_mode->r = add_or_equal;
-                    break;
-                case 'w':
-                    temp_mode->w = add_or_equal;
-                    break;
-                case 'x':
-                    temp_mode->x = add_or_equal;
-                    break;
-                default:
+            case 'r':
+                temp_mode->r = add_or_equal;
+                break;
+            case 'w':
+                temp_mode->w = add_or_equal;
+                break;
+            case 'x':
+                temp_mode->x = add_or_equal;
+                break;
+            default:
                 //TODO error
-                    break;
+                break;
             }
         }
     }
-    else{
-        for(int i = 2; i < size; i++){
+    else
+    {
+        for (int i = 2; i < size; i++)
+        {
             switch (p[i])
             {
-                case 'r':
-                    mode_u->r = add_or_equal;
-                    mode_g->r = add_or_equal;
-                    mode_o->r= add_or_equal;
-                    break;
-                case 'w':
-                    mode_u->w = add_or_equal;
-                    mode_g->w = add_or_equal;
-                    mode_o->w = add_or_equal;
-                    break;
-                case 'x':
-                    mode_u->x = add_or_equal;
-                    mode_g->x = add_or_equal;
-                    mode_o->x = add_or_equal;
-                    break;
-                default:
+            case 'r':
+                mode_u->r = add_or_equal;
+                mode_g->r = add_or_equal;
+                mode_o->r = add_or_equal;
+                break;
+            case 'w':
+                mode_u->w = add_or_equal;
+                mode_g->w = add_or_equal;
+                mode_o->w = add_or_equal;
+                break;
+            case 'x':
+                mode_u->x = add_or_equal;
+                mode_g->x = add_or_equal;
+                mode_o->x = add_or_equal;
+                break;
+            default:
                 //TODO error
-                    break;
+                break;
             }
         }
     }
@@ -163,11 +168,21 @@ int xmod(int argc, char *argv[])
 {
 
     char *options;
-    char*file_name;
+    char *file_name;
     int mode;
     char mode_str[3] = {'0', '0', '0'};
-    perm_mode mode_u,mode_g,mode_o;
+    perm_mode mode_u, mode_g, mode_o;
     char *oldmode;
+
+    struct stat st_buf;
+    int status = stat (argv[argc - 1], &st_buf);
+
+    if (S_ISREG (st_buf.st_mode)) {
+        printf ("%s is a regular file.\n", argv[argc - 1]);
+    } else if (S_ISDIR (st_buf.st_mode)) {
+        printf ("%s is a directory.\n", argv[argc - 1]);
+    }
+
     if (argv[1][0] == '-' && ((argv[1][1] == 'c') | (argv[1][1] == 'R') | (argv[1][1] == 'v')))
     { //Or argc==4
         options = argv[1];
@@ -179,17 +194,18 @@ int xmod(int argc, char *argv[])
     {
         mode = strtol(argv[1], 0, 8);
         oldmode = getoldmode(argv[1], argv[2]);
-        
-        
+
         if (chmod(argv[argc - 1], mode) < 0)
         {
             printf("ERROR");
         }
-        else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(argv[1],oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[1],file_name);
-        }
+        else
+        { //FILE_MODF here (reason why went to get oldmode)
+            if (strcmp(argv[1], oldmode) != 0)
+            { //Think we only need to write if they are different
+                file_name = argv[argc - 1];
+                write_FILE_MODF(oldmode, argv[1], file_name);
+            }
         }
     }
     else
@@ -198,11 +214,11 @@ int xmod(int argc, char *argv[])
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
+        oldmode = parse(argv[1], argv[2], &mode_u, &mode_g, &mode_o);
 
-        int modeu=calculate_mode(mode_u);
-        int modeg=calculate_mode(mode_g);
-        int modeo=calculate_mode(mode_o);
+        int modeu = calculate_mode(mode_u);
+        int modeg = calculate_mode(mode_g);
+        int modeo = calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
@@ -214,12 +230,14 @@ int xmod(int argc, char *argv[])
         {
             printf("ERROR");
         }
-         else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,mode_str,file_name);
+        else
+        { //FILE_MODF here (reason why went to get oldmode)
+            if (strcmp(mode_str, oldmode) != 0)
+            { //Think we only need to write if they are different
+                file_name = argv[argc - 1];
+                write_FILE_MODF(oldmode, mode_str, file_name);
+            }
         }
-         }
     }
 
     if (argc == 4)
@@ -233,23 +251,25 @@ int xmod(int argc, char *argv[])
             {
                 printf("ERROR");
             }
-             else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(argv[2],oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[2],file_name);
-        }
-             }
+            else
+            { //FILE_MODF here (reason why went to get oldmode)
+                if (strcmp(argv[2], oldmode) != 0)
+                { //Think we only need to write if they are different
+                    file_name = argv[argc - 1];
+                    write_FILE_MODF(oldmode, argv[2], file_name);
+                }
+            }
         }
         else
         {
-            oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
+            oldmode = parse(argv[1], argv[2], &mode_u, &mode_g, &mode_o);
 
-        int modeu=calculate_mode(mode_u);
-        int modeg=calculate_mode(mode_g);
-        int modeo=calculate_mode(mode_o);
-        mode_str[0] = modeu + '0';
-        mode_str[1] = modeg + '0';
-        mode_str[2] = modeo + '0';
+            int modeu = calculate_mode(mode_u);
+            int modeg = calculate_mode(mode_g);
+            int modeo = calculate_mode(mode_o);
+            mode_str[0] = modeu + '0';
+            mode_str[1] = modeg + '0';
+            mode_str[2] = modeo + '0';
 
             mode = strtol(mode_str, 0, 8);
             printf("%s\n", mode_str);
@@ -258,20 +278,25 @@ int xmod(int argc, char *argv[])
             {
                 printf("ERROR");
             }
-             else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,mode_str,file_name);
-        }
-             }
+            else
+            { //FILE_MODF here (reason why went to get oldmode)
+                if (strcmp(mode_str, oldmode) != 0)
+                { //Think we only need to write if they are different
+                    file_name = argv[argc - 1];
+                    write_FILE_MODF(oldmode, mode_str, file_name);
+                }
+            }
         }
     }
     return 0;
 }
 
-bool aretheyequal(char *env,char const *arg){
-    for(int i = 0; arg[i] != '\0'; i++){
-        if(arg[i] != env[i]){
+bool aretheyequal(char *env, char const *arg)
+{
+    for (int i = 0; arg[i] != '\0'; i++)
+    {
+        if (arg[i] != env[i])
+        {
             return false;
         }
     }
@@ -282,35 +307,36 @@ bool aretheyequal(char *env,char const *arg){
 char *checkLog(char *envp[])
 {
     printf("Hi\n");
-     //Check if LOG_FILENAME was defined by user
-    for(int j=0;envp[j]!=NULL;j++){
-        //printf("%s\n",envp[j]);
-        if(aretheyequal(envp[j],"LOG_FILENAME")){
-    char *reg = getenv("LOG_FILENAME");
-    //printf("%s\n",reg);
-
-    int fd;
-    //char const *text1 = "Holo Pat"; //Experiment
-
-    if (access(reg, F_OK) == 0)
-    { //When file exists->Truncate it
-        printf("File exists\n");
-        fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-        //write(fd, text1, 8);
-        close(fd);
-    }
-    else
+    //Check if LOG_FILENAME was defined by user
+    for (int j = 0; envp[j] != NULL; j++)
     {
-        //If file doesn't exist->Create a new one
-        printf("File doesn't exist\n");
-        //printf("%s\n",reg);
-        fd = open(reg, O_CREAT | O_EXCL, 0644);
-        //write(fd, text1, 8);
-        close(fd);
-    }
-    return reg;
-        }
+        //printf("%s\n",envp[j]);
+        if (aretheyequal(envp[j], "LOG_FILENAME"))
+        {
+            char *reg = getenv("LOG_FILENAME");
+            //printf("%s\n",reg);
 
+            int fd;
+            //char const *text1 = "Holo Pat"; //Experiment
+
+            if (access(reg, F_OK) == 0)
+            { //When file exists->Truncate it
+                printf("File exists\n");
+                fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+                //write(fd, text1, 8);
+                close(fd);
+            }
+            else
+            {
+                //If file doesn't exist->Create a new one
+                printf("File doesn't exist\n");
+                //printf("%s\n",reg);
+                fd = open(reg, O_CREAT | O_EXCL, 0644);
+                //write(fd, text1, 8);
+                close(fd);
+            }
+            return reg;
+        }
     }
     return NULL;
 }
@@ -341,7 +367,7 @@ void checkSymlink(int argc, char *argv[])
 int main(int argc, char *argv[], char *envp[])
 {
     START_TIME = clock();
-    char *reg=checkLog(envp);
+    char *reg = checkLog(envp);
     getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
@@ -352,7 +378,7 @@ int main(int argc, char *argv[], char *envp[])
     printf("Awake\n");
 
     if (argc < 3)
-    {   //chmod options permissions file_name
+    { //chmod options permissions file_name
         /*If no options are specified, chmod modifies the permissions of the file 
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
@@ -362,7 +388,6 @@ int main(int argc, char *argv[], char *envp[])
         return 1;
     }
 
-    
     checkSymlink(argc, argv);
 
     if (xmod(argc, argv))
