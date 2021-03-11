@@ -6,7 +6,7 @@
 #include <string.h>
 #include<time.h>
 #include "file.h"
-extern clock_t start;
+extern clock_t START_TIME;
 
 /*
 void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken){
@@ -52,11 +52,11 @@ void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken){
 
 
 void getfd(char*reg){
-    global_fd= open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
+    FD_LOG_FILE= open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
 }
 
 double calculate_time(){
-    clock_t end=clock()-start;
+    clock_t end=clock()-START_TIME;
     double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
     return time_taken;
 }
@@ -71,15 +71,15 @@ void write_PROC_CREATE(char *argv[]){
     //printf("\n%d %d", getpid(), size);
     snprintf(pid, size, "%d\n", getpid());
     snprintf(t,9,"%f",time_taken);
-    write(global_fd,t,sizeof(t)-1);
-    write(global_fd, msg, strlen(msg));
-    write(global_fd, pid,  sizeof(pid)-1);
-    write(global_fd,msg2,strlen(msg2));
+    write(FD_LOG_FILE,t,sizeof(t)-1);
+    write(FD_LOG_FILE, msg, strlen(msg));
+    write(FD_LOG_FILE, pid,  sizeof(pid)-1);
+    write(FD_LOG_FILE,msg2,strlen(msg2));
     for(int j=0;argv[j]!=NULL;j++){
-        write(global_fd," ",sizeof(" ")-1);
-        write(global_fd,argv[j],strlen(argv[j]));
+        write(FD_LOG_FILE," ",sizeof(" ")-1);
+        write(FD_LOG_FILE,argv[j],strlen(argv[j]));
     }
-    write(global_fd,"\n",sizeof("\n")-1);
+    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
 }
 
 void write_PROC_EXIT(int exit_code){
@@ -93,12 +93,12 @@ void write_PROC_EXIT(int exit_code){
     char pid[size];
     snprintf(pid, size, "%d", getpid());
     snprintf(t,9,"%f",time_taken);
-    write(global_fd,t,sizeof(t)-1);
-    write(global_fd, msg, strlen(msg));
-    write(global_fd, pid, sizeof(pid)-1);
-    write(global_fd, final, strlen(final));
-    write(global_fd,exit,sizeof(exit));
-    close(global_fd);
+    write(FD_LOG_FILE,t,sizeof(t)-1);
+    write(FD_LOG_FILE, msg, strlen(msg));
+    write(FD_LOG_FILE, pid, sizeof(pid)-1);
+    write(FD_LOG_FILE, final, strlen(final));
+    write(FD_LOG_FILE,exit,sizeof(exit));
+    close(FD_LOG_FILE);
 }
 
 
@@ -112,16 +112,16 @@ void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){
     char pid[size];
     snprintf(pid, size, "%d", getpid());
     snprintf(t,9,"%f",time_taken); 
-    write(global_fd,t,sizeof(t)-1);
-    write(global_fd,msg1,strlen(msg1));
-    write(global_fd,pid,sizeof(pid)-1);
-    write(global_fd,msg,strlen(msg));
-    write(global_fd,file_name,strlen(file_name));
-    write(global_fd,point,strlen(point));
-    write(global_fd,old_mode,strlen(old_mode));
-    write(global_fd,point,strlen(point));
-    write(global_fd,new_mode,strlen(new_mode));
-    write(global_fd,"\n",sizeof("\n")-1);
+    write(FD_LOG_FILE,t,sizeof(t)-1);
+    write(FD_LOG_FILE,msg1,strlen(msg1));
+    write(FD_LOG_FILE,pid,sizeof(pid)-1);
+    write(FD_LOG_FILE,msg,strlen(msg));
+    write(FD_LOG_FILE,file_name,strlen(file_name));
+    write(FD_LOG_FILE,point,strlen(point));
+    write(FD_LOG_FILE,old_mode,strlen(old_mode));
+    write(FD_LOG_FILE,point,strlen(point));
+    write(FD_LOG_FILE,new_mode,strlen(new_mode));
+    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
 }
 
 void write_SIGNAL_RECV(char *signal){
@@ -129,10 +129,10 @@ void write_SIGNAL_RECV(char *signal){
     char t[sizeof(time_taken)];
     char const *msg=" SIGNAL_RECV ";
     snprintf(t,9,"%f",time_taken); 
-    write(global_fd,t,sizeof(t)-1);
-    write(global_fd,msg,strlen(msg));
-    write(global_fd,signal,strlen(signal));
-    write(global_fd,"\n",sizeof("\n")-1);
+    write(FD_LOG_FILE,t,sizeof(t)-1);
+    write(FD_LOG_FILE,msg,strlen(msg));
+    write(FD_LOG_FILE,signal,strlen(signal));
+    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
 }
 
 void write_SIGNAL_SENT(char *signal){
@@ -143,10 +143,10 @@ void write_SIGNAL_SENT(char *signal){
     snprintf(t,9,"%f",time_taken); 
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    write(global_fd,t,sizeof(t)-1);
-    write(global_fd,msg,strlen(msg));
-    write(global_fd,signal,strlen(signal));
-    write(global_fd," : ",sizeof(" : ")-1);
-    write(global_fd,pid,sizeof(pid)-1);
-    write(global_fd,"\n",sizeof("\n")-1);
+    write(FD_LOG_FILE,t,sizeof(t)-1);
+    write(FD_LOG_FILE,msg,strlen(msg));
+    write(FD_LOG_FILE,signal,strlen(signal));
+    write(FD_LOG_FILE," : ",sizeof(" : ")-1);
+    write(FD_LOG_FILE,pid,sizeof(pid)-1);
+    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
 }

@@ -2,7 +2,7 @@
 #ifndef FILE_H
 #define FILE_H
 
-int global_fd;
+int FD_LOG_FILE;
 
 void write_PROC_CREATE(char *argv[]);
 void write_PROC_EXIT(int exit_code);
