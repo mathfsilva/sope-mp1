@@ -31,7 +31,7 @@ void signals_handler(int signo)
     //int pg=getpgrp();
     printf("Still\n");
     printf("%d\n",getppid());
-    //kill(getppid(),SIGSTP); //This is working
+    //kill(getppid(),SIGSTP); 
     printf("Gone\n");
     //write_SIGNALRECV("SIGINT");
     //write_SIGNALSEND("SIGSTOP");
@@ -44,7 +44,7 @@ void signals_handler(int signo)
     scanf("%s",&answer);
     if(answer=='N' || answer=='n'){
         valid=true;
-        //kill(getppid(),SIGCONT); //Working 
+        //kill(getppid(),SIGCONT); 
         //write_SIGNALSEND("SIGCONT");
         printf("GO\n");
 
@@ -52,10 +52,9 @@ void signals_handler(int signo)
     else if(answer=='Y' || answer=='y'){
         printf("hi\n");
         valid=true;
-        printf("%d\n",getppid());
         kill(getpid(),SIGTERM);
-        write_SIGNALSEND("SIGTERM");
-        write_PROC_EXIT(1);
+        //write_SIGNALSEND(signal="SIGTERM");
+        //write_PROC_EXIT(exit status=1);
         //writes lines here
         printf("EXIT\n");
         exit(1);
