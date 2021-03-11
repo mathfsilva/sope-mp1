@@ -63,6 +63,12 @@ char *getoldmode(char *p, char *f)
 char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* mode_o)
 {
     int size = strlen(p);
+
+    if (size > 5){
+        perror("Wrong input for mode\n");
+        exit(-1); //TODO change this
+    }
+
     char *oldmode_str = (char *)malloc(3);
     struct stat fs;
     stat(f, &fs); //Gets current permission
@@ -96,99 +102,183 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
 
     bool add_or_equal = p[1] == '+' || p[1] == '=';
 
-    if (p[0] != 'a'){
+    
+    switch (p[0]){
+        case 'u':
+            temp_mode = mode_u;
+            break;
+        case 'g':
+            temp_mode = mode_g;
+            break;
+        case 'o':
+            temp_mode = mode_o;
+            break;
+        case 'a':
+            temp_mode =  malloc(3 * sizeof(bool));
+        default:
+        //TODO error
+            break;
+    }
 
-        switch (p[0]){
-            case 'u':
-                temp_mode = mode_u;
+    if(p[1] == '='){
+        temp_mode->r = 0;
+        temp_mode->w = 0;
+        temp_mode->x = 0;
+    }
+
+    int r = 0, w = 0, x = 0; 
+
+    for(int i = 2; i < size; i++){
+        switch (p[i])
+        {
+            case 'r':
+                r++;
+                temp_mode->r = add_or_equal;
                 break;
-            case 'g':
-                temp_mode = mode_g;
+            case 'w':
+                w++;
+                temp_mode->w = add_or_equal;
                 break;
-            case 'o':
-                temp_mode = mode_o;
+            case 'x':
+                x++;
+                temp_mode->x = add_or_equal;
                 break;
             default:
             //TODO error
                 break;
         }
+    }
 
-        for(int i = 2; i < size; i++){
-            switch (p[i])
-            {
-                case 'r':
-                    temp_mode->r = add_or_equal;
-                    break;
-                case 'w':
-                    temp_mode->w = add_or_equal;
-                    break;
-                case 'x':
-                    temp_mode->x = add_or_equal;
-                    break;
-                default:
-                //TODO error
-                    break;
-            }
-        }
+    if(r > 1 || w > 1 || x > 1){
+        perror("Gave the same mode more than once");
+        return NULL; //TODO change this
     }
-    else{
-        for(int i = 2; i < size; i++){
-            switch (p[i])
-            {
-                case 'r':
-                    mode_u->r = add_or_equal;
-                    mode_g->r = add_or_equal;
-                    mode_o->r= add_or_equal;
-                    break;
-                case 'w':
-                    mode_u->w = add_or_equal;
-                    mode_g->w = add_or_equal;
-                    mode_o->w = add_or_equal;
-                    break;
-                case 'x':
-                    mode_u->x = add_or_equal;
-                    mode_g->x = add_or_equal;
-                    mode_o->x = add_or_equal;
-                    break;
-                default:
-                //TODO error
-                    break;
-            }
-        }
+
+    if(p[0] == 'a'){
+        *mode_u = *temp_mode;
+        *mode_g = *temp_mode;
+        *mode_o = *temp_mode;
+        free(temp_mode);
     }
+
     return oldmode_str;
+}
+
+void print_options(options opts){
+    printf("Option v: %d\n", opts.v);
+    printf("Option c: %d\n", opts.c);
+    printf("Option R: %d\n", opts.R);
+}
+
+int get_options(int argc, char *argv[], options* opts){
+
+    int i;
+
+    int ret = 0;
+
+    if(argc < 3){ //not needed
+        perror("Too few args\n");
+        return -1;
+    }
+
+    for(i = 1; argv[i][0] == '-'; i++){
+        if (!(i < argc-2)){
+            perror("Too few args\n");
+            return -1;
+        }
+        //for(int j = 1; argv[i][j] != '\0'; j++){
+            int j = 1;
+            switch (argv[i][j])
+            {
+            case 'c':
+                if(opts->c){
+                    perror("Invalid, repeated options\n");
+                    return -1;
+                }
+                else{
+                    ret++;
+                    opts->c = 1;
+                }
+                break;
+            case 'v':
+                if(opts->v){
+                    perror("Invalid, repeated options\n");
+                    return -1;
+                }
+                else{
+                    ret++;
+                    opts->v = 1;
+                }
+                break;
+            case 'R':
+                if(opts->R){
+                    perror("Invalid, repeated options\n");
+                    return -1;
+                }
+                else{
+                    ret++;
+                    opts->R = 1;
+                }
+                break;
+            default:
+                perror("Invalid options\n");
+                return -1;
+                break;
+            }
+            if(argv[i][j+1] != '\0'){
+                perror("Invalid options\n");
+                return -1;
+            }
+        //}
+    }    
+
+    printf("Done reading options\n");
+
+    return ret;
 }
 
 int xmod(int argc, char *argv[])
 {
 
-    char *options;
     char*file_name;
     int mode;
     char mode_str[3] = {'0', '0', '0'};
     perm_mode mode_u,mode_g,mode_o;
     char *oldmode;
-    if (argv[1][0] == '-' && ((argv[1][1] == 'c') | (argv[1][1] == 'R') | (argv[1][1] == 'v')))
-    { //Or argc==4
-        options = argv[1];
-        printf("%s\n", options);
+
+    options opts;
+
+    opts.c = 0;
+    opts.v = 0;
+    opts.R = 0;
+
+
+    int no_options = get_options(argc, argv, &opts);
+
+    if (no_options == -1){
+        perror("Error occurred while reading options\n");
+        write_PROC_EXIT(1);
+        return 1;
     }
 
+    print_options(opts);
+
     //Turn mode (when written in digits) to an octal number in order to call chmod function
-    else if (isdigit(argv[1][0]))
+    if (isdigit(argv[1][0]))
     {
-        mode = strtol(argv[1], 0, 8);
-        oldmode = getoldmode(argv[1], argv[2]);
+        mode = strtol(argv[1+no_options], 0, 8);
+        oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
         
+        if (oldmode == NULL) return 1;
         
         if (chmod(argv[argc - 1], mode) < 0)
         {
             printf("ERROR");
         }
         else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(argv[1],oldmode)!=0){ //Think we only need to write if they are different
+            if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
             file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[1],file_name);
+            write_FILE_MODF(oldmode,argv[1+no_options],file_name);
         }
         }
     }
@@ -198,7 +288,9 @@ int xmod(int argc, char *argv[])
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
+        oldmode = parse(argv[1+no_options], argv[2+no_options], &mode_u,&mode_g,&mode_o);
+        
+        if (oldmode == NULL) return 1;
 
         int modeu=calculate_mode(mode_u);
         int modeg=calculate_mode(mode_g);
@@ -214,57 +306,12 @@ int xmod(int argc, char *argv[])
         {
             printf("ERROR");
         }
-         else{ //FILE_MODF here (reason why went to get oldmode)
+        else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,mode_str,file_name);
-        }
+                file_name=argv[argc-1];
+                write_FILE_MODF(oldmode,mode_str,file_name);
+            }
          }
-    }
-
-    if (argc == 4)
-    { //In case we have options
-        if (isdigit(argv[2][0]))
-        {
-            mode = strtol(argv[2], 0, 8);
-            oldmode = getoldmode(argv[2], argv[3]);
-
-            if (chmod(argv[argc - 1], mode) < 0)
-            {
-                printf("ERROR");
-            }
-             else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(argv[2],oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[2],file_name);
-        }
-             }
-        }
-        else
-        {
-            oldmode = parse(argv[1], argv[2], &mode_u,&mode_g,&mode_o);
-
-        int modeu=calculate_mode(mode_u);
-        int modeg=calculate_mode(mode_g);
-        int modeo=calculate_mode(mode_o);
-        mode_str[0] = modeu + '0';
-        mode_str[1] = modeg + '0';
-        mode_str[2] = modeo + '0';
-
-            mode = strtol(mode_str, 0, 8);
-            printf("%s\n", mode_str);
-
-            if (chmod(argv[argc - 1], mode) < 0)
-            {
-                printf("ERROR");
-            }
-             else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,mode_str,file_name);
-        }
-             }
-        }
     }
     return 0;
 }
@@ -361,7 +408,6 @@ int main(int argc, char *argv[], char *envp[])
         //PROC_EXIT here
         return 1;
     }
-
     
     checkSymlink(argc, argv);
 
