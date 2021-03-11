@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <unistd.h>
 #include <ctype.h>
 #include <string.h>
@@ -15,9 +16,8 @@
 #include "signals.h"
 #include "macros.h"
 
-
-
-int calculate_mode(perm_mode mode){
+int calculate_mode(perm_mode mode)
+{
     int val = 0;
     val += mode.r ? 4 : 0;
     val += mode.w ? 2 : 0;
@@ -60,7 +60,7 @@ char *getoldmode(char *p, char *f)
     return oldmode_str;
 }
 
-char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* mode_o)
+char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o)
 {
     int size = strlen(p);
 
@@ -101,7 +101,6 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
     perm_mode *temp_mode;
 
     bool add_or_equal = p[1] == '+' || p[1] == '=';
-
     
     switch (p[0]){
         case 'u':
@@ -145,7 +144,7 @@ char *parse(char *p, char *f, perm_mode* mode_u, perm_mode* mode_g, perm_mode* m
                 break;
             default:
             //TODO error
-                break;
+            break;
         }
     }
 
@@ -243,7 +242,7 @@ int xmod(int argc, char *argv[])
     char*file_name;
     int mode;
     char mode_str[3] = {'0', '0', '0'};
-    perm_mode mode_u,mode_g,mode_o;
+    perm_mode mode_u, mode_g, mode_o;
     char *oldmode;
 
     options opts;
@@ -252,6 +251,14 @@ int xmod(int argc, char *argv[])
     opts.v = 0;
     opts.R = 0;
 
+    struct stat st_buf;
+    int status = stat (argv[argc - 1], &st_buf);
+
+    if (S_ISREG (st_buf.st_mode)) {
+        printf ("%s is a regular file.\n", argv[argc - 1]);
+    } else if (S_ISDIR (st_buf.st_mode)) {
+        printf ("%s is a directory.\n", argv[argc - 1]);
+    }
 
     int no_options = get_options(argc, argv, &opts);
 
@@ -266,6 +273,7 @@ int xmod(int argc, char *argv[])
     //Turn mode (when written in digits) to an octal number in order to call chmod function
     if (isdigit(argv[1][0]))
     {
+
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
         
@@ -275,11 +283,12 @@ int xmod(int argc, char *argv[])
         {
             printf("ERROR");
         }
+
         else{ //FILE_MODF here (reason why went to get oldmode)
             if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[1+no_options],file_name);
-        }
+                file_name=argv[argc-1];
+                write_FILE_MODF(oldmode,argv[1+no_options],file_name);
+            }
         }
     }
     else
@@ -292,9 +301,9 @@ int xmod(int argc, char *argv[])
         
         if (oldmode == NULL) return 1;
 
-        int modeu=calculate_mode(mode_u);
-        int modeg=calculate_mode(mode_g);
-        int modeo=calculate_mode(mode_o);
+        int modeu = calculate_mode(mode_u);
+        int modeg = calculate_mode(mode_g);
+        int modeo = calculate_mode(mode_o);
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
@@ -311,14 +320,17 @@ int xmod(int argc, char *argv[])
                 file_name=argv[argc-1];
                 write_FILE_MODF(oldmode,mode_str,file_name);
             }
-         }
+        }
     }
     return 0;
 }
 
-bool aretheyequal(char *env,char const *arg){
-    for(int i = 0; arg[i] != '\0'; i++){
-        if(arg[i] != env[i]){
+bool aretheyequal(char *env, char const *arg)
+{
+    for (int i = 0; arg[i] != '\0'; i++)
+    {
+        if (arg[i] != env[i])
+        {
             return false;
         }
     }
@@ -329,35 +341,36 @@ bool aretheyequal(char *env,char const *arg){
 char *checkLog(char *envp[])
 {
     printf("Hi\n");
-     //Check if LOG_FILENAME was defined by user
-    for(int j=0;envp[j]!=NULL;j++){
-        //printf("%s\n",envp[j]);
-        if(aretheyequal(envp[j],"LOG_FILENAME")){
-    char *reg = getenv("LOG_FILENAME");
-    //printf("%s\n",reg);
-
-    int fd;
-    //char const *text1 = "Holo Pat"; //Experiment
-
-    if (access(reg, F_OK) == 0)
-    { //When file exists->Truncate it
-        printf("File exists\n");
-        fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-        //write(fd, text1, 8);
-        close(fd);
-    }
-    else
+    //Check if LOG_FILENAME was defined by user
+    for (int j = 0; envp[j] != NULL; j++)
     {
-        //If file doesn't exist->Create a new one
-        printf("File doesn't exist\n");
-        //printf("%s\n",reg);
-        fd = open(reg, O_CREAT | O_EXCL, 0644);
-        //write(fd, text1, 8);
-        close(fd);
-    }
-    return reg;
-        }
+        //printf("%s\n",envp[j]);
+        if (aretheyequal(envp[j], "LOG_FILENAME"))
+        {
+            char *reg = getenv("LOG_FILENAME");
+            //printf("%s\n",reg);
 
+            int fd;
+            //char const *text1 = "Holo Pat"; //Experiment
+
+            if (access(reg, F_OK) == 0)
+            { //When file exists->Truncate it
+                printf("File exists\n");
+                fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+                //write(fd, text1, 8);
+                close(fd);
+            }
+            else
+            {
+                //If file doesn't exist->Create a new one
+                printf("File doesn't exist\n");
+                //printf("%s\n",reg);
+                fd = open(reg, O_CREAT | O_EXCL, 0644);
+                //write(fd, text1, 8);
+                close(fd);
+            }
+            return reg;
+        }
     }
     return NULL;
 }
@@ -388,7 +401,7 @@ void checkSymlink(int argc, char *argv[])
 int main(int argc, char *argv[], char *envp[])
 {
     START_TIME = clock();
-    char *reg=checkLog(envp);
+    char *reg = checkLog(envp);
     getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
@@ -399,7 +412,7 @@ int main(int argc, char *argv[], char *envp[])
     printf("Awake\n");
 
     if (argc < 3)
-    {   //chmod options permissions file_name
+    { //chmod options permissions file_name
         /*If no options are specified, chmod modifies the permissions of the file 
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
