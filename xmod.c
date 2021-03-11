@@ -348,7 +348,7 @@ int main(int argc, char *argv[], char *envp[])
     write_PROC_CREATE(argv);
     subscribe_SIGINT(); //Ctrl+C interruption
     printf("Back\n");
-    sleep(4);
+    //sleep(4);
     printf("Awake\n");
 
     if (argc < 3)
