@@ -49,7 +49,9 @@ int traverse(const char *dir_name)
       stat(DIRECTORY->d_name, &st_buf);
 
       //Distinguishing files and directories.
-      if (S_ISREG(st_buf.st_mode))
+      if (S_ISREG(st_buf.st_mode)) // NÃO É PRECISO USAR O STAT, BASTA DIRECTORY->d_type == DT_REG
+                                   // mas cuidado que não sendo regular não é necessariamente logo um diretório!!! ver man readdir
+                                   // cuidado também com links simbólicos (mencionados no enunciado)
       {
         //When it's a file, we gotta change its permissions.
         printf("%s is a regular file.\n", DIRECTORY->d_name);
