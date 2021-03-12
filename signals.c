@@ -33,8 +33,8 @@ void signals_handler(int signo)
     printf("%d\n",getppid());
     //kill(getppid(),SIGSTP); 
     printf("Gone\n");
-    write_SIGNAL_RECV("SIGINT");
-    write_SIGNAL_SENT("SIGSTOP",getppid());
+    /*write_SIGNAL_RECV("SIGINT");
+    write_SIGNAL_SENT("SIGSTOP",getppid());*/
  
     bool valid=false;
     printf("Value\n");
