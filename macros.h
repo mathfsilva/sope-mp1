@@ -10,5 +10,10 @@ typedef struct
     bool x;
 }perm_mode;
 
+typedef struct{
+    bool v;
+    bool c;
+    bool R;
+}options;
 
 #endif
