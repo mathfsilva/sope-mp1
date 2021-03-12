@@ -37,7 +37,7 @@ int traverse(const char* dir_name)
 
     /* Check it was opened. */
     if (! d) {
-        //fprintf (stderr, "Cannot open directory '%s': %s\n", dir_name, strerror (errno));
+        printf (stderr, "Cannot open directory '%s': %s\n", dir_name, strerror (errno));
         exit (EXIT_FAILURE);
     }
 
@@ -57,7 +57,7 @@ int traverse(const char* dir_name)
                 char path[PATH_MAX];
  
                 path_length = snprintf(path, PATH_MAX, "%s/%s", dir_name, d_name);
-                //printf ("%s\n", path);
+                printf ("%s\n", path);
                 if (path_length >= PATH_MAX) {
                     exit (EXIT_FAILURE);
                 }
@@ -74,5 +74,5 @@ int traverse(const char* dir_name)
 }
 
 int main(){
-    traverse("Desktop/SOPE");
+    traverse(".");
 }
