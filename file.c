@@ -190,5 +190,6 @@ void write_SIGNAL_SENT(char *signal,pid_t target_pid){
     strcat(str_final,t_pid);
     strcat(str_final,"\n");
     write(FD_LOG_FILE,str_final,strlen(str_final));
+    free(str_final);
 
 }
