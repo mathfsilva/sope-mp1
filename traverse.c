@@ -10,7 +10,6 @@
 #include <string.h>
 #include <ftw.h>
 #include <stdio.h>
-#include <linux/limits.h>
 
 /*xmod(file_dir) //assuming -R option
   chmod(file_dir)
@@ -27,52 +26,50 @@
     end cycle
 */
 
-int traverse(const char* dir_name)
+int traverse(const char *dir_name)
 {
-    DIR * d;
+  char path[1000];
+  struct dirent *DIRECTORY;
+  DIR *DP = opendir(dir_name);
 
-    /* Open the directory specified by "dir_name". */
+  if (!DP)
+  {
+    //Couldn't open directory stream.
+    return -1;
+  }
 
-    d = opendir (dir_name);
+  //readdir() returns NULL if we've reached the end.
+  while ((DIRECTORY = readdir(DP)) != NULL)
+  {
+    if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0)
+    {
+      //Construct new path, to keep traversal.
 
-    /* Check it was opened. */
-    if (! d) {
-        //fprintf (stderr, "Cannot open directory '%s': %s\n", dir_name, strerror (errno));
-        exit (EXIT_FAILURE);
+      struct stat st_buf;
+      stat(DIRECTORY->d_name, &st_buf);
+
+      //Distinguishing files and directories.
+      if (S_ISREG(st_buf.st_mode))
+      {
+        //When it's a file, we gotta change its permissions.
+        printf("%s is a regular file.\n", DIRECTORY->d_name);
+      }
+      else
+      {
+        printf("%s is a directory\n", DIRECTORY->d_name);
+      }
+
+      strcpy(path, dir_name);
+      strcat(path, "/");
+      strcat(path, DIRECTORY->d_name);
+      traverse(path);
     }
+  }
 
-    while (1) {
-        struct dirent * entry;
-        const char * d_name;
-
-        entry = readdir (d);
-        if (! entry) {
-            break;
-        }
-        d_name = entry->d_name;
-        if (entry->d_type & DT_DIR) {
-            if (strcmp (d_name, "..") != 0 &&
-                strcmp (d_name, ".") != 0) {
-                int path_length;
-                char path[PATH_MAX];
- 
-                path_length = snprintf(path, PATH_MAX, "%s/%s", dir_name, d_name);
-                //printf ("%s\n", path);
-                if (path_length >= PATH_MAX) {
-                    exit (EXIT_FAILURE);
-                }
-                traverse(path);
-            }
-	    }
-    }
-    if (closedir (d)) {
-        fprintf (stderr, "Could not close '%s': %s\n",
-                 dir_name, strerror (errno));
-        exit (EXIT_FAILURE);
-    }
-    return 0;
+  closedir(DP);
 }
 
-int main(){
-    traverse("Desktop/SOPE");
+int main()
+{
+  traverse("."); //probably need to change the arguments xD
 }
