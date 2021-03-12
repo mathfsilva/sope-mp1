@@ -15,6 +15,7 @@
 #include "file.h"
 #include "signals.h"
 #include "macros.h"
+#include "transverse.h"
 
 int calculate_mode(perm_mode mode)
 {
@@ -248,15 +249,6 @@ int xmod(int argc, char *argv[])
     opts.v = 0;
     opts.R = 0;
 
-    struct stat st_buf;
-    stat (argv[argc - 1], &st_buf);
-
-    if (S_ISREG (st_buf.st_mode)) {
-        printf ("%s is a regular file.\n", argv[argc - 1]);
-    } else if (S_ISDIR (st_buf.st_mode)) {
-        printf ("%s is a directory.\n", argv[argc - 1]);
-    }
-
     int no_options = get_options(argc, argv, &opts);
 
     if (no_options == -1){
@@ -308,12 +300,18 @@ int xmod(int argc, char *argv[])
             }
         }
         else{
-        if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
-            file_name=argv[argc-1];
-            write_FILE_MODF(oldmode,argv[1+no_options],file_name);
+            if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
+                file_name=argv[argc-1];
+                write_FILE_MODF(oldmode,argv[1+no_options],file_name);
+            }
         }
+
+        if (opts.R) {
+            if (transverse(argc, argv) != 0)
+                return -1;
         }
     }
+
     return 0;
 }
 

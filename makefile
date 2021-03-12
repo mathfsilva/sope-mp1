@@ -1,7 +1,7 @@
 all: xmod	
 
-xmod: xmod.c file.h file.c
-	cc -Wall -o xmod xmod.c file.h file.c signals.h signals.c
+xmod:
+	cc -Wall -o xmod xmod.c file.c signals.c transverse.c
 	
 clean:
 	rm -f xmod
