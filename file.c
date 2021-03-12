@@ -1,7 +1,6 @@
 //File.c
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include<time.h>
@@ -64,41 +63,53 @@ double calculate_time(){
 void write_PROC_CREATE(char *argv[]){
     double time_taken=calculate_time();
     char t[sizeof(time_taken)]; 
-    char const *msg = " PROCESS WITH PID ";
-    char const *msg2 = " PROC_CREAT ";
+    char const *msg2 = "PROC_CREAT";
     static int size = sizeof(getpid())/sizeof(char);
     char pid[size];
-    //printf("\n%d %d", getpid(), size);
     snprintf(pid, size, "%d\n", getpid());
     snprintf(t,9,"%f",time_taken);
-    write(FD_LOG_FILE,t,sizeof(t)-1);
-    write(FD_LOG_FILE, msg, strlen(msg));
-    write(FD_LOG_FILE, pid,  sizeof(pid)-1);
-    write(FD_LOG_FILE,msg2,strlen(msg2));
+
+    size_t size2=sizeof(char*)+sizeof(time_taken)+size+strlen(msg2);
+    char *str_final=(char*)malloc(size2*2);
+    strcat(str_final,t);
+    strcat(str_final," ; ");
+    strcat(str_final,pid);
+    strcat(str_final," ; ");
+    strcat(str_final,msg2);
+    strcat(str_final," ; ");
     for(int j=0;argv[j]!=NULL;j++){
-        write(FD_LOG_FILE," ",sizeof(" ")-1);
-        write(FD_LOG_FILE,argv[j],strlen(argv[j]));
+        strcat(str_final,argv[j]);
+        strcat(str_final," ");
     }
-    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
+    strcat(str_final,"\n");
+    write(FD_LOG_FILE,str_final,strlen(str_final));
+    free(str_final);
 }
 
 void write_PROC_EXIT(int exit_code){
     double time_taken=calculate_time();
     char t[sizeof(time_taken)]; 
-    char exit[1]={'0'};
-    exit[0]=exit_code +'0';
-    char const *msg = " PROCESS WITH PID ";
-    char const *final= " PROC_EXIT WITH EXIT STATUS ";
+    char exit[sizeof(exit_code)];
+    sprintf(exit,"%d",exit_code);
+    char const *final= "PROC_EXIT";
     static size_t size = sizeof(getpid())/sizeof(char);
     char pid[size];
     snprintf(pid, size, "%d", getpid());
     snprintf(t,9,"%f",time_taken);
-    write(FD_LOG_FILE,t,sizeof(t)-1);
-    write(FD_LOG_FILE, msg, strlen(msg));
-    write(FD_LOG_FILE, pid, sizeof(pid)-1);
-    write(FD_LOG_FILE, final, strlen(final));
-    write(FD_LOG_FILE,exit,sizeof(exit));
+
+    size_t size2=sizeof(time_taken)+sizeof(exit_code)+strlen(final)+size;
+    char *str_final=(char*)malloc(size2*2);
+    strcat(str_final,t);
+    strcat(str_final," ; ");
+    strcat(str_final,pid);
+    strcat(str_final," ; ");
+    strcat(str_final,final);
+    strcat(str_final," ; ");
+    strcat(str_final,exit);
+    strcat(str_final,"\n");    
+    write(FD_LOG_FILE,str_final,strlen(str_final));
     close(FD_LOG_FILE);
+    free(str_final);
 }
 
 
@@ -106,47 +117,78 @@ void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){
     double time_taken=calculate_time();
     char t[sizeof(time_taken)];
     static size_t size = sizeof(getpid())/sizeof(char);
-    char const *msg=" FILE_MODF ";
-    char const *msg1 = " PROCESS WITH PID ";
+    char const *msg="FILE_MODF";
     char const *point=" : ";
     char pid[size];
     snprintf(pid, size, "%d", getpid());
     snprintf(t,9,"%f",time_taken); 
-    write(FD_LOG_FILE,t,sizeof(t)-1);
-    write(FD_LOG_FILE,msg1,strlen(msg1));
-    write(FD_LOG_FILE,pid,sizeof(pid)-1);
-    write(FD_LOG_FILE,msg,strlen(msg));
-    write(FD_LOG_FILE,file_name,strlen(file_name));
-    write(FD_LOG_FILE,point,strlen(point));
-    write(FD_LOG_FILE,old_mode,strlen(old_mode));
-    write(FD_LOG_FILE,point,strlen(point));
-    write(FD_LOG_FILE,new_mode,strlen(new_mode));
-    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
+
+    size_t size2=sizeof(time_taken)+size+strlen(msg)+strlen(point);
+    char* str_final=(char*)malloc(size2*2);
+
+    strcat(str_final,t);
+    strcat(str_final, " ; ");
+    strcat(str_final,pid);
+    strcat(str_final, " ; ");
+    strcat(str_final,msg);
+    strcat(str_final," ; ");
+    strcat(str_final,file_name);
+    strcat(str_final,point);
+    strcat(str_final,old_mode);
+    strcat(str_final,point);
+    strcat(str_final,new_mode);
+    strcat(str_final,"\n");
+    write(FD_LOG_FILE,str_final,strlen(str_final));
+    free(str_final);
 }
 
 void write_SIGNAL_RECV(char *signal){
     double time_taken=calculate_time();
     char t[sizeof(time_taken)];
-    char const *msg=" SIGNAL_RECV ";
+    char const *msg="SIGNAL_RECV";
     snprintf(t,9,"%f",time_taken); 
-    write(FD_LOG_FILE,t,sizeof(t)-1);
-    write(FD_LOG_FILE,msg,strlen(msg));
-    write(FD_LOG_FILE,signal,strlen(signal));
-    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
+    static size_t size = sizeof(getpid())/sizeof(char);
+
+    char pid[size];
+
+    snprintf(pid, size, "%d", getpid());
+    size_t size2= sizeof(time_taken)+strlen(msg)+strlen(signal)+size;
+    char *str_final=(char*)malloc(size2*2);
+    strcat(str_final,t);
+    strcat(str_final," ; ");
+    strcat(str_final,pid);
+    strcat(str_final," ; ");
+    strcat(str_final,msg);
+    strcat(str_final," ; ");
+    strcat(str_final,signal);
+    strcat(str_final,"\n");
+    write(FD_LOG_FILE,str_final,strlen(str_final));
+    free(str_final);
 }
 
-void write_SIGNAL_SENT(char *signal){
+void write_SIGNAL_SENT(char *signal,pid_t target_pid){
     double time_taken=calculate_time();
     char t[sizeof(time_taken)];
     static size_t size = sizeof(getpid())/sizeof(char);
-    char const *msg=" SIGNAL_SENT ";
+    char const *msg="SIGNAL_SENT";
     snprintf(t,9,"%f",time_taken); 
     char pid[size];
+    char t_pid[size];
     snprintf(pid, size, "%d", getpid());
-    write(FD_LOG_FILE,t,sizeof(t)-1);
-    write(FD_LOG_FILE,msg,strlen(msg));
-    write(FD_LOG_FILE,signal,strlen(signal));
-    write(FD_LOG_FILE," : ",sizeof(" : ")-1);
-    write(FD_LOG_FILE,pid,sizeof(pid)-1);
-    write(FD_LOG_FILE,"\n",sizeof("\n")-1);
+    snprintf(t_pid,size,"%d",target_pid);
+    size_t size2= sizeof(time_taken)+strlen(msg)+strlen(signal)+size*2;
+    char *str_final=(char*)malloc(size2*2);
+
+    strcat(str_final,t);
+    strcat(str_final," ; ");
+    strcat(str_final,pid);
+    strcat(str_final," ; ");
+    strcat(str_final,msg);
+    strcat(str_final," ; ");
+    strcat(str_final,signal);
+    strcat(str_final," : ");
+    strcat(str_final,t_pid);
+    strcat(str_final,"\n");
+    write(FD_LOG_FILE,str_final,strlen(str_final));
+
 }

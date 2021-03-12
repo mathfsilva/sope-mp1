@@ -33,8 +33,8 @@ void signals_handler(int signo)
     printf("%d\n",getppid());
     //kill(getppid(),SIGSTP); 
     printf("Gone\n");
-    //write_SIGNALRECV("SIGINT");
-    //write_SIGNALSEND("SIGSTOP");
+    write_SIGNAL_RECV("SIGINT");
+    write_SIGNAL_SENT("SIGSTOP",getppid());
  
     bool valid=false;
     printf("Value\n");
@@ -45,7 +45,7 @@ void signals_handler(int signo)
     if(answer=='N' || answer=='n'){
         valid=true;
         //kill(getppid(),SIGCONT); 
-        //write_SIGNALSEND("SIGCONT");
+        //write_SIGNAL_SENT("SIGCONT");
         printf("GO\n");
 
     }
@@ -53,7 +53,7 @@ void signals_handler(int signo)
         printf("hi\n");
         valid=true;
         kill(getpid(),SIGTERM);
-        //write_SIGNALSEND(signal="SIGTERM");
+        //write_SIGNAL_SENT(signal="SIGTERM");
         //write_PROC_EXIT(exit status=1);
         //writes lines here
         printf("EXIT\n");
