@@ -16,4 +16,5 @@ typedef struct{
     bool R;
 }options;
 
+
 #endif

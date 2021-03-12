@@ -267,7 +267,7 @@ int xmod(int argc, char *argv[])
         write_PROC_EXIT(1);
         return 1;
     }
-
+    
     print_options(opts);
 
     //Turn mode (when written in digits) to an octal number in order to call chmod function
