@@ -98,66 +98,63 @@ char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *m
     //Let's consider letters option first (u+w)
     //User
 
-    perm_mode *temp_mode;
-
     bool add_or_equal = p[1] == '+' || p[1] == '=';
+
+    perm_mode *modes[3];
     
     switch (p[0]){
         case 'u':
-            temp_mode = mode_u;
+            modes[0] = mode_u;
             break;
         case 'g':
-            temp_mode = mode_g;
+            modes[0] = mode_g;
             break;
         case 'o':
-            temp_mode = mode_o;
+            modes[0] = mode_o;
             break;
         case 'a':
-            temp_mode =  malloc(3 * sizeof(bool));
+            modes[0] =  mode_u;
+            modes[1] =  mode_g;
+            modes[2] =  mode_o;
         default:
         //TODO error
             break;
     }
 
-    if(p[1] == '='){
-        temp_mode->r = 0;
-        temp_mode->w = 0;
-        temp_mode->x = 0;
-    }
-
-    int r = 0, w = 0, x = 0; 
-
-    for(int i = 2; i < size; i++){
-        switch (p[i])
-        {
-            case 'r':
-                r++;
-                temp_mode->r = add_or_equal;
-                break;
-            case 'w':
-                w++;
-                temp_mode->w = add_or_equal;
-                break;
-            case 'x':
-                x++;
-                temp_mode->x = add_or_equal;
-                break;
-            default:
-            //TODO error
-            break;
+    for (int i = 0; i < (p[0] == 'a' ? 3 : 1); i++){
+        if(p[1] == '='){
+            modes[i]->r = 0;
+            modes[i]->w = 0;
+            modes[i]->x = 0;
         }
-    }
 
-    if(r > 1 || w > 1 || x > 1){
-        perror("Gave the same mode more than once");
-        return NULL; //TODO change this
-    }
+        int r = 0, w = 0, x = 0; 
 
-    if(p[0] == 'a'){
-        *mode_u = *temp_mode;
-        *mode_g = *temp_mode;
-        *mode_o = *temp_mode;
-        free(temp_mode);
+        for(int j = 2; j < size; j++){
+            switch (p[j])
+            {
+                case 'r':
+                    r++;
+                    modes[i]->r = add_or_equal;
+                    break;
+                case 'w':
+                    w++;
+                    modes[i]->w = add_or_equal;
+                    break;
+                case 'x':
+                    x++;
+                    modes[i]->x = add_or_equal;
+                    break;
+                default:
+                //TODO error
+                break;
+            }
+        }
+
+        if(r > 1 || w > 1 || x > 1){
+            perror("Gave the same mode more than once");
+            return NULL; //TODO change this
+        }
     }
 
     return oldmode_str;
