@@ -43,28 +43,23 @@ int traverse(const char *dir_name)
   {
     if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0)
     {
-      //Construct new path, to keep traversal.
-
-      struct stat st_buf;
-      stat(DIRECTORY->d_name, &st_buf);
-
       //Distinguishing files and directories.
-      if (S_ISREG(st_buf.st_mode)) // NÃO É PRECISO USAR O STAT, BASTA DIRECTORY->d_type == DT_REG
+      if (DIRECTORY->d_type == DT_REG) // NÃO É PRECISO USAR O STAT, BASTA DIRECTORY->d_type == DT_REG
                                    // mas cuidado que não sendo regular não é necessariamente logo um diretório!!! ver man readdir
                                    // cuidado também com links simbólicos (mencionados no enunciado)
       {
         //When it's a file, we gotta change its permissions.
         printf("%s is a regular file.\n", DIRECTORY->d_name);
       }
-      else
-      {
-        printf("%s is a directory\n", DIRECTORY->d_name);
-      }
+      else if (DIRECTORY->d_type == DT_DIR) {
+        //Construct new path, to keep traversal.
+        printf ("%s is a directory.\n", DIRECTORY->d_name);
+        strcpy(path, dir_name);
+        strcat(path, "/");
+        strcat(path, DIRECTORY->d_name);
+        traverse(path);
+    }
 
-      strcpy(path, dir_name);
-      strcat(path, "/");
-      strcat(path, DIRECTORY->d_name);
-      traverse(path);
     }
   }
 
