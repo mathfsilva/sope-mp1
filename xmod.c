@@ -252,7 +252,7 @@ int xmod(int argc, char *argv[])
     opts.R = 0;
 
     struct stat st_buf;
-    int status = stat (argv[argc - 1], &st_buf);
+    stat (argv[argc - 1], &st_buf);
 
     if (S_ISREG (st_buf.st_mode)) {
         printf ("%s is a regular file.\n", argv[argc - 1]);
@@ -271,25 +271,13 @@ int xmod(int argc, char *argv[])
     print_options(opts);
 
     //Turn mode (when written in digits) to an octal number in order to call chmod function
-    if (isdigit(argv[1][0]))
+    if (isdigit(argv[1+no_options][0]))
     {
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
         
         if (oldmode == NULL) return 1;
-        
-        if (chmod(argv[argc - 1], mode) < 0)
-        {
-            printf("ERROR");
-        }
-
-        else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
-                file_name=argv[argc-1];
-                write_FILE_MODF(oldmode,argv[1+no_options],file_name);
-            }
-        }
     }
     else
     {
@@ -309,16 +297,24 @@ int xmod(int argc, char *argv[])
         mode_str[2] = modeo + '0';
 
         mode = strtol(mode_str, 0, 8);
+    }
 
-        if (chmod(argv[argc - 1], mode) < 0)
-        {
-            printf("ERROR");
-        }
-        else{ //FILE_MODF here (reason why went to get oldmode)
-            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
+    if (chmod(argv[argc - 1], mode) < 0)
+    {
+        printf("ERROR");
+    }
+    else{ //FILE_MODF here (reason why went to get oldmode)
+        if(mode_str[0]!='0'){
+           if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
                 file_name=argv[argc-1];
                 write_FILE_MODF(oldmode,mode_str,file_name);
             }
+        }
+        else{
+        if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
+            file_name=argv[argc-1];
+            write_FILE_MODF(oldmode,argv[1+no_options],file_name);
+        }
         }
     }
     return 0;

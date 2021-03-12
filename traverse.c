@@ -10,6 +10,7 @@
 #include <string.h>
 #include <ftw.h>
 #include <stdio.h>
+#include <linux/limits.h>
 
 /*xmod(file_dir) //assuming -R option
   chmod(file_dir)
@@ -69,8 +70,9 @@ int traverse(const char* dir_name)
                  dir_name, strerror (errno));
         exit (EXIT_FAILURE);
     }
+    return 0;
 }
 
 int main(){
-    traverse(".");
+    traverse("Desktop/SOPE");
 }
