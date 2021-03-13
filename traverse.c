@@ -57,7 +57,10 @@ int traverse(int argc, char *argv[]) {
             strcat(path, "/");
             strcat(path, DIRECTORY->d_name);
             argv[argc-1] = path;
-            
+
+            // TODO do we need to check if it's a folder and if not change the mode of the file in the current process?
+            // right now it's being done in a child process
+
             pid_t pid = fork();
             switch (pid) {
             case 0: // child

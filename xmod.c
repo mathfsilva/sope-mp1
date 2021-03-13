@@ -15,7 +15,7 @@
 #include "file.h"
 #include "signals.h"
 #include "macros.h"
-#include "transverse.h"
+#include "traverse.h"
 
 int calculate_mode(perm_mode mode)
 {
@@ -307,7 +307,7 @@ int xmod(int argc, char *argv[])
         }
 
         if (opts.R) {
-            if (transverse(argc, argv) != 0)
+            if (traverse(argc, argv) != 0)
                 return -1;
         }
     }
