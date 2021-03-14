@@ -10,7 +10,7 @@
 #include <string.h>
 #include <limits.h>
 #include <fcntl.h>
-#include <time.h>
+#include <sys/time.h>
 
 #include "file.h"
 #include "signals.h"
@@ -390,6 +390,7 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
+    //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
     printf("seconds : %ld\nmicro seconds : %ld\n",
@@ -403,6 +404,7 @@ int main(int argc, char *argv[], char *envp[])
     START_TIME.tv_usec=time%(1000000LL);
     printf("%ld\n",START_TIME.tv_sec);
     printf("%ld\n",START_TIME.tv_usec);
+
     char *reg = checkLog(envp);
     getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)

@@ -92,6 +92,7 @@ int traverse(int argc, char *argv[]) {
                     closedir(DP);
                     return -1;
                 }
+                PID_CURRENT_CHILD=pid;
                 break;
             }
             

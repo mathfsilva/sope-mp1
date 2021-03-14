@@ -7,6 +7,7 @@
 #include <unistd.h>
 
 int FD_LOG_FILE;
+extern pid_t PID_CURRENT_CHILD;
 
 void write_PROC_CREATE(char *argv[]);
 void write_PROC_EXIT(int exit_code);
