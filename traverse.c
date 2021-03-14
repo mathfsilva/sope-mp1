@@ -1,5 +1,3 @@
-#include "traverse.h"
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/types.h>
@@ -13,6 +11,9 @@
 #include <string.h>
 #include <ftw.h>
 #include <stdio.h>
+
+#include "traverse.h"
+#include "file.h"
 
 
 /*xmod(file_dir) //assuming -R option
@@ -32,8 +33,11 @@
 
 int traverse(int argc, char *argv[]) {
     struct stat st_buf;
-    stat (argv[argc - 1], &st_buf);
-    printf("%s\n", argv[argc-1]); // just to debug
+    if (stat (argv[argc - 1], &st_buf) != 0) {
+        perror("");
+        return -1;
+    }
+    
     if (! S_ISDIR (st_buf.st_mode)) { // if not a directory, traverse is done by default
         return 0;
     }
@@ -45,6 +49,7 @@ int traverse(int argc, char *argv[]) {
 
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
+        perror("");
         return -1;
     }
 
@@ -64,10 +69,13 @@ int traverse(int argc, char *argv[]) {
             pid_t pid = fork();
             switch (pid) {
             case 0: // child
-                if (execv(argv[0], argv) != 0)
-                    exit(1);
-                else
-                    exit(0);
+                if (execv(argv[0], argv) == -1) {
+                    perror("");
+                    closedir(DP);
+                    write_PROC_EXIT(1);
+                    exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
+                             // já que seria no processo filho mas sem estar exec'd
+                }
                 break;
 
             case -1: // error
@@ -80,7 +88,7 @@ int traverse(int argc, char *argv[]) {
                 if (waitid(P_PID, pid, NULL, WEXITED) == -1) { // TODO confirmar que opções devem ser usadas
                                                                 //      e se não será melhor não passar NULL
                                                                 //      para ter acesso ao exit status do processo filho
-                    perror("parent");
+                    perror("");
                     closedir(DP);
                     return -1;
                 }
