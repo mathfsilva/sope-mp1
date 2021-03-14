@@ -393,8 +393,8 @@ int main(int argc, char *argv[], char *envp[])
     gettimeofday(&START_TIME, NULL);
     printf("seconds : %ld\nmicro seconds : %ld",
     START_TIME.tv_sec, START_TIME.tv_usec);
-    char t[sizeof(START_TIME.tv_usec)];
-    snprintf(t,9,"%ld",START_TIME.tv_usec);
+    char t[sizeof(START_TIME.tv_usec/(1000))];
+    snprintf(t,9,"%ld",START_TIME.tv_usec/(1000));
     setenv("XMOD_PARENT_PROCESS",t,false);
     char *reg = checkLog(envp);
     getfd(reg);
