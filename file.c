@@ -79,14 +79,15 @@ long double calculate_time(){
 void write_PROC_CREATE(char *argv[]){
     long double time_taken=calculate_time();
     time_taken/=1000;
-    char t[32]; 
+    static int sizet=32;
+    char t[sizet]; 
     char const *msg2 = "PROC_CREAT";
     static int size =20;
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    snprintf(t,32,"%Lf",time_taken);
+    snprintf(t,sizet,"%Lf",time_taken);
 
-    size_t size2=sizeof(char*)+sizeof(time_taken)+size+strlen(msg2);
+    size_t size2=sizeof(char*)+sizet+size+strlen(msg2);
     char *str_final=(char*)malloc(size2*2);
     strcat(str_final,t);
     strcat(str_final," ; ");
@@ -106,16 +107,18 @@ void write_PROC_CREATE(char *argv[]){
 void write_PROC_EXIT(int exit_code){
     long double time_taken=calculate_time();
     time_taken/=1000;
-    char t[sizeof(time_taken)]; 
-    char exit[sizeof(exit_code)];
+    static size_t sizet=32;
+    static size_t sizee=1;
+    char t[sizet]; 
+    char exit[sizee];
     sprintf(exit,"%d",exit_code);
     char const *final= "PROC_EXIT";
     static size_t size = 20;
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    snprintf(t,32,"%Lf",time_taken);
+    snprintf(t,sizet,"%Lf",time_taken);
 
-    size_t size2=sizeof(time_taken)+sizeof(exit_code)+strlen(final)+size;
+    size_t size2=sizet+sizee+strlen(final)+size;
     char *str_final=(char*)malloc(size2*2);
     strcat(str_final,t);
     strcat(str_final," ; ");
@@ -134,15 +137,16 @@ void write_PROC_EXIT(int exit_code){
 void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){ 
     long double time_taken=calculate_time();
     time_taken/=1000;
-    char t[sizeof(time_taken)];
+    static size_t sizet=32;
+    char t[sizet];
     static size_t size = 20;
     char const *msg="FILE_MODF";
     char const *point=" : ";
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    snprintf(t,32,"%Lf",time_taken); 
+    snprintf(t,sizet,"%Lf",time_taken); 
 
-    size_t size2=sizeof(time_taken)+size+strlen(msg)+strlen(point);
+    size_t size2=sizet+size+strlen(msg)+strlen(point);
     char* str_final=(char*)malloc(size2*2);
 
     strcat(str_final,t);
@@ -164,15 +168,16 @@ void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){
 void write_SIGNAL_RECV(char *signal){
     long double time_taken=calculate_time();
     time_taken/=1000;
-    char t[sizeof(time_taken)];
+    static size_t sizet=32;
+    char t[sizet];
     char const *msg="SIGNAL_RECV";
-    snprintf(t,32,"%Lf",time_taken); 
+    snprintf(t,sizet,"%Lf",time_taken); 
     static size_t size = 20;
 
     char pid[size];
 
     snprintf(pid, size, "%d", getpid());
-    size_t size2= sizeof(time_taken)+strlen(msg)+strlen(signal)+size;
+    size_t size2= sizet+strlen(msg)+strlen(signal)+size;
     char *str_final=(char*)malloc(size2*2);
     strcat(str_final,t);
     strcat(str_final," ; ");
@@ -189,15 +194,16 @@ void write_SIGNAL_RECV(char *signal){
 void write_SIGNAL_SENT(char *signal,pid_t target_pid){
     long double time_taken=calculate_time();
     time_taken/=1000;
-    char t[sizeof(time_taken)];
+    static size_t sizet=32;
+    char t[sizet];
     static size_t size = 20;
     char const *msg="SIGNAL_SENT";
-    snprintf(t,32,"%Lf",time_taken); 
+    snprintf(t,sizet,"%Lf",time_taken); 
     char pid[size];
     char t_pid[size];
     snprintf(pid, size, "%d", getpid());
     snprintf(t_pid,size,"%d",target_pid);
-    size_t size2= sizeof(time_taken)+strlen(msg)+strlen(signal)+size*2;
+    size_t size2= sizet+strlen(msg)+strlen(signal)+size*2;
     char *str_final=(char*)malloc(size2*2);
 
     strcat(str_final,t);

@@ -1,2 +1,3 @@
-1.296000 ; 8361 ; PROC_CREAT ; ./xmod 666 test.txt 
-2.883000 ; 8361 ; PROC_EXIT ; 0
+3.423000 ; 8464 ; PROC_CREAT ; ./xmod 777 test.txt 
+5.470000 ; 8464 ; FILE_MODF ; test.txt : 666 : 777
+7.006000 ; 8464 ; PROC_EXIT ; 0
