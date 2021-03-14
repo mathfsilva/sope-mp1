@@ -1,7 +1,7 @@
 #ifndef MACROS_H
 #define MACROS_H
 
-clock_t START_TIME;
+struct timeval START_TIME;
 
 typedef struct 
 {

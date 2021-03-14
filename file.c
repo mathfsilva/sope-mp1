@@ -3,9 +3,9 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
-#include<time.h>
+#include<sys/time.h>
 #include "file.h"
-extern clock_t START_TIME;
+extern struct timeval START_TIME;
 
 /*
 void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken){
@@ -55,9 +55,13 @@ void getfd(char*reg){
 }
 
 double calculate_time(){
+    /*struct timeval end;
+    gettimeofday(&end, NULL);
+
     clock_t end=clock()-START_TIME;
     double time_taken=((double)end) / (CLOCKS_PER_SEC / 1000); // in miliseconds
-    return time_taken;
+    return time_taken;*/
+    return 0;
 }
 
 void write_PROC_CREATE(char *argv[]){
