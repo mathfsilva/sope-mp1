@@ -84,7 +84,7 @@ void write_PROC_CREATE(char *argv[]){
     static int size = sizeof(getpid())/sizeof(char);
     char pid[size];
     snprintf(pid, size, "%d\n", getpid());
-    snprintf(t,9,"%Lf",time_taken);
+    snprintf(t,32,"%Lf",time_taken);
 
     size_t size2=sizeof(char*)+sizeof(time_taken)+size+strlen(msg2);
     char *str_final=(char*)malloc(size2*2);
@@ -113,7 +113,7 @@ void write_PROC_EXIT(int exit_code){
     static size_t size = sizeof(getpid())/sizeof(char);
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    snprintf(t,9,"%Lf",time_taken);
+    snprintf(t,32,"%Lf",time_taken);
 
     size_t size2=sizeof(time_taken)+sizeof(exit_code)+strlen(final)+size;
     char *str_final=(char*)malloc(size2*2);
@@ -140,7 +140,7 @@ void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){
     char const *point=" : ";
     char pid[size];
     snprintf(pid, size, "%d", getpid());
-    snprintf(t,9,"%Lf",time_taken); 
+    snprintf(t,32,"%Lf",time_taken); 
 
     size_t size2=sizeof(time_taken)+size+strlen(msg)+strlen(point);
     char* str_final=(char*)malloc(size2*2);
@@ -166,7 +166,7 @@ void write_SIGNAL_RECV(char *signal){
     time_taken/=1000;
     char t[sizeof(time_taken)];
     char const *msg="SIGNAL_RECV";
-    snprintf(t,9,"%Lf",time_taken); 
+    snprintf(t,32,"%Lf",time_taken); 
     static size_t size = sizeof(getpid())/sizeof(char);
 
     char pid[size];
@@ -192,7 +192,7 @@ void write_SIGNAL_SENT(char *signal,pid_t target_pid){
     char t[sizeof(time_taken)];
     static size_t size = sizeof(getpid())/sizeof(char);
     char const *msg="SIGNAL_SENT";
-    snprintf(t,9,"%Lf",time_taken); 
+    snprintf(t,32,"%Lf",time_taken); 
     char pid[size];
     char t_pid[size];
     snprintf(pid, size, "%d", getpid());

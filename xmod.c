@@ -390,12 +390,19 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
-    gettimeofday(&START_TIME, NULL);
-    printf("seconds : %ld\nmicro seconds : %ld",
-    START_TIME.tv_sec, START_TIME.tv_usec);
-    char t[sizeof(START_TIME.tv_usec/(1000))];
-    snprintf(t,9,"%ld",START_TIME.tv_usec/(1000));
+    struct timeval start;
+    gettimeofday(&start, NULL);
+    printf("seconds : %ld\nmicro seconds : %ld\n",
+    start.tv_sec, start.tv_usec);
+    char t[64];
+    snprintf(t,64,"%lld",1000000LL*start.tv_sec+start.tv_usec);
     setenv("XMOD_PARENT_PROCESS",t,false);
+    char *s=getenv("XMOD_PARENT_PROCESS");
+    long time= atol(s);
+    START_TIME.tv_sec=time/(1000000LL);
+    START_TIME.tv_usec=time%(1000000LL);
+    printf("%ld\n",START_TIME.tv_sec);
+    printf("%ld\n",START_TIME.tv_usec);
     char *reg = checkLog(envp);
     getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
