@@ -579,6 +579,8 @@ int main(int argc, char *argv[], char *envp[])
     nftot = 0;
     nfmod = 0;
 
+    subscribe_SIGINT(); //Ctrl+C interruption
+
     //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
@@ -599,7 +601,7 @@ int main(int argc, char *argv[], char *envp[])
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
     write_PROC_CREATE(argv);
-    subscribe_SIGINT(); //Ctrl+C interruption
+    
     printf("Back\n");
     printf("Awake\n");
 
