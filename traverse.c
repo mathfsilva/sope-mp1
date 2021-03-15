@@ -14,6 +14,7 @@
 
 #include "traverse.h"
 #include "file.h"
+#include "xmod.h"
 
 
 /*xmod(file_dir) //assuming -R option
@@ -60,6 +61,8 @@ int traverse(int argc, char *argv[]) {
 
         PID_CURRENT_CHILD = 0;
 
+        //printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
+
         if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
             //Construct new path, to keep traversal.
             
@@ -76,52 +79,67 @@ int traverse(int argc, char *argv[]) {
             // TODO do we need to check if it's a folder and if not change the mode of the file in the current process?
             // right now it's being done in a child process
 
-            pid_t pid = fork();
-
             int status;
             int waitpid_value;
 
-            switch (pid) {
-            case 0: // child
-                if (execv(argv[0], argv) == -1) {
-                    perror("");
-                    closedir(DP);
-                    write_PROC_EXIT(1);
-                    exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
-                             // já que seria no processo filho mas sem estar exec'd
-                }
-                break;
-
-            case -1: // error
+            struct stat st_path;
+            if (stat (path, &st_path) != 0) {
                 perror("");
-                closedir(DP);
                 return -1;
+            }
+    
+            if (!S_ISDIR (st_path.st_mode)) { // if not a directory, traverse is done by default
+                //printf("PID: %d found a file in %s\n", getpid(), path);
+                xmod(argc, argv);
+            }
+            else{
+                //printf("PID: %d found a dir in %s\n", getpid(), path);
 
-            default: // parent
-                      
-                PID_CURRENT_CHILD=pid;
+                pid_t pid = fork();
 
-                do{
-                    waitpid_value = waitpid(pid, &status, 0);
-                }
-                while(waitpid_value == -1 && errno == EINTR); //TODO more verifications might be needed
-
-                if(WIFEXITED(status)){
-                    int es=WEXITSTATUS(status);
-                    printf("Exit code is %d\n",es);
-                    write_PROC_EXIT(es);
-                    if(es != 0){
-                        exit(es);
+                switch (pid) {
+                case 0: // child
+                    if (execv(argv[0], argv) == -1) {
+                        perror("");
+                        closedir(DP);
+                        write_PROC_EXIT(1);
+                        exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
+                                // já que seria no processo filho mas sem estar exec'd
                     }
-                }
-                else{   
+                    break;
+
+                case -1: // error
                     perror("");
                     closedir(DP);
                     return -1;
+
+                default: // parent
+                        
+                    PID_CURRENT_CHILD=pid;
+
+                    do{
+                        waitpid_value = waitpid(pid, &status, 0);
+                    }
+                    while(waitpid_value == -1 && errno == EINTR); //TODO more verifications might be needed
+
+                    if(WIFEXITED(status)){
+                        int es=WEXITSTATUS(status);
+                        //printf("Exit code is %d\n",es);
+                        write_PROC_EXIT(es);
+                        if(es != 0){
+                            exit(es);
+                        }
+                    }
+                    else{   
+                        perror("");
+                        closedir(DP);
+                        return -1;
+                    }
+                    
+                    break;
                 }
-                
-                break;
             }
+            
             
         }
 

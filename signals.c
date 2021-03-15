@@ -24,8 +24,10 @@ write_SIGNAL_SENT.
 #include <signal.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "file.h"
 #include "traverse.h"
+#include "xmod.h"
 
 void signals_handler(int signo)
 {
@@ -81,13 +83,15 @@ void sigint_handler(int signo){
   char nfmod_str[nfmod_size];
   snprintf(nfmod_str, nfmod_size, "%d", nfmod);
 
-  size_t final_size = pid_size + nfmod_size + nftot_size + 100; //10 is for 3* " ; " and \0
+  int file_path_size = strlen(global_file_path);
 
-  char str_final[final_size];
+  size_t final_size = pid_size + nfmod_size + nftot_size + file_path_size + 9; //10 is for 3* " ; " and \0
+
+  char *str_final = malloc(final_size * sizeof(char));
 
   strcat(str_final, pid);
   strcat(str_final, " ; ");
-  strcat(str_final, "fich/dir");
+  strcat(str_final, global_file_path);
   strcat(str_final, " ; ");
   strcat(str_final, nftot_str);
   strcat(str_final, " ; ");
@@ -95,7 +99,7 @@ void sigint_handler(int signo){
   str_final[final_size-1] = '\0';
 
   printf("%s\n", str_final);
-  printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
+  //printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
 
   if (PID_CURRENT_CHILD == 0){
     sleep(5);
@@ -119,7 +123,7 @@ void sigint_handler(int signo){
 
 void subscribe_SIGINT(){
 
-  printf("Subscribed SIGINT signal\n");
+  //printf("Subscribed SIGINT signal\n");
   struct sigaction interruption;
   interruption.sa_handler = sigint_handler;
   interruption.sa_flags = 0;
