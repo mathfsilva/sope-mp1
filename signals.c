@@ -29,12 +29,9 @@ write_SIGNAL_SENT.
 
 void signals_handler(int signo)
 {
-    printf("Sup\n");
     //int pg=getpgrp();
-    printf("Still\n");
     printf("%d\n",getppid());
     //kill(getppid(),SIGSTP); 
-    printf("Gone\n");
     /*write_SIGNAL_RECV("SIGINT");
     write_SIGNAL_SENT("SIGSTOP",getppid());*/
  
@@ -48,19 +45,15 @@ void signals_handler(int signo)
         valid=true;
         //kill(getppid(),SIGCONT); 
         //write_SIGNAL_SENT("SIGCONT");
-        printf("GO\n");
 
     }
     else if(answer=='Y' || answer=='y'){
-        printf("hi\n");
         valid=true;
         kill(getpid(),SIGTERM);
         //write_SIGNAL_SENT(signal="SIGTERM");
         //write_PROC_EXIT(exit status=1);
         //writes lines here
-        printf("EXIT\n");
         exit(1);
-        printf("Gone\n");
     }
   }
 }
