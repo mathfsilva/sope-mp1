@@ -425,6 +425,8 @@ int xmod(int argc, char *argv[])
         mode = strtol(mode_str, 0, 8);
     }
 
+    nftot++;
+
     if (chmod(argv[argc - 1], mode) < 0)
     {
         char const *msg="xmod: cannot access '";
@@ -434,6 +436,7 @@ int xmod(int argc, char *argv[])
         printf("%s\n",msg2);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
+          nfmod++;
         if(mode_str[1]!='0'){
            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
                 file_name=argv[argc-1];
@@ -553,6 +556,10 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
+    PID_CURRENT_CHILD = 0;
+    nftot = 0;
+    nfmod = 0;
+
     //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);

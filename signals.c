@@ -23,7 +23,9 @@ write_SIGNAL_SENT.
 #include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <string.h>
 #include "file.h"
+#include "traverse.h"
 
 void signals_handler(int signo)
 {
@@ -60,14 +62,66 @@ void signals_handler(int signo)
         exit(1);
         printf("Gone\n");
     }
+  }
+}
+
+void sigint_handler(int signo){
+  
+  write_SIGNAL_RECV("SIGINT");
+
+  int pid_size =20;
+  char pid[pid_size];
+  snprintf(pid, pid_size, "%d", getpid());
+
+  int nftot_size = 20;
+  char nftot_str[nftot_size];
+  snprintf(nftot_str, nftot_size, "%d", nftot);
+
+  int nfmod_size = 20;
+  char nfmod_str[nfmod_size];
+  snprintf(nfmod_str, nfmod_size, "%d", nfmod);
+
+  size_t final_size = pid_size + nfmod_size + nftot_size + 100; //10 is for 3* " ; " and \0
+
+  char str_final[final_size];
+
+  strcat(str_final, pid);
+  strcat(str_final, " ; ");
+  strcat(str_final, "fich/dir");
+  strcat(str_final, " ; ");
+  strcat(str_final, nftot_str);
+  strcat(str_final, " ; ");
+  strcat(str_final, nfmod_str);
+  str_final[final_size-1] = '\0';
+
+  printf("%s\n", str_final);
+  printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
+
+  if (PID_CURRENT_CHILD == 0){
+    sleep(5);
+    printf("Do you wish to end the program? (y/n)\n");
+    char letter = getchar();
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF) { }
+
+    if(letter == 'y'){
+      printf("Ending the program\n");
+      exit(1);
     }
+    else if(letter == 'n'){
+      printf("Continuing the program\n");
+    }
+    else{
+      printf("Bad input continuing the program\n");
+    }
+  }
 }
 
 void subscribe_SIGINT(){
 
-  printf("Holo\n");
+  printf("Subscribed SIGINT signal\n");
   struct sigaction interruption;
-  interruption.sa_handler = signals_handler;
+  interruption.sa_handler = sigint_handler;
   interruption.sa_flags = 0;
   sigemptyset(&interruption.sa_mask);
 

@@ -53,11 +53,16 @@ int traverse(int argc, char *argv[]) {
         return -1;
     }
 
+
+
     //readdir() returns NULL if we've reached the end.
     while ((DIRECTORY = readdir(DP)) != NULL) {
         if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
             //Construct new path, to keep traversal.
             
+            //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
+            //sleep(3);
+
             strcpy(path, dir_name);
             strcat(path, "/");
             strcat(path, DIRECTORY->d_name);
@@ -67,6 +72,10 @@ int traverse(int argc, char *argv[]) {
             // right now it's being done in a child process
 
             pid_t pid = fork();
+
+            int status;
+            int waitpid_value;
+
             switch (pid) {
             case 0: // child
                 if (execv(argv[0], argv) == -1) {
@@ -85,18 +94,29 @@ int traverse(int argc, char *argv[]) {
 
             default: // parent
                       
-                if (waitid(P_PID, pid, NULL, WEXITED) == -1) { // TODO confirmar que opções devem ser usadas
-                                                                //      e se não será melhor não passar NULL
-                                                                //      para ter acesso ao exit status do processo filho
+                PID_CURRENT_CHILD=pid;
+
+                do{
+                    waitpid_value = waitpid(pid, &status, 0);
+                }
+                while(waitpid_value == -1 && errno == EINTR); //TODO more verifications might be needed
+
+                if(WIFEXITED(status)){
+                    int es=WEXITSTATUS(status);
+                    printf("Exit code is %d\n",es);
+                    write_PROC_EXIT(es);
+                }
+                else{   
                     perror("");
                     closedir(DP);
                     return -1;
                 }
-                PID_CURRENT_CHILD=pid;
+                
                 break;
             }
             
         }
+
     }
 
     closedir(DP);
