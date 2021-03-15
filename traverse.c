@@ -60,8 +60,8 @@ int traverse(int argc, char *argv[]) {
         if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
             //Construct new path, to keep traversal.
             
-            //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
-            //sleep(3);
+            printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
+            sleep(3);
 
             strcpy(path, dir_name);
             strcat(path, "/");
