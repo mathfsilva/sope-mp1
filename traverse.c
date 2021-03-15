@@ -57,11 +57,16 @@ int traverse(int argc, char *argv[]) {
 
     //readdir() returns NULL if we've reached the end.
     while ((DIRECTORY = readdir(DP)) != NULL) {
+
+        PID_CURRENT_CHILD = 0;
+
         if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
             //Construct new path, to keep traversal.
             
-            printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
-            sleep(3);
+
+            
+            //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
+            //sleep(3);
 
             strcpy(path, dir_name);
             strcat(path, "/");

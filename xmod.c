@@ -139,7 +139,7 @@ void getoldmodeletters(char *p,char *f,char *oldml){
     }
 
 
-    printf("%s\n",oldml);
+    
 
 }
 char *getoldmode(char *p, char *f)
@@ -509,39 +509,37 @@ bool aretheyequal(char *env, char const *arg)
             return false;
         }
     }
-    //printf("Holo\n");
+    
     return true;
 }
 
 char *checkLog(char *envp[])
 {
-    printf("Hi\n");
+    
     //Check if LOG_FILENAME was defined by user
     for (int j = 0; envp[j] != NULL; j++)
     {
-        //printf("%s\n",envp[j]);
+        
         if (aretheyequal(envp[j], "LOG_FILENAME"))
         {
             char *reg = getenv("LOG_FILENAME");
-            //printf("%s\n",reg);
+            
 
             int fd;
-            //char const *text1 = "Holo Pat"; //Experiment
+           
 
             if (access(reg, F_OK) == 0)
             { //When file exists->Truncate it
                 printf("File exists\n");
                 fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-                //write(fd, text1, 8);
+                
                 close(fd);
             }
             else
             {
                 //If file doesn't exist->Create a new one
                 printf("File doesn't exist\n");
-                //printf("%s\n",reg);
                 fd = open(reg, O_CREAT | O_EXCL, 0644);
-                //write(fd, text1, 8);
                 close(fd);
             }
             return reg;
@@ -566,9 +564,8 @@ void checkSymlink(int argc, char *argv[])
         }
         else
         {
-            //printf("Hihi, it worked!!!!\n");
+            
             memcpy(argv[argc - 1], buf, strlen(buf));
-            //printf("NOVO CAMINHO: %s\n", argv[argc - 1]);
         }
     }
 }
@@ -579,11 +576,11 @@ int main(int argc, char *argv[], char *envp[])
     nftot = 0;
     nfmod = 0;
 
+    subscribe_SIGINT(); //Ctrl+C interruption
+
     //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
-    printf("seconds : %ld\nmicro seconds : %ld\n",
-    start.tv_sec, start.tv_usec);
     char t[64];
     snprintf(t,64,"%lld",1000000LL*start.tv_sec+start.tv_usec);
     setenv("XMOD_PARENT_PROCESS",t,false);
@@ -591,17 +588,14 @@ int main(int argc, char *argv[], char *envp[])
     long time= atol(s);
     START_TIME.tv_sec=time/(1000000LL);
     START_TIME.tv_usec=time%(1000000LL);
-    printf("%ld\n",START_TIME.tv_sec);
-    printf("%ld\n",START_TIME.tv_usec);
 
     char *reg = checkLog(envp);
     getfd(reg);
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
     write_PROC_CREATE(argv);
-    subscribe_SIGINT(); //Ctrl+C interruption
-    printf("Back\n");
-    printf("Awake\n");
+    
+    
 
     if (argc < 3)
     { //chmod options permissions file_name
