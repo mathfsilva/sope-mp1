@@ -105,6 +105,9 @@ int traverse(int argc, char *argv[]) {
                     int es=WEXITSTATUS(status);
                     printf("Exit code is %d\n",es);
                     write_PROC_EXIT(es);
+                    if(es != 0){
+                        exit(es);
+                    }
                 }
                 else{   
                     perror("");
