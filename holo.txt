@@ -1,2 +1,3 @@
-64.178000 ; 10587 ; PROC_CREAT ; ./xmod -R -v a=rwx hj/test.txt 
-67.592000 ; 10587 ; PROC_EXIT ; 0
+8.735000 ; 11002 ; PROC_CREAT ; ./xmod -R -c a+rw hj/papi 
+0CU÷:18.502000 ; 11002 ; PROC_EXIT ; 0
+22.415000 ; 11001 ; PROC_EXIT ; 0

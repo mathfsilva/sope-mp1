@@ -16,6 +16,7 @@
 #include "signals.h"
 #include "macros.h"
 #include "traverse.h"
+#include "xmod.h"
 
 int calculate_mode(perm_mode mode)
 {
@@ -138,10 +139,8 @@ void getoldmodeletters(char *p,char *f,char *oldml){
         strcat(oldml,"-");
     }
 
-
-    
-
 }
+
 char *getoldmode(char *p, char *f)
 {
     char *oldmode_str = (char *)malloc(4);
@@ -347,7 +346,7 @@ int get_options(int argc, char *argv[], options* opts){
         //}
     }    
 
-    printf("Done reading options\n");
+    //printf("Done reading options\n");
 
     return ret;
 }
@@ -377,21 +376,22 @@ int xmod(int argc, char *argv[])
         return 1;
     }
     
-    print_options(opts);
+    //print_options(opts);
 
     getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters);
 
     
-
-
     //Turn mode (when written in digits) to an octal number in order to call chmod function
     if (isdigit(argv[1+no_options][0]))
     {
+
+
 
         mode_str[0]='0';
         mode_str[1]=argv[1+no_options][0];
         mode_str[2]=argv[1+no_options][1];
         mode_str[3]=argv[1+no_options][2];
+
        
         getnewmodeletters(mode_str,mode_letters);
 
@@ -439,7 +439,7 @@ int xmod(int argc, char *argv[])
         strcat(error_msg,msg);
         strcat(error_msg,argv[argc-1]);
         strcat(error_msg,msg2);
-        printf("%s",error_msg);
+        printf("\n%s",error_msg);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
           nfmod++;
@@ -494,14 +494,16 @@ int xmod(int argc, char *argv[])
 
         
 
-        if (opts.R) {
+        /*if (opts.R) {
             if (traverse(argc, argv) != 0)
                 return -1;
-        }
+        }*/
     }
 
     return 0;
 }
+
+
 
 bool aretheyequal(char *env, char const *arg)
 {
@@ -578,6 +580,7 @@ int main(int argc, char *argv[], char *envp[])
     PID_CURRENT_CHILD = 0;
     nftot = 0;
     nfmod = 0;
+    global_file_path = argv[argc-1];
 
     subscribe_SIGINT(); //Ctrl+C interruption
 
@@ -616,6 +619,19 @@ int main(int argc, char *argv[], char *envp[])
     if (xmod(argc, argv))
     {
         return 1;
+    }
+
+    options opts;
+    opts.c = 0;
+    opts.v = 0;
+    opts.R = 0;
+    get_options(argc, argv, &opts);
+    //print_options(opts);
+
+    if (opts.R) {
+        if (traverse(argc, argv) != 0){
+                return 1;
+        }
     }
 
     write_PROC_EXIT(0);
