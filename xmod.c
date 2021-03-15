@@ -26,6 +26,122 @@ int calculate_mode(perm_mode mode)
     return val;
 }
 
+void getnewmodeletters(char *p,char *newml){
+    for(int i=0;i<3;i++){
+        if(p[i]=='7'){
+           strcat(newml,"r");
+            strcat(newml,"w");
+            strcat(newml,"x");
+        }
+        else if(p[i]=='0'){
+             strcat(newml,"-");
+            strcat(newml,"-");
+            strcat(newml,"-");
+        }
+        else if(p[i]=='1'){
+             strcat(newml,"-");
+            strcat(newml,"-");
+            strcat(newml,"x");
+        }
+        else if(p[i]=='2'){
+             strcat(newml,"-");
+            strcat(newml,"w");
+            strcat(newml,"-");
+        }
+        else if(p[i]=='4'){
+             strcat(newml,"r");
+            strcat(newml,"-");
+            strcat(newml,"-");
+        }
+        else if(p[i]=='3'){
+             strcat(newml,"-");
+            strcat(newml,"w");
+            strcat(newml,"x");
+        }
+        else if(p[i]=='5'){
+             strcat(newml,"r");
+            strcat(newml,"-");
+            strcat(newml,"x");
+        }
+        else if(p[i]=='6'){
+             strcat(newml,"r");
+            strcat(newml,"w");
+            strcat(newml,"-");
+        }
+    }
+}
+
+void getoldmodeletters(char *p,char *f,char *oldml){
+    struct stat fs;
+    stat(f, &fs);
+
+    if(fs.st_mode & S_IRUSR){
+        strcat(oldml,"r");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IWUSR){
+        strcat(oldml,"w");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IXUSR){
+        strcat(oldml,"x");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IRGRP){
+        strcat(oldml,"r");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IWGRP){
+        strcat(oldml,"w");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IXGRP){
+        strcat(oldml,"x");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+    if(fs.st_mode & S_IROTH){
+        strcat(oldml,"r");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+     if(fs.st_mode & S_IWOTH){
+        strcat(oldml,"w");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+     if(fs.st_mode & S_IXOTH){
+        strcat(oldml,"x");
+    }
+    else{
+        strcat(oldml,"-");
+    }
+
+
+    printf("%s\n",oldml);
+
+}
 char *getoldmode(char *p, char *f)
 {
     char *oldmode_str = (char *)malloc(3);
@@ -242,6 +358,12 @@ int xmod(int argc, char *argv[])
     char mode_str[3] = {'0', '0', '0'};
     perm_mode mode_u, mode_g, mode_o;
     char *oldmode;
+    char *oldmode_letters=(char*)malloc(9);
+    char *mode_letters=(char*)malloc(9);
+
+
+    
+    
 
     options opts;
 
@@ -259,9 +381,16 @@ int xmod(int argc, char *argv[])
     
     print_options(opts);
 
+    getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters);
+
+    printf("%s\n",oldmode_letters);
+
+
     //Turn mode (when written in digits) to an octal number in order to call chmod function
     if (isdigit(argv[1+no_options][0]))
     {
+        getnewmodeletters(argv[1+no_options],mode_letters);
+        printf("%s\n",mode_letters);
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
@@ -284,6 +413,8 @@ int xmod(int argc, char *argv[])
         mode_str[0] = modeu + '0';
         mode_str[1] = modeg + '0';
         mode_str[2] = modeo + '0';
+        getnewmodeletters(mode_str,mode_letters);
+        printf("%s\n",mode_letters);
 
         mode = strtol(mode_str, 0, 8);
     }
@@ -292,8 +423,8 @@ int xmod(int argc, char *argv[])
 
     if (chmod(argv[argc - 1], mode) < 0)
     {
-        char const *msg="xmod cannot access ";
-        char const *msg2=": Permission denied";
+        char const *msg="xmod: cannot access '";
+        char const *msg2="': Permission denied";
         printf("%s",msg);
         printf("%s",argv[argc-1]);
         printf("%s\n",msg2);
