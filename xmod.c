@@ -290,7 +290,11 @@ int xmod(int argc, char *argv[])
 
     if (chmod(argv[argc - 1], mode) < 0)
     {
-        printf("ERROR");
+        char const *msg="xmod cannot access ";
+        char const *msg2=": Permission denied";
+        printf("%s",msg);
+        printf("%s",argv[argc-1]);
+        printf("%s\n",msg2);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
         if(mode_str[0]!='0'){
