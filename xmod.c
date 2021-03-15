@@ -144,7 +144,7 @@ void getoldmodeletters(char *p,char *f,char *oldml){
 }
 char *getoldmode(char *p, char *f)
 {
-    char *oldmode_str = (char *)malloc(3);
+    char *oldmode_str = (char *)malloc(4);
     struct stat fs;
     stat(f, &fs); //Gets current permission
 
@@ -170,9 +170,10 @@ char *getoldmode(char *p, char *f)
     int old_g = calculate_mode(old_mode_g);
     int old_o = calculate_mode(old_mode_o);
 
-    oldmode_str[0] = old_u + '0';
-    oldmode_str[1] = old_g + '0';
-    oldmode_str[2] = old_o + '0';
+    oldmode_str[0]='0';
+    oldmode_str[1] = old_u + '0';
+    oldmode_str[2] = old_g + '0';
+    oldmode_str[3] = old_o + '0';
 
     return oldmode_str;
 }
@@ -186,7 +187,7 @@ char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *m
         exit(-1); //TODO change this
     }
 
-    char *oldmode_str = (char *)malloc(3);
+    char *oldmode_str = (char *)malloc(4);
     struct stat fs;
     stat(f, &fs); //Gets current permission
 
@@ -208,9 +209,10 @@ char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *m
     int old_g = calculate_mode(*mode_g);
     int old_o = calculate_mode(*mode_o);
 
-    oldmode_str[0] = old_u + '0';
-    oldmode_str[1] = old_g + '0';
-    oldmode_str[2] = old_o + '0';
+    oldmode_str[0]='0';
+    oldmode_str[1] = old_u + '0';
+    oldmode_str[2] = old_g + '0';
+    oldmode_str[3] = old_o + '0';
 
     //Let's consider letters option first (u+w)
     //User
@@ -355,15 +357,11 @@ int xmod(int argc, char *argv[])
 
     char*file_name;
     int mode;
-    char mode_str[3] = {'0', '0', '0'};
+    char *mode_str=(char*)malloc(4);
     perm_mode mode_u, mode_g, mode_o;
     char *oldmode;
     char *oldmode_letters=(char*)malloc(9);
     char *mode_letters=(char*)malloc(9);
-
-
-    
-    
 
     options opts;
 
@@ -390,7 +388,13 @@ int xmod(int argc, char *argv[])
     if (isdigit(argv[1+no_options][0]))
     {
         getnewmodeletters(argv[1+no_options],mode_letters);
-        printf("%s\n",mode_letters);
+        
+
+        mode_str[0]='0';
+        mode_str[1]=argv[1+no_options][0];
+        mode_str[2]=argv[1+no_options][1];
+        mode_str[3]=argv[1+no_options][2];
+       
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
@@ -410,9 +414,11 @@ int xmod(int argc, char *argv[])
         int modeu = calculate_mode(mode_u);
         int modeg = calculate_mode(mode_g);
         int modeo = calculate_mode(mode_o);
-        mode_str[0] = modeu + '0';
-        mode_str[1] = modeg + '0';
-        mode_str[2] = modeo + '0';
+        mode_str[0]='0';
+        mode_str[1] = modeu + '0';
+        mode_str[2] = modeg + '0';
+        mode_str[3] = modeo + '0';
+        
         getnewmodeletters(mode_str,mode_letters);
         printf("%s\n",mode_letters);
 
@@ -428,18 +434,40 @@ int xmod(int argc, char *argv[])
         printf("%s\n",msg2);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
-        if(mode_str[0]!='0'){
+        if(mode_str[1]!='0'){
            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
                 file_name=argv[argc-1];
                 write_FILE_MODF(oldmode,mode_str,file_name);
+                if(opts.c || opts.v){
+                    printf("mode of '");
+                    printf("%s",file_name);
+                    printf("' changed from ");
+                    printf("%s",oldmode);
+                    printf("(");
+                    printf("%s",oldmode_letters);
+                    printf(") to ");
+                    printf("%s",mode_str);
+                    printf("(");
+                    printf("%s",mode_letters);
+                    printf(")");
+                }
             }
-        }
-        else{
-            if(strcmp(argv[1+no_options],oldmode)!=0){ //Think we only need to write if they are different
+            else{
                 file_name=argv[argc-1];
-                write_FILE_MODF(oldmode,argv[1+no_options],file_name);
-            }
+                if(opts.v){
+                    printf("mode of '");
+                    printf("%s",file_name);
+                    printf("' retained as ");
+                    printf("%s",oldmode);
+                    printf("(");
+                    printf("%s",oldmode_letters);
+                    printf(")");
+                }
+            }   
         }
+        
+
+        
 
         if (opts.R) {
             if (traverse(argc, argv) != 0)
