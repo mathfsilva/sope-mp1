@@ -381,7 +381,7 @@ int xmod(int argc, char *argv[])
 
     getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters);
 
-    printf("%s\n",oldmode_letters);
+    
 
 
     //Turn mode (when written in digits) to an octal number in order to call chmod function
@@ -420,7 +420,7 @@ int xmod(int argc, char *argv[])
         mode_str[3] = modeo + '0';
         
         getnewmodeletters(mode_str,mode_letters);
-        printf("%s\n",mode_letters);
+        
 
         mode = strtol(mode_str, 0, 8);
     }
@@ -430,10 +430,13 @@ int xmod(int argc, char *argv[])
     if (chmod(argv[argc - 1], mode) < 0)
     {
         char const *msg="xmod: cannot access '";
-        char const *msg2="': Permission denied";
-        printf("%s",msg);
-        printf("%s",argv[argc-1]);
-        printf("%s\n",msg2);
+        char const *msg2="': Permission denied\n";
+        int s=strlen(msg)+strlen(msg2)+sizeof(argv[argc-1]);
+        char* error_msg= (char*)malloc(s);
+        strcat(error_msg,msg);
+        strcat(error_msg,argv[argc-1]);
+        strcat(error_msg,msg2);
+        printf("%s",error_msg);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
           nfmod++;
@@ -442,29 +445,45 @@ int xmod(int argc, char *argv[])
                 file_name=argv[argc-1];
                 write_FILE_MODF(oldmode,mode_str,file_name);
                 if(opts.c || opts.v){
-                    printf("mode of '");
-                    printf("%s",file_name);
-                    printf("' changed from ");
-                    printf("%s",oldmode);
-                    printf("(");
-                    printf("%s",oldmode_letters);
-                    printf(") to ");
-                    printf("%s",mode_str);
-                    printf("(");
-                    printf("%s",mode_letters);
-                    printf(")");
+                    char const *msg="mode of '";
+                    char const *msg2="' changed from ";
+                    char const *msg3=") to ";
+                    int size=strlen(msg)+strlen(msg2)+strlen(msg3)+sizeof(file_name)+sizeof(oldmode)+sizeof(oldmode_letters)+sizeof(mode_str)+sizeof(mode_letters);
+                    char* print=(char*)(malloc(size));
+                    strcat(print,msg);
+                    strcat(print,file_name);
+                    strcat(print,msg2);
+                    strcat(print,oldmode);
+                    strcat(print,"(");
+                    strcat(print,oldmode_letters);
+                    strcat(print,msg3);
+                    strcat(print,mode_str);
+                    strcat(print,"(");
+                    strcat(print,mode_letters);
+                    strcat(print,")");
+                    printf("%s\n",print);
+
+
+                    
                 }
             }
             else{
                 file_name=argv[argc-1];
                 if(opts.v){
-                    printf("mode of '");
-                    printf("%s",file_name);
-                    printf("' retained as ");
-                    printf("%s",oldmode);
-                    printf("(");
-                    printf("%s",oldmode_letters);
-                    printf(")");
+                    char const *msg="mode of '";
+                    char const *msg2= "' retained as ";
+                    int size= strlen(msg)+strlen(msg2)+sizeof(file_name)+sizeof(oldmode)+sizeof(oldmode_letters);
+                    char* print=(char* )malloc(size);
+
+                    strcat(print,msg);
+                    strcat(print,file_name);
+                    strcat(print,msg2);
+                    strcat(print,oldmode);
+                    strcat(print,"(");
+                    strcat(print, oldmode_letters);
+                    strcat(print,")");
+                    printf("%s\n",print);
+                    
                 }
             }   
         }

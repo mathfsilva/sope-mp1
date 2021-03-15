@@ -1,2 +1,2 @@
-4.082000 ; 7857 ; PROC_CREAT ; ./xmod -v 777 hj 
-7.526000 ; 7857 ; PROC_EXIT ; 0
+53.410000 ; 8375 ; PROC_CREAT ; ./xmod -v -R 777 hj/test.txt 
+56.003000 ; 8375 ; PROC_EXIT ; 0
