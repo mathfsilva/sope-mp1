@@ -81,6 +81,7 @@ int traverse(int argc, char *argv[]) {
             int status;
             int waitpid_value;
 
+            printf("PID: %d found a dir in %s\n", getpid(), path);
             switch (pid) {
             case 0: // child
                 if (execv(argv[0], argv) == -1) {

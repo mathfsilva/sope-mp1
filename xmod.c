@@ -27,7 +27,7 @@ int calculate_mode(perm_mode mode)
 }
 
 void getnewmodeletters(char *p,char *newml){
-    for(int i=0;i<3;i++){
+    for(int i=1;i<4;i++){
         if(p[i]=='7'){
            strcat(newml,"r");
             strcat(newml,"w");
@@ -387,14 +387,13 @@ int xmod(int argc, char *argv[])
     //Turn mode (when written in digits) to an octal number in order to call chmod function
     if (isdigit(argv[1+no_options][0]))
     {
-        getnewmodeletters(argv[1+no_options],mode_letters);
-        
 
         mode_str[0]='0';
         mode_str[1]=argv[1+no_options][0];
         mode_str[2]=argv[1+no_options][1];
         mode_str[3]=argv[1+no_options][2];
        
+        getnewmodeletters(mode_str,mode_letters);
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
@@ -414,12 +413,16 @@ int xmod(int argc, char *argv[])
         int modeu = calculate_mode(mode_u);
         int modeg = calculate_mode(mode_g);
         int modeo = calculate_mode(mode_o);
+        
         mode_str[0]='0';
         mode_str[1] = modeu + '0';
         mode_str[2] = modeg + '0';
         mode_str[3] = modeo + '0';
         
         getnewmodeletters(mode_str,mode_letters);
+        
+        
+
         
 
         mode = strtol(mode_str, 0, 8);
