@@ -92,6 +92,7 @@ void sigint_handler(int signo){
       printf("Bad input continuing the program\n");
     }
   }
+  free(str_final);
 }
 
 void subscribe_SIGINT(){

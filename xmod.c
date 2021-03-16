@@ -122,9 +122,8 @@ void getoldmodeletters(char *p,char *f,char *oldml){
 
 }
 
-char *getoldmode(char *p, char *f)
+void getoldmode(char *p, char *f,char *oldmode_str)
 {
-    char *oldmode_str = (char *)malloc(4);
     struct stat fs;
     if(stat(f, &fs)==-1){
         //perror("ERROR\n");
@@ -157,10 +156,9 @@ char *getoldmode(char *p, char *f)
     oldmode_str[2] = old_g + '0';
     oldmode_str[3] = old_o + '0';
 
-    return oldmode_str;
 }
 
-char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o)
+void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o,char *oldmode_str)
 {
     int size = strlen(p);
 
@@ -169,7 +167,6 @@ char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *m
         exit(-1); //TODO change this
     }
 
-    char *oldmode_str = (char *)malloc(4);
     struct stat fs;
     stat(f, &fs); //Gets current permission
 
@@ -254,11 +251,10 @@ char *parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *m
 
         if(r > 1 || w > 1 || x > 1){
             perror("Gave the same mode more than once");
-            return NULL; //TODO change this
+            
         }
     }
 
-    return oldmode_str;
 }
 
 void print_options(options opts){
@@ -341,7 +337,7 @@ int xmod(int argc, char *argv[])
     int mode;
     char *mode_str=(char*)malloc(4);
     perm_mode mode_u, mode_g, mode_o;
-    char *oldmode;
+    char *oldmode=(char*)malloc(4);
     char *oldmode_letters=(char*)malloc(9);
     char *mode_letters=(char*)malloc(9);
 
@@ -376,7 +372,7 @@ int xmod(int argc, char *argv[])
         getnewmodeletters(mode_str,mode_letters);
 
         mode = strtol(argv[1+no_options], 0, 8);
-        oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
+        getoldmode(argv[1+no_options], argv[2+no_options],oldmode);
        
         
         if (oldmode == NULL) return 1;
@@ -387,7 +383,7 @@ int xmod(int argc, char *argv[])
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        oldmode = parse(argv[1+no_options], argv[2+no_options], &mode_u,&mode_g,&mode_o);
+        parse(argv[1+no_options], argv[2+no_options], &mode_u,&mode_g,&mode_o,oldmode);
         
         if (oldmode == NULL) return 1;
 
@@ -427,6 +423,7 @@ int xmod(int argc, char *argv[])
 
                     snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")");
                     printf("%s\n",print);
+                    free(print);
                     
                 }
 
@@ -455,6 +452,7 @@ int xmod(int argc, char *argv[])
                     snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
                     
                     printf("%s\n",print);
+                    free(print);
 
 
                     
@@ -471,6 +469,7 @@ int xmod(int argc, char *argv[])
 
                     snprintf(print,nbytes,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")");
                     printf("%s\n",print);
+                    free(print);
                     
                 }
             }   
@@ -485,7 +484,11 @@ int xmod(int argc, char *argv[])
         }*/
     }
     }
-
+    free(mode_str);
+    free(mode_letters);
+    free(oldmode_letters);
+    free(oldmode);
+    
     return 0;
 }
 
