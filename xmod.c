@@ -536,9 +536,13 @@ char *checkLog(char *envp[])
             if (access(reg, F_OK) == 0)
             { //When file exists->Truncate it
                 printf("File exists\n");
-                fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-                
-                close(fd);
+
+                char *s=getenv("XMOD_PARENT_PROCESS");
+                if (s == NULL) 
+                {
+                    fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+                    close(fd);
+                }
             }
             else
             {
@@ -584,6 +588,10 @@ int main(int argc, char *argv[], char *envp[])
 
     subscribe_SIGINT(); //Ctrl+C interruption
 
+    char *reg = checkLog(envp);
+    getfd(reg);
+
+
     //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
@@ -595,8 +603,7 @@ int main(int argc, char *argv[], char *envp[])
     START_TIME.tv_sec=time/(1000000LL);
     START_TIME.tv_usec=time%(1000000LL);
 
-    char *reg = checkLog(envp);
-    getfd(reg);
+    
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
     write_PROC_CREATE(argv);
