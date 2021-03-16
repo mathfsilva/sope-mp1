@@ -22,9 +22,9 @@ void calculate_mode(perm_mode mode,int *val)
 {
     *val += mode.r ? 4 : 0;
     *val += mode.w ? 2 : 0;
-    *val += mode.x ? 1 : 0;
-    
+    *val += mode.x ? 1 : 0;    
 }
+
 
 void getnewmodeletters(char *p,char *newml){
    for(int i=1;i<4;i++){
@@ -52,9 +52,11 @@ void getnewmodeletters(char *p,char *newml){
 }
 
 
-void getoldmodeletters(char *p,char *f,char *oldml){
+int getoldmodeletters(char *p,char *f,char *oldml){
     struct stat fs;
-    stat(f, &fs);
+    if(stat(f, &fs)==-1){
+        return 1;
+    }
 
     if(fs.st_mode & S_IRUSR){
         strcat(oldml,"r");
@@ -118,14 +120,14 @@ void getoldmodeletters(char *p,char *f,char *oldml){
     else{
         strcat(oldml,"-");
     }
-
+    return 0;
 }
 
-void getoldmode(char *p, char *f,char *oldmode_str)
+int getoldmode(char *p, char *f,char *oldmode_str)
 {
     struct stat fs;
     if(stat(f, &fs)==-1){
-        //perror("ERROR\n");
+        return 1;
     } //Gets current permission
 
     //User Permission
@@ -155,20 +157,22 @@ void getoldmode(char *p, char *f,char *oldmode_str)
     oldmode_str[1] = old_u + '0';
     oldmode_str[2] = old_g + '0';
     oldmode_str[3] = old_o + '0';
-
+    return 0;
 }
 
-void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o,char *oldmode_str)
+int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mode_o,char *oldmode_str)
 {
     int size = strlen(p);
 
     if (size > 5){
         perror("Wrong input for mode\n");
-        exit(-1); //TODO change this
+        return 1;
     }
 
     struct stat fs;
-    stat(f, &fs); //Gets current permission
+    if(stat(f, &fs)==-1){
+        return 1;
+    }//Gets current permission
 
     //User Permission
 
@@ -188,6 +192,7 @@ void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mo
     calculate_mode(*mode_u,&old_u);
     calculate_mode(*mode_g,&old_g);
     calculate_mode(*mode_o,&old_o);
+
 
     oldmode_str[0]='0';
     oldmode_str[1] = old_u + '0';
@@ -216,7 +221,7 @@ void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mo
             modes[1] =  mode_g;
             modes[2] =  mode_o;
         default:
-        //TODO error
+            return 1;
             break;
     }
 
@@ -245,17 +250,18 @@ void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mo
                     modes[i]->x = add_or_equal;
                     break;
                 default:
-                //TODO error
+                    return 1;
                 break;
             }
         }
 
         if(r > 1 || w > 1 || x > 1){
             perror("Gave the same mode more than once");
-            
+            return 1;
         }
     }
 
+    return 0;
 }
 
 void print_options(options opts){
@@ -272,13 +278,13 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
 
     if(argc < 3){ //not needed
         perror("Too few args\n");
-        return -1;
+        return 1;
     }
 
     for(i = 1; argv[i][0] == '-'; i++){
         if (!(i < argc-2)){
             perror("Too few args\n");
-            return -1;
+            return 1;
         }
         //for(int j = 1; argv[i][j] != '\0'; j++){
             int j = 1;
@@ -287,7 +293,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
             case 'c':
                 if(opts->c){
                     perror("Invalid, repeated options\n");
-                    return -1;
+                    return 1;
                 }
                 else{
                     *ret+=1;
@@ -297,7 +303,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
             case 'v':
                 if(opts->v){
                     perror("Invalid, repeated options\n");
-                    return -1;
+                    return 1;
                 }
                 else{
                     *ret+=1;
@@ -307,7 +313,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
             case 'R':
                 if(opts->R){
                     perror("Invalid, repeated options\n");
-                    return -1;
+                    return 1;
                 }
                 else{
                     *ret+=1;
@@ -316,12 +322,12 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
                 break;
             default:
                 perror("Invalid options\n");
-                return -1;
+                return 1;
                 break;
             }
             if(argv[i][j+1] != '\0'){
                 perror("Invalid options\n");
-                return -1;
+                return 1;
             }
         //}
     }    
@@ -331,6 +337,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
     return 0;
 }
 
+
 int xmod(int argc, char *argv[])
 {
 
@@ -338,7 +345,7 @@ int xmod(int argc, char *argv[])
     int mode;
     char *mode_str=(char*)malloc(4);
     perm_mode mode_u, mode_g, mode_o;
-    char *oldmode=(char*)malloc(4);
+    char *oldmode=(char*)malloc(5);
     char *oldmode_letters=(char*)malloc(9);
     char *mode_letters=(char*)malloc(9);
 
@@ -349,17 +356,24 @@ int xmod(int argc, char *argv[])
     opts.R = 0;
 
     int no_options =0;
-    get_options(argc, argv, &opts,&no_options);
+    if(get_options(argc, argv, &opts,&no_options)){
+        return 1;
+    }
+
 
     if (no_options == -1){
         perror("Error occurred while reading options\n");
-        write_PROC_EXIT(1);
+        if(write_PROC_EXIT(1)){
+            return 1;
+        }
         return 1;
     }
     
     //print_options(opts);
 
-    getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters);
+    if(getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters)){
+        return 1;
+    }
 
     
     //Turn mode (when written in digits) to an octal number in order to call chmod function
@@ -374,8 +388,9 @@ int xmod(int argc, char *argv[])
         getnewmodeletters(mode_str,mode_letters);
 
         mode = strtol(argv[1+no_options], 0, 8);
-        getoldmode(argv[1+no_options], argv[2+no_options],oldmode);
-       
+        if(getoldmode(argv[1+no_options], argv[2+no_options],oldmode)){
+            return 1;
+        }
         
         if (oldmode == NULL) return 1;
     }
@@ -385,8 +400,11 @@ int xmod(int argc, char *argv[])
        are just adding or deleting permissions to certain people, we
        don't change the current permissions for the other people.
        */
-        parse(argv[1+no_options], argv[2+no_options], &mode_u,&mode_g,&mode_o,oldmode);
+        if(parse(argv[1+no_options], argv[2+no_options], &mode_u,&mode_g,&mode_o,oldmode)){
+            return 1;
+        }
         
+
         if (oldmode == NULL) return 1;
 
         int modeu=0,modeg=0,modeo=0;
@@ -402,10 +420,6 @@ int xmod(int argc, char *argv[])
         
         getnewmodeletters(mode_str,mode_letters);
         
-        
-
-        
-
         mode = strtol(mode_str, 0, 8);
     }
 
@@ -423,11 +437,15 @@ int xmod(int argc, char *argv[])
                     char const *msg3=" to ";
 
                     size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")");
+                    if(nbytes==-1){
+                        return 1;
+                    }
                     char* print=(char* )malloc(nbytes);
 
-                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")");
+                    if(snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")")==-1){
+                        return 1;
+                    }
                     printf("%s\n",print);
-                    free(print);
                     
                 }
 
@@ -439,24 +457,30 @@ int xmod(int argc, char *argv[])
             }
             else{//FILE_MODF here (reason why went to get oldmode)
     
-    MODE=mode;
+          MODE=mode;
           nfmod++;
         if(mode_str[1]!='0'){
            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
                 file_name=argv[argc-1];
-                write_FILE_MODF(oldmode,mode_str,file_name);
+                if(write_FILE_MODF(oldmode,mode_str,file_name)){
+                    return 1;
+                }
                 if(opts.c || opts.v){
                     char const *msg="mode of '";
                     char const *msg2="' changed from ";
                     char const *msg3=") to ";
 
                     size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    if(nbytes==-1){
+                        return 1;
+                    }
                     char* print=(malloc(nbytes));
 
-                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    if(snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")")==-1){
+                        return 1;
+                    }
                     
                     printf("%s\n",print);
-                    free(print);
 
 
                     
@@ -469,24 +493,22 @@ int xmod(int argc, char *argv[])
                     char const *msg2= "' retained as ";
 
                     size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")");
+                    if(nbytes==-1){
+                        return 1;
+                    }
                     char* print=(char* )malloc(nbytes);
 
-                    snprintf(print,nbytes,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")");
+                    if(snprintf(print,nbytes,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")")==-1){
+                        return 1;
+                    }
                     printf("%s\n",print);
-                    free(print);
                     
                 }
             }   
-        }
-        
+        }    
+    }
+    }
 
-    }
-    }
-    free(mode_str);
-    free(mode_letters);
-    free(oldmode_letters);
-    free(oldmode);
-    
     return 0;
 }
 
@@ -514,7 +536,9 @@ int checkLog(char *envp[],char *reg)
         
         if (aretheyequal(envp[j], "LOG_FILENAME"))
         {
-            snprintf(reg,100, "%s",getenv("LOG_FILENAME"));
+            if(snprintf(reg,100, "%s",getenv("LOG_FILENAME"))==-1){
+                return 1;
+            }
             
 
             int fd;
@@ -522,21 +546,29 @@ int checkLog(char *envp[],char *reg)
 
             if (access(reg, F_OK) == 0)
             { //When file exists->Truncate it
-                printf("File exists\n");
 
                 char *s=getenv("XMOD_PARENT_PROCESS");
                 if (s == NULL) 
                 {
                     fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
-                    close(fd);
+                    if(fd==-1){
+                        return 1;
+                    }
+                    if(close(fd)==-1){
+                        return 1;
+                    }
                 }
             }
             else
             {
                 //If file doesn't exist->Create a new one
-                printf("File doesn't exist\n");
                 fd = open(reg, O_CREAT | O_EXCL, 0644);
-                close(fd);
+                if(fd==-1){
+                    return 1;
+                }
+                if(close(fd)==-1){
+                    return 1;
+                }
             }
             return 0;
         }
@@ -544,7 +576,7 @@ int checkLog(char *envp[],char *reg)
     return 1;
 }
 
-void checkSymlink(int argc, char *argv[])
+int checkSymlink(int argc, char *argv[])
 {
     //Symlink check.
     struct stat buffer;
@@ -557,6 +589,7 @@ void checkSymlink(int argc, char *argv[])
         if (res == NULL)
         {
             perror("Couldn't find the real path of a symlink.");
+            return 1;
         }
         else
         {
@@ -564,6 +597,7 @@ void checkSymlink(int argc, char *argv[])
             memcpy(argv[argc - 1], buf, strlen(buf));
         }
     }
+    return 0;
 }
 
 int main(int argc, char *argv[], char *envp[])
@@ -577,17 +611,45 @@ int main(int argc, char *argv[], char *envp[])
     subscribe_SIGINT(); //Ctrl+C interruption
 
     char *reg=(char*)malloc(100); //should be enough right?
-    checkLog(envp,reg);
-    getfd(reg);
+    if(checkLog(envp,reg)){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
+
+    if(getfd(reg)){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
 
 
     //Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
     char t[64];
-    snprintf(t,64,"%lld",1000000LL*start.tv_sec+start.tv_usec);
-    setenv("XMOD_PARENT_PROCESS",t,false);
+    if(snprintf(t,64,"%lld",1000000LL*start.tv_sec+start.tv_usec)==-1){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
+    if(setenv("XMOD_PARENT_PROCESS",t,false)==-1){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
     char *s=getenv("XMOD_PARENT_PROCESS");
+    if(s==NULL){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
+
     long time= atol(s);
     START_TIME.tv_sec=time/(1000000LL);
     START_TIME.tv_usec=time%(1000000LL);
@@ -595,7 +657,12 @@ int main(int argc, char *argv[], char *envp[])
     
     //It's gonna have a PROC_CREAT here (only PROC_CREAT right now-->because we only have one process)
     //eventHandler(0, argc, argv, reg,time_taken);
-    write_PROC_CREATE(argv);
+    if(write_PROC_CREATE(argv)){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
     
     
 
@@ -605,15 +672,25 @@ int main(int argc, char *argv[], char *envp[])
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
         printf("Not enough arguments\n");
-        write_PROC_EXIT(1);
+        if(write_PROC_EXIT(1)){
+            return 1;
+        }
         //PROC_EXIT here
         return 1;
     }
     
-    checkSymlink(argc, argv);
+    if(checkSymlink(argc, argv)){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
 
     if (xmod(argc, argv))
     {
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
         return 1;
     }
 
@@ -622,18 +699,31 @@ int main(int argc, char *argv[], char *envp[])
     opts.v = 0;
     opts.R = 0;
     int ops=0;
-    get_options(argc, argv, &opts,&ops);
+    if(get_options(argc, argv, &opts,&ops)){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
     //print_options(opts);
 
     if (opts.R) {
         if (traverse(argc, argv) != 0){
+             if(write_PROC_EXIT(1)){
+        return 1;
+    }
                 return 1;
         }
     }
-    chmod(global_file_path,MODE);
-    write_PROC_EXIT(0);
+    if(chmod(global_file_path,MODE)<1){
+         if(write_PROC_EXIT(1)){
+        return 1;
+    }
+        return 1;
+    }
+    if(write_PROC_EXIT(0)){
+        return 1;
+    }
     free(reg);
-    //Should have a PROC_EXIT here
-    //eventHandler(1, argc, argv, reg,time_taken);
     return 0;
 }

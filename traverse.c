@@ -36,7 +36,7 @@ int traverse(int argc, char *argv[]) {
     struct stat st_buf;
     if (stat (argv[argc - 1], &st_buf) != 0) {
         perror("Hoo\n");
-        return -1;
+        return 1;
     }
     
     if (! S_ISDIR (st_buf.st_mode)) { // if not a directory, traverse is done by default
@@ -51,7 +51,7 @@ int traverse(int argc, char *argv[]) {
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
         perror("Holo\n");
-        return -1;
+        return 1
     }
 
 
