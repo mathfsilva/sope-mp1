@@ -28,49 +28,30 @@ int calculate_mode(perm_mode mode)
 }
 
 void getnewmodeletters(char *p,char *newml){
-    for(int i=1;i<4;i++){
-        if(p[i]=='7'){
-           strcat(newml,"r");
-           strcat(newml,"w");
-           strcat(newml,"x");
-        }
-        else if(p[i]=='0'){
-             strcat(newml,"-");
-            strcat(newml,"-");
-            strcat(newml,"-");
-        }
-        else if(p[i]=='1'){
-             strcat(newml,"-");
-            strcat(newml,"-");
-            strcat(newml,"x");
-        }
-        else if(p[i]=='2'){
-             strcat(newml,"-");
-            strcat(newml,"w");
-            strcat(newml,"-");
-        }
-        else if(p[i]=='4'){
-             strcat(newml,"r");
-            strcat(newml,"-");
-            strcat(newml,"-");
-        }
-        else if(p[i]=='3'){
-             strcat(newml,"-");
-            strcat(newml,"w");
-            strcat(newml,"x");
-        }
-        else if(p[i]=='5'){
-             strcat(newml,"r");
-            strcat(newml,"-");
-            strcat(newml,"x");
-        }
-        else if(p[i]=='6'){
-             strcat(newml,"r");
-            strcat(newml,"w");
-            strcat(newml,"-");
-        }
+   for(int i=1;i<4;i++){
+        int val = p[i] - '0';
+
+        if ((val-4) >= 0)
+            strcat(newml,"r");
+        else
+            strcat(newml, "-");
+        
+        val -= 4;
+
+        if ((val-2) >= 0)
+            strcat(newml, "w");
+        else
+            strcat(newml, "-");
+
+        val -= 2;
+
+        if ((val-1) >= 0)
+            strcat(newml, "x");
+        else
+            strcat(newml, "-");
     }
 }
+
 
 void getoldmodeletters(char *p,char *f,char *oldml){
     struct stat fs;
@@ -451,12 +432,12 @@ int xmod(int argc, char *argv[])
                     char const *msg2="' changed from ";
                     char const *msg3=") to ";
 
-                    size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")",msg3,mode_str,"(",mode_letters,")");
+                    size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
                     char* print=(malloc(nbytes));
 
-                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")",msg3,mode_str,"(",mode_letters,")");
+                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
                     
-                    printf("%s",print);
+                    printf("%s\n",print);
 
 
                     
