@@ -70,7 +70,7 @@ void sigint_handler(int signo){
 
   snprintf(str_final, nbytes, "%d ; %s ; %d ; %d\n", getpid(), global_file_path, nftot, nfmod);
 
-  printf("%s\n", str_final);
+  printf("%s", str_final);
   //printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
 
   if (PID_CURRENT_CHILD == 0){
