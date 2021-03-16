@@ -16,26 +16,10 @@
 #include "file.h"
 #include "xmod.h"
 
-
-/*xmod(file_dir) //assuming -R option
-    chmod(file_dir)
-    if (file_dir is dir)
-        for (fd in file_dir)
-            if (fd is dir)
-                fork()
-                parent:
-                    waits for child
-                child:
-                    exec xmod(fd2)
-            else if (fd is file)
-                chmod(fd2)
-      end cycle
-*/
-
 int traverse(int argc, char *argv[]) {
     struct stat st_buf;
     if (stat (argv[argc - 1], &st_buf) != 0) {
-        perror("Hoo\n");
+        perror("Stat from path returned != 0\n");
         return 1;
     }
     
@@ -50,7 +34,7 @@ int traverse(int argc, char *argv[]) {
 
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
-        perror("Holo\n");
+        perror("Could not open dir\n");
         return 1;
     }
 
@@ -100,14 +84,14 @@ int traverse(int argc, char *argv[]) {
                 printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
             else if(DIRECTORY->d_type == DT_DIR){
-                printf("PID: %d found a dir in %s\n", getpid(), path);
+                //printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
                 switch (pid) {
                 case 0: // child
                     if (execv(argv[0], argv) == -1) {
-                        perror("Here\n");
+                        perror("Execv failed\n");
                         if(closedir(DP)==-1){
                             //return 1;
                         }
@@ -120,7 +104,7 @@ int traverse(int argc, char *argv[]) {
                     break;
 
                 case -1: // error
-                    perror("Nope\n");
+                    perror("Process failed on creating child\n");
                     if(closedir(DP)==-1){
                         return 1;
                     }
@@ -145,7 +129,7 @@ int traverse(int argc, char *argv[]) {
                         }
                     }
                     else{   
-                        perror("I wish\n");
+                        perror("Bad status uppon waiting on child\n");
                         if(closedir(DP)==-1){
                             return 1;
                         }
