@@ -1,3 +1,2 @@
-8.735000 ; 11002 ; PROC_CREAT ; ./xmod -R -c a+rw hj/papi 
-0CU÷:18.502000 ; 11002 ; PROC_EXIT ; 0
-22.415000 ; 11001 ; PROC_EXIT ; 0
+0.754000 ; 4844 ; PROC_CREAT ; ./xmod -v -R a=rx ./hj 
+2098.760000 ; 4844 ; SIGNAL_RECV ; SIGINT
