@@ -29,45 +29,53 @@ int calculate_mode(perm_mode mode)
 
 void getnewmodeletters(char *p,char *newml){
     for(int i=1;i<4;i++){
-        if(p[i]=='7'){
-           strcat(newml,"r");
-           strcat(newml,"w");
-           strcat(newml,"x");
+        if (p[i] == '7')
+        {
+            strcat(newml, "rwx");
+            //strcat(newml, "w");
+            //strcat(newml, "x");
         }
-        else if(p[i]=='0'){
-             strcat(newml,"-");
-            strcat(newml,"-");
-            strcat(newml,"-");
+        else if (p[i] == '0')
+        {
+            strcat(newml, "---");
+            //strcat(newml, "-");
+            //strcat(newml, "-");
         }
-        else if(p[i]=='1'){
-             strcat(newml,"-");
-            strcat(newml,"-");
-            strcat(newml,"x");
+        else if (p[i] == '1')
+        {
+            strcat(newml, "--x");
+            //strcat(newml, "-");
+            //strcat(newml, "x");
         }
-        else if(p[i]=='2'){
-             strcat(newml,"-");
-            strcat(newml,"w");
-            strcat(newml,"-");
+        else if (p[i] == '2')
+        {
+            strcat(newml, "-w-");
+            //strcat(newml, "w");
+            //strcat(newml, "-");
         }
-        else if(p[i]=='4'){
-             strcat(newml,"r");
-            strcat(newml,"-");
-            strcat(newml,"-");
+        else if (p[i] == '4')
+        {
+            strcat(newml, "r--");
+            //strcat(newml, "-");
+            //strcat(newml, "-");
         }
-        else if(p[i]=='3'){
-             strcat(newml,"-");
-            strcat(newml,"w");
-            strcat(newml,"x");
+        else if (p[i] == '3')
+        {
+            strcat(newml, "-wx");
+            //strcat(newml, "w");
+            //strcat(newml, "x");
         }
-        else if(p[i]=='5'){
-             strcat(newml,"r");
-            strcat(newml,"-");
-            strcat(newml,"x");
+        else if (p[i] == '5')
+        {
+            strcat(newml, "r-x");
+            //strcat(newml, "-");
+            //strcat(newml, "x");
         }
-        else if(p[i]=='6'){
-             strcat(newml,"r");
-            strcat(newml,"w");
-            strcat(newml,"-");
+        else if (p[i] == '6')
+        {
+            strcat(newml, "rw-");
+            //strcat(newml, "w");
+            //strcat(newml, "-");
         }
     }
 }
