@@ -365,14 +365,11 @@ int xmod(int argc, char *argv[])
     //Turn mode (when written in digits) to an octal number in order to call chmod function
     if (isdigit(argv[1+no_options][0]))
     {
-
-
-
-        mode_str[0]='0';
-        mode_str[1]=argv[1+no_options][0];
-        mode_str[2]=argv[1+no_options][1];
-        mode_str[3]=argv[1+no_options][2];
-
+        mode_str[0]=argv[1+no_options][0];
+        mode_str[1]=argv[1+no_options][1];
+        mode_str[2]=argv[1+no_options][2];
+        mode_str[3]=argv[1+no_options][3];
+        
        
         getnewmodeletters(mode_str,mode_letters);
 
