@@ -411,7 +411,7 @@ int xmod(int argc, char *argv[])
 
     nftot++;
 
-    if (chmod(argv[argc - 1], mode) ==-1 || IMPOSSIBLE)
+    if (IMPOSSIBLE)
     {
         
         fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc-1],strerror( errno ));
@@ -431,7 +431,12 @@ int xmod(int argc, char *argv[])
                 }
 
     }
-    else{ //FILE_MODF here (reason why went to get oldmode)
+    else{ 
+        if(chmod(argv[argc - 1], mode) ==-1){
+                    fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc-1],strerror( errno ));
+
+            }
+            else{//FILE_MODF here (reason why went to get oldmode)
     
     MODE=mode;
           nfmod++;
@@ -478,6 +483,7 @@ int xmod(int argc, char *argv[])
             if (traverse(argc, argv) != 0)
                 return -1;
         }*/
+    }
     }
 
     return 0;
