@@ -468,10 +468,10 @@ int xmod(int argc, char *argv[])
                     char const *msg="mode of '";
                     char const *msg2= "' retained as ";
 
-                    size_t nbytes=snprintf(NULL,0,"%s;%s;%s;%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,oldmode_letters,"(",")");
+                    size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")");
                     char* print=(char* )malloc(nbytes);
 
-                    snprintf(print,nbytes,"%s;%s;%s;%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,oldmode_letters,"(",")");
+                    snprintf(print,nbytes,"%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")");
                     printf("%s\n",print);
                     
                 }
