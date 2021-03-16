@@ -14,7 +14,7 @@ void write_PROC_EXIT(int exit_code);
 void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name);
 void write_SIGNAL_RECV(char *signal);
 void write_SIGNAL_SENT(char *signal,pid_t target_pid);
-long double calculate_time();
+void calculate_time(long double *time_taken);
 //void eventHandler(int code, int argc, char *argv[], char*reg,double time_taken);
 
 void getfd(char*reg);

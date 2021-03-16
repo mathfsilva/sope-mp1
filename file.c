@@ -12,7 +12,7 @@ void getfd(char*reg){
     FD_LOG_FILE= open(reg, O_WRONLY|O_SYNC|O_APPEND,0600);
 }
 
-long double calculate_time(){
+void calculate_time(long double *time_taken){
     struct timeval end;
     gettimeofday(&end, NULL);
     struct timeval temp_diff;
@@ -30,12 +30,13 @@ long double calculate_time(){
     temp_diff.tv_sec -=1;
   }
 
-  return (1000000LL*temp_diff.tv_sec+temp_diff.tv_usec);
+ *time_taken=(1000000LL*temp_diff.tv_sec+temp_diff.tv_usec);
 
 } 
 
 void write_PROC_CREATE(char *argv[]){
-    long double time_taken=calculate_time();
+    long double time_taken=0;
+    calculate_time(&time_taken);
     time_taken/=1000;
     static int sizet=32;
     char t[sizet]; 
@@ -64,7 +65,8 @@ void write_PROC_CREATE(char *argv[]){
 }
 
 void write_PROC_EXIT(int exit_code){
-    long double time_taken=calculate_time();
+    long double time_taken=0;
+    calculate_time(&time_taken);
     time_taken/=1000;
     char const *final= "PROC_EXIT";
 
@@ -81,7 +83,8 @@ void write_PROC_EXIT(int exit_code){
 
 
 void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){ 
-    long double time_taken=calculate_time();
+    long double time_taken=0;
+    calculate_time(&time_taken);
     time_taken/=1000;
     char const *msg="FILE_MODF";
 
@@ -96,7 +99,8 @@ void write_FILE_MODF(char*old_mode,char* new_mode,char*file_name){
 }
 
 void write_SIGNAL_RECV(char *signal){
-    long double time_taken=calculate_time();
+    long double time_taken=0;
+    calculate_time(&time_taken);
     time_taken/=1000;
 
     char const *msg="SIGNAL_RECV";
@@ -112,7 +116,8 @@ void write_SIGNAL_RECV(char *signal){
 }
 
 void write_SIGNAL_SENT(char *signal,pid_t target_pid){
-    long double time_taken=calculate_time();
+    long double time_taken=0;
+    calculate_time(&time_taken);
     time_taken/=1000;
     char const *msg="SIGNAL_SENT";
     
