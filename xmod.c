@@ -31,8 +31,8 @@ void getnewmodeletters(char *p,char *newml){
     for(int i=1;i<4;i++){
         if(p[i]=='7'){
            strcat(newml,"r");
-            strcat(newml,"w");
-            strcat(newml,"x");
+           strcat(newml,"w");
+           strcat(newml,"x");
         }
         else if(p[i]=='0'){
              strcat(newml,"-");
