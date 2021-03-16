@@ -434,12 +434,11 @@ int xmod(int argc, char *argv[])
     {
         char const *msg="xmod: cannot access '";
         char const *msg2="': Permission denied\n";
-        int s=strlen(msg)+strlen(msg2)+sizeof(argv[argc-1]);
-        char* error_msg= (char*)malloc(s);
-        strcat(error_msg,msg);
-        strcat(error_msg,argv[argc-1]);
-        strcat(error_msg,msg2);
-        printf("\n%s",error_msg);
+
+        size_t nbytes=snprintf(NULL,0,"%s,%s,%s\n",msg,argv[argc-1],msg2);
+        char* error_msg= malloc(nbytes);
+        snprintf(error_msg,nbytes,"%s,%s,%s\n",msg,argv[argc-1],msg2);
+        printf("%s",error_msg);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
           nfmod++;
@@ -451,20 +450,13 @@ int xmod(int argc, char *argv[])
                     char const *msg="mode of '";
                     char const *msg2="' changed from ";
                     char const *msg3=") to ";
-                    int size=strlen(msg)+strlen(msg2)+strlen(msg3)+sizeof(file_name)+sizeof(oldmode)+sizeof(oldmode_letters)+sizeof(mode_str)+sizeof(mode_letters);
-                    char* print=(char*)(malloc(size));
-                    strcat(print,msg);
-                    strcat(print,file_name);
-                    strcat(print,msg2);
-                    strcat(print,oldmode);
-                    strcat(print,"(");
-                    strcat(print,oldmode_letters);
-                    strcat(print,msg3);
-                    strcat(print,mode_str);
-                    strcat(print,"(");
-                    strcat(print,mode_letters);
-                    strcat(print,")");
-                    printf("%s\n",print);
+
+                    size_t nbytes=snprintf(NULL,0,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    char* print=(malloc(nbytes));
+
+                    snprintf(print,nbytes,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    
+                    printf("%s",print);
 
 
                     
@@ -475,16 +467,11 @@ int xmod(int argc, char *argv[])
                 if(opts.v){
                     char const *msg="mode of '";
                     char const *msg2= "' retained as ";
-                    int size= strlen(msg)+strlen(msg2)+sizeof(file_name)+sizeof(oldmode)+sizeof(oldmode_letters);
-                    char* print=(char* )malloc(size);
 
-                    strcat(print,msg);
-                    strcat(print,file_name);
-                    strcat(print,msg2);
-                    strcat(print,oldmode);
-                    strcat(print,"(");
-                    strcat(print, oldmode_letters);
-                    strcat(print,")");
+                    size_t nbytes=snprintf(NULL,0,"%s;%s;%s;%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,oldmode_letters,"(",")");
+                    char* print=(char* )malloc(nbytes);
+
+                    snprintf(print,nbytes,"%s;%s;%s;%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,oldmode_letters,"(",")");
                     printf("%s\n",print);
                     
                 }
