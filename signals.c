@@ -64,32 +64,11 @@ void sigint_handler(int signo){
   
   write_SIGNAL_RECV("SIGINT");
 
-  int pid_size =20;
-  char pid[pid_size];
-  snprintf(pid, pid_size, "%d", getpid());
+  size_t nbytes = snprintf(NULL, 0, "%d ; %s ; %d ; %d\n", getpid(), global_file_path, nftot, nfmod) + 1;
 
-  int nftot_size = 20;
-  char nftot_str[nftot_size];
-  snprintf(nftot_str, nftot_size, "%d", nftot);
+  char *str_final = malloc(nbytes);
 
-  int nfmod_size = 20;
-  char nfmod_str[nfmod_size];
-  snprintf(nfmod_str, nfmod_size, "%d", nfmod);
-
-  int file_path_size = strlen(global_file_path);
-
-  size_t final_size = pid_size + nfmod_size + nftot_size + file_path_size + 9; //10 is for 3* " ; " and \0
-
-  char *str_final = malloc(final_size * sizeof(char));
-
-  strcat(str_final, pid);
-  strcat(str_final, " ; ");
-  strcat(str_final, global_file_path);
-  strcat(str_final, " ; ");
-  strcat(str_final, nftot_str);
-  strcat(str_final, " ; ");
-  strcat(str_final, nfmod_str);
-  str_final[final_size-1] = '\0';
+  snprintf(str_final, nbytes, "%d ; %s ; %d ; %d\n", getpid(), global_file_path, nftot, nfmod);
 
   printf("%s\n", str_final);
   //printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
@@ -103,6 +82,7 @@ void sigint_handler(int signo){
 
     if(letter == 'y'){
       printf("Ending the program\n");
+      write_PROC_EXIT(1);
       exit(1);
     }
     else if(letter == 'n'){
