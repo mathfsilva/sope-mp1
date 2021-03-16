@@ -18,13 +18,12 @@
 #include "traverse.h"
 #include "xmod.h"
 
-int calculate_mode(perm_mode mode)
+void calculate_mode(perm_mode mode,int *val)
 {
-    int val = 0;
-    val += mode.r ? 4 : 0;
-    val += mode.w ? 2 : 0;
-    val += mode.x ? 1 : 0;
-    return val;
+    *val += mode.r ? 4 : 0;
+    *val += mode.w ? 2 : 0;
+    *val += mode.x ? 1 : 0;
+    
 }
 
 void getnewmodeletters(char *p,char *newml){
@@ -147,9 +146,10 @@ void getoldmode(char *p, char *f,char *oldmode_str)
     old_mode_o.w = fs.st_mode & S_IWOTH;
     old_mode_o.x = fs.st_mode & S_IXOTH;
 
-    int old_u = calculate_mode(old_mode_u);
-    int old_g = calculate_mode(old_mode_g);
-    int old_o = calculate_mode(old_mode_o);
+    int old_u=0,old_g=0,old_o=0;
+    calculate_mode(old_mode_u,&old_u);
+    calculate_mode(old_mode_g,&old_g);
+    calculate_mode(old_mode_o,&old_o);
 
     oldmode_str[0]='0';
     oldmode_str[1] = old_u + '0';
@@ -184,9 +184,10 @@ void parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g, perm_mode *mo
     mode_o->w = fs.st_mode & S_IWOTH;
     mode_o->x = fs.st_mode & S_IXOTH;
 
-    int old_u = calculate_mode(*mode_u);
-    int old_g = calculate_mode(*mode_g);
-    int old_o = calculate_mode(*mode_o);
+    int old_u=0,old_g=0,old_o=0;
+    calculate_mode(*mode_u,&old_u);
+    calculate_mode(*mode_g,&old_g);
+    calculate_mode(*mode_o,&old_o);
 
     oldmode_str[0]='0';
     oldmode_str[1] = old_u + '0';
@@ -263,11 +264,11 @@ void print_options(options opts){
     printf("Option R: %d\n", opts.R);
 }
 
-int get_options(int argc, char *argv[], options* opts){
+int get_options(int argc, char *argv[], options* opts,int*ret){
 
     int i;
 
-    int ret = 0;
+    
 
     if(argc < 3){ //not needed
         perror("Too few args\n");
@@ -289,7 +290,7 @@ int get_options(int argc, char *argv[], options* opts){
                     return -1;
                 }
                 else{
-                    ret++;
+                    *ret+=1;
                     opts->c = 1;
                 }
                 break;
@@ -299,7 +300,7 @@ int get_options(int argc, char *argv[], options* opts){
                     return -1;
                 }
                 else{
-                    ret++;
+                    *ret+=1;
                     opts->v = 1;
                 }
                 break;
@@ -309,7 +310,7 @@ int get_options(int argc, char *argv[], options* opts){
                     return -1;
                 }
                 else{
-                    ret++;
+                    *ret+=1;
                     opts->R = 1;
                 }
                 break;
@@ -327,7 +328,7 @@ int get_options(int argc, char *argv[], options* opts){
 
     //printf("Done reading options\n");
 
-    return ret;
+    return 0;
 }
 
 int xmod(int argc, char *argv[])
@@ -347,7 +348,8 @@ int xmod(int argc, char *argv[])
     opts.v = 0;
     opts.R = 0;
 
-    int no_options = get_options(argc, argv, &opts);
+    int no_options =0;
+    get_options(argc, argv, &opts,&no_options);
 
     if (no_options == -1){
         perror("Error occurred while reading options\n");
@@ -387,9 +389,11 @@ int xmod(int argc, char *argv[])
         
         if (oldmode == NULL) return 1;
 
-        int modeu = calculate_mode(mode_u);
-        int modeg = calculate_mode(mode_g);
-        int modeo = calculate_mode(mode_o);
+        int modeu=0,modeg=0,modeo=0;
+
+        calculate_mode(mode_u,&modeu);
+        calculate_mode(mode_g,&modeg);
+        calculate_mode(mode_o,&modeo);
         
         mode_str[0]='0';
         mode_str[1] = modeu + '0';
@@ -476,12 +480,6 @@ int xmod(int argc, char *argv[])
         }
         
 
-        
-
-        /*if (opts.R) {
-            if (traverse(argc, argv) != 0)
-                return -1;
-        }*/
     }
     }
     free(mode_str);
@@ -507,7 +505,7 @@ bool aretheyequal(char *env, char const *arg)
     return true;
 }
 
-char *checkLog(char *envp[])
+int checkLog(char *envp[],char *reg)
 {
     
     //Check if LOG_FILENAME was defined by user
@@ -516,7 +514,7 @@ char *checkLog(char *envp[])
         
         if (aretheyequal(envp[j], "LOG_FILENAME"))
         {
-            char *reg = getenv("LOG_FILENAME");
+            snprintf(reg,100, "%s",getenv("LOG_FILENAME"));
             
 
             int fd;
@@ -540,10 +538,10 @@ char *checkLog(char *envp[])
                 fd = open(reg, O_CREAT | O_EXCL, 0644);
                 close(fd);
             }
-            return reg;
+            return 0;
         }
     }
-    return NULL;
+    return 1;
 }
 
 void checkSymlink(int argc, char *argv[])
@@ -578,7 +576,8 @@ int main(int argc, char *argv[], char *envp[])
 
     subscribe_SIGINT(); //Ctrl+C interruption
 
-    char *reg = checkLog(envp);
+    char *reg=(char*)malloc(100); //should be enough right?
+    checkLog(envp,reg);
     getfd(reg);
 
 
@@ -622,7 +621,8 @@ int main(int argc, char *argv[], char *envp[])
     opts.c = 0;
     opts.v = 0;
     opts.R = 0;
-    get_options(argc, argv, &opts);
+    int ops=0;
+    get_options(argc, argv, &opts,&ops);
     //print_options(opts);
 
     if (opts.R) {
@@ -632,6 +632,7 @@ int main(int argc, char *argv[], char *envp[])
     }
     chmod(global_file_path,MODE);
     write_PROC_EXIT(0);
+    free(reg);
     //Should have a PROC_EXIT here
     //eventHandler(1, argc, argv, reg,time_taken);
     return 0;
