@@ -69,7 +69,7 @@ int traverse(int argc, char *argv[]) {
 
             
             //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
-            //sleep(3);
+            sleep(3);
 
             strcpy(path, dir_name);
             strcat(path, "/");
