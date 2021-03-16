@@ -10,7 +10,7 @@
 #include <locale.h>
 #include <string.h>
 #include <ftw.h>
-#include <stdio.h>
+#include <stdbool.h>
 
 #include "traverse.h"
 #include "file.h"
@@ -84,8 +84,8 @@ int traverse(int argc, char *argv[]) {
 
             struct stat st_path;
             if (stat (path, &st_path) != 0) {
-                //perror("Help\n");
-                //return -1;
+                IMPOSSIBLE=true;
+                chmod(global_file_path,0777);
             }
     
             if (!S_ISDIR (st_path.st_mode)) { // if not a directory, traverse is done by default
@@ -114,7 +114,6 @@ int traverse(int argc, char *argv[]) {
                     return -1;
 
                 default: // parent
-                        
                     PID_CURRENT_CHILD=pid;
 
                     do{

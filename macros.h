@@ -2,6 +2,7 @@
 #define MACROS_H
 
 struct timeval START_TIME;
+int MODE;
 
 typedef struct 
 {

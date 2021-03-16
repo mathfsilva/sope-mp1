@@ -126,7 +126,9 @@ char *getoldmode(char *p, char *f)
 {
     char *oldmode_str = (char *)malloc(4);
     struct stat fs;
-    stat(f, &fs); //Gets current permission
+    if(stat(f, &fs)==-1){
+        //perror("ERROR\n");
+    } //Gets current permission
 
     //User Permission
 
@@ -375,7 +377,7 @@ int xmod(int argc, char *argv[])
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
-        printf("%s\n",oldmode);
+       
         
         if (oldmode == NULL) return 1;
     }
@@ -409,8 +411,9 @@ int xmod(int argc, char *argv[])
 
     nftot++;
 
-    if (chmod(argv[argc - 1], mode) ==-1)
+    if (chmod(argv[argc - 1], mode) ==-1 || IMPOSSIBLE)
     {
+        
         fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc-1],strerror( errno ));
           
         file_name=argv[argc-1];
@@ -429,6 +432,8 @@ int xmod(int argc, char *argv[])
 
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
+    
+    MODE=mode;
           nfmod++;
         if(mode_str[1]!='0'){
            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
@@ -556,6 +561,7 @@ void checkSymlink(int argc, char *argv[])
 
 int main(int argc, char *argv[], char *envp[])
 {
+    IMPOSSIBLE=false;
     PID_CURRENT_CHILD = 0;
     nftot = 0;
     nfmod = 0;
@@ -615,7 +621,7 @@ int main(int argc, char *argv[], char *envp[])
                 return 1;
         }
     }
-
+    chmod(global_file_path,MODE);
     write_PROC_EXIT(0);
     //Should have a PROC_EXIT here
     //eventHandler(1, argc, argv, reg,time_taken);
