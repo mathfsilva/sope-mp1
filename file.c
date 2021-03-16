@@ -77,16 +77,25 @@ void write_PROC_EXIT(int exit_code){
     snprintf(t,sizet,"%Lf",time_taken);
 
     size_t size2=sizet+sizee+strlen(final)+size;
-    char *str_final=(char*)malloc(size2*2);
-    strcat(str_final,t);
+    char *str_final=(char*)malloc(size2*4);
+    /*strcat(str_final,t);
     strcat(str_final," ; ");
     strcat(str_final,pid);
     strcat(str_final," ; ");
     strcat(str_final,final);
     strcat(str_final," ; ");
     strcat(str_final,exit);
-    strcat(str_final,"\n");    
-    write(FD_LOG_FILE,str_final,strlen(str_final));
+    strcat(str_final,"\n"); */  
+
+    snprintf(str_final,sizet,"%s",t);
+    snprintf(str_final,strlen(" ; "),"%s"," ; ");
+    snprintf(str_final,size,"%s",pid);
+    snprintf(str_final,strlen(" ; "),"%s"," ; ");
+    snprintf(str_final,strlen(final),"%s",final);
+        snprintf(str_final,strlen(" ; "),"%s"," ; ");
+    snprintf(str_final,strlen(exit),"%s",exit);
+    snprintf(str_final,strlen("\n"),"%s","\n");
+     write(FD_LOG_FILE,str_final,strlen(str_final));
     close(FD_LOG_FILE);
     free(str_final);
 }
