@@ -69,7 +69,7 @@ int traverse(int argc, char *argv[]) {
 
             
             //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
-            sleep(3);
+            //sleep(3);
 
             strcpy(path, dir_name);
             strcat(path, "/");
@@ -88,12 +88,15 @@ int traverse(int argc, char *argv[]) {
                 chmod(global_file_path,0777);
             }
     
-            if (!S_ISDIR (st_path.st_mode)) { // if not a directory, traverse is done by default
+            if (DIRECTORY->d_type == DT_REG) { // if not a directory, traverse is done by default
                 //printf("PID: %d found a file in %s\n", getpid(), path);
                 xmod(argc, argv);
             }
-            else{
-                //printf("PID: %d found a dir in %s\n", getpid(), path);
+            else if(DIRECTORY->d_type == DT_LNK){
+                printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+            }
+            else if(DIRECTORY->d_type == DT_DIR){
+                printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
