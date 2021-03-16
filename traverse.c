@@ -35,7 +35,7 @@
 int traverse(int argc, char *argv[]) {
     struct stat st_buf;
     if (stat (argv[argc - 1], &st_buf) != 0) {
-        perror("");
+        perror("Hoo\n");
         return -1;
     }
     
@@ -50,7 +50,7 @@ int traverse(int argc, char *argv[]) {
 
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
-        perror("");
+        perror("Holo\n");
         return -1;
     }
 
@@ -84,8 +84,8 @@ int traverse(int argc, char *argv[]) {
 
             struct stat st_path;
             if (stat (path, &st_path) != 0) {
-                perror("");
-                return -1;
+                //perror("Help\n");
+                //return -1;
             }
     
             if (!S_ISDIR (st_path.st_mode)) { // if not a directory, traverse is done by default
@@ -100,7 +100,7 @@ int traverse(int argc, char *argv[]) {
                 switch (pid) {
                 case 0: // child
                     if (execv(argv[0], argv) == -1) {
-                        perror("");
+                        perror("Here\n");
                         closedir(DP);
                         write_PROC_EXIT(1);
                         exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
@@ -109,7 +109,7 @@ int traverse(int argc, char *argv[]) {
                     break;
 
                 case -1: // error
-                    perror("");
+                    perror("Nope\n");
                     closedir(DP);
                     return -1;
 
@@ -131,7 +131,7 @@ int traverse(int argc, char *argv[]) {
                         }
                     }
                     else{   
-                        perror("");
+                        perror("I wish\n");
                         closedir(DP);
                         return -1;
                     }

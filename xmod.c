@@ -375,6 +375,7 @@ int xmod(int argc, char *argv[])
 
         mode = strtol(argv[1+no_options], 0, 8);
         oldmode = getoldmode(argv[1+no_options], argv[2+no_options]);
+        printf("%s\n",oldmode);
         
         if (oldmode == NULL) return 1;
     }
@@ -408,15 +409,24 @@ int xmod(int argc, char *argv[])
 
     nftot++;
 
-    if (chmod(argv[argc - 1], mode) < 0)
+    if (chmod(argv[argc - 1], mode) ==-1)
     {
-        char const *msg="xmod: cannot access '";
-        char const *msg2="': Permission denied\n";
+        fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc-1],strerror( errno ));
+          
+        file_name=argv[argc-1];
+        if(opts.v){
+                    char const *msg="failed to change mode of '";
+                    char const *msg2= "' from ";
+                    char const *msg3=" to ";
 
-        size_t nbytes=snprintf(NULL,0,"%s%s%s\n",msg,argv[argc-1],msg2);
-        char* error_msg= malloc(nbytes);
-        snprintf(error_msg,nbytes,"%s%s%s\n",msg,argv[argc-1],msg2);
-        printf("%s",error_msg);
+                    size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")");
+                    char* print=(char* )malloc(nbytes);
+
+                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")", msg3,mode_str,"(",mode_letters,")");
+                    printf("%s\n",print);
+                    
+                }
+
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
           nfmod++;
