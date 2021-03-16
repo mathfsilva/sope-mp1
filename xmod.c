@@ -29,53 +29,45 @@ int calculate_mode(perm_mode mode)
 
 void getnewmodeletters(char *p,char *newml){
     for(int i=1;i<4;i++){
-        if (p[i] == '7')
-        {
-            strcat(newml, "rwx");
-            //strcat(newml, "w");
-            //strcat(newml, "x");
+        if(p[i]=='7'){
+           strcat(newml,"r");
+           strcat(newml,"w");
+           strcat(newml,"x");
         }
-        else if (p[i] == '0')
-        {
-            strcat(newml, "---");
-            //strcat(newml, "-");
-            //strcat(newml, "-");
+        else if(p[i]=='0'){
+             strcat(newml,"-");
+            strcat(newml,"-");
+            strcat(newml,"-");
         }
-        else if (p[i] == '1')
-        {
-            strcat(newml, "--x");
-            //strcat(newml, "-");
-            //strcat(newml, "x");
+        else if(p[i]=='1'){
+             strcat(newml,"-");
+            strcat(newml,"-");
+            strcat(newml,"x");
         }
-        else if (p[i] == '2')
-        {
-            strcat(newml, "-w-");
-            //strcat(newml, "w");
-            //strcat(newml, "-");
+        else if(p[i]=='2'){
+             strcat(newml,"-");
+            strcat(newml,"w");
+            strcat(newml,"-");
         }
-        else if (p[i] == '4')
-        {
-            strcat(newml, "r--");
-            //strcat(newml, "-");
-            //strcat(newml, "-");
+        else if(p[i]=='4'){
+             strcat(newml,"r");
+            strcat(newml,"-");
+            strcat(newml,"-");
         }
-        else if (p[i] == '3')
-        {
-            strcat(newml, "-wx");
-            //strcat(newml, "w");
-            //strcat(newml, "x");
+        else if(p[i]=='3'){
+             strcat(newml,"-");
+            strcat(newml,"w");
+            strcat(newml,"x");
         }
-        else if (p[i] == '5')
-        {
-            strcat(newml, "r-x");
-            //strcat(newml, "-");
-            //strcat(newml, "x");
+        else if(p[i]=='5'){
+             strcat(newml,"r");
+            strcat(newml,"-");
+            strcat(newml,"x");
         }
-        else if (p[i] == '6')
-        {
-            strcat(newml, "rw-");
-            //strcat(newml, "w");
-            //strcat(newml, "-");
+        else if(p[i]=='6'){
+             strcat(newml,"r");
+            strcat(newml,"w");
+            strcat(newml,"-");
         }
     }
 }
@@ -443,9 +435,9 @@ int xmod(int argc, char *argv[])
         char const *msg="xmod: cannot access '";
         char const *msg2="': Permission denied\n";
 
-        size_t nbytes=snprintf(NULL,0,"%s,%s,%s\n",msg,argv[argc-1],msg2);
+        size_t nbytes=snprintf(NULL,0,"%s%s%s\n",msg,argv[argc-1],msg2);
         char* error_msg= malloc(nbytes);
-        snprintf(error_msg,nbytes,"%s,%s,%s\n",msg,argv[argc-1],msg2);
+        snprintf(error_msg,nbytes,"%s%s%s\n",msg,argv[argc-1],msg2);
         printf("%s",error_msg);
     }
     else{ //FILE_MODF here (reason why went to get oldmode)
@@ -459,10 +451,10 @@ int xmod(int argc, char *argv[])
                     char const *msg2="' changed from ";
                     char const *msg3=") to ";
 
-                    size_t nbytes=snprintf(NULL,0,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")",msg3,mode_str,"(",mode_letters,")");
                     char* print=(malloc(nbytes));
 
-                    snprintf(print,nbytes,"%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
+                    snprintf(print,nbytes,"%s%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,")",msg3,mode_str,"(",mode_letters,")");
                     
                     printf("%s",print);
 
