@@ -261,6 +261,16 @@ int get_options(int argc, char *argv[], options *opts, int *ret) {
     return 0;
 }
 
+bool aretheyequal(char *env, char const *arg) {
+    for (int i = 0; arg[i] != '\0'; i++) {
+        if (arg[i] != env[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
 int xmod(int argc, char *argv[], options opts, int no_options) {
     // printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
     char *canonical_path = realpath(argv[argc-1], NULL);
@@ -358,6 +368,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
         }
     } else {
         if (chmod(canonical_path, mode) == -1) {
+            printf("%s\n",canonical_path);
+            
+            if(aretheyequal(canonical_path,"/tmp")){
+                printf("Holo\n");
+            }
             fprintf(stderr, "chmod: cannot access '%s': %s\n",
                     path_used_shell, strerror(errno));
         } else {
@@ -431,15 +446,6 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     return 0;
 }
 
-bool aretheyequal(char *env, char const *arg) {
-    for (int i = 0; arg[i] != '\0'; i++) {
-        if (arg[i] != env[i]) {
-            return false;
-        }
-    }
-
-    return true;
-}
 
 int checkLog(char *envp[], char *reg) {
     // Check if LOG_FILENAME was defined by user
