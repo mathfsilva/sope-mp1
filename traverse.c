@@ -89,7 +89,7 @@ int traverse(int argc, char *argv[])
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                //printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+                printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
             else if (DIRECTORY->d_type == DT_DIR)
             {
