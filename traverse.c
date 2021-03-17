@@ -52,6 +52,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             if (snprintf(path, nbytes, "%s%s%s",
              dir_name,"/", DIRECTORY->d_name) == -1)
             {
+               free(path);
                return 1;
             }
             argv[argc - 1] = path;
@@ -67,6 +68,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             if (stat(path, &st_path) != 0) {
                 IMPOSSIBLE = true;
                 if (chmod(global_file_path, 0777) < 0) {
+                    free(path);
                     return 1;
                 }
             }
@@ -74,6 +76,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             if (IMPOSSIBLE) {
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
+                    free(path);
                     return 1;
                 }
                 continue;
@@ -84,6 +87,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 // printf("PID: %d found a file in %s\n", getpid(), path);
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
+                    free(path);
                     return 1;
                 }
             } else if (DIRECTORY->d_type == DT_LNK) {
@@ -110,6 +114,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                             if (write_PROC_EXIT(1)) {
                                 // return 1;
                             }
+                            free(path);
                             exit(1);
                             // TO SEE: aqui tem que se ver melhor pois return
                             // não parece fazer sentido já que seria no
@@ -120,8 +125,10 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                     // error
                         perror("Process failed on creating child\n");
                         if (closedir(DP) == -1) {
+                            free(path);
                             return 1;
                         }
+                        free(path);
                         return 1;
                     default:
                     // parent
@@ -142,6 +149,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                                 if (write_PROC_EXIT(es)) {
                                     // return 1;
                                 }
+                            free(path);
                             exit(es);
                             }
                         } else {

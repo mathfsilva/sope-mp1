@@ -352,7 +352,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s%s\n",
                                     msg, path_used_shell, msg2, oldmode, "(",
                                     oldmode_letters, ")", msg3, mode_str, "(",
-                                    mode_letters, ")");
+                                    mode_letters, ")") + 1;
             if (nbytes == -1) {
                 return 1;
             }
@@ -365,16 +365,20 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                 return 1;
             }
             printf("%s\n", print);
+            free(print);
         }
     } else {
         if (chmod(canonical_path, mode) == -1) {
-            printf("%s\n",canonical_path);
             
             if(aretheyequal(canonical_path,"/tmp")){
-                printf("Holo\n");
+                fprintf(stderr, "chmod: changing permissions of '%s': %s\n",
+                    path_used_shell, strerror(errno));
             }
+            else
+            {
             fprintf(stderr, "chmod: cannot access '%s': %s\n",
                     path_used_shell, strerror(errno));
+            }
         } else {
             // FILE_MODF here (reason why went to get oldmode)
 
@@ -397,7 +401,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                                             msg, path_used_shell, msg2, oldmode,
                                             "(", oldmode_letters, msg3,
                                             mode_str, "(", mode_letters,
-                                            ")");
+                                            ")") + 1;
                         if (nbytes == -1) {
                             return 1;
                         }
@@ -411,6 +415,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         }
 
                         printf("%s\n", print);
+                        free(print);
                     }
                 } else {
                     if (opts.v) {
@@ -420,7 +425,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         size_t nbytes;
                         nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s\n", msg,
                                             path_used_shell, msg2, oldmode, "(",
-                                            oldmode_letters, ")");
+                                            oldmode_letters, ")") + 1;
                         if (nbytes == -1) {
                             return 1;
                         }
@@ -432,6 +437,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                             return 1;
                         }
                         printf("%s\n", print);
+                        free(print);
                     }
                 }
             }
@@ -630,7 +636,7 @@ int main(int argc, char *argv[], char *envp[]) {
     }
 
     free(reg);
-
+    free(global_file_path);
     if (close(FD_LOG_FILE) == -1) {
         return 1;
     }
