@@ -371,8 +371,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             free(print);
         }
     } else {
-        if (chmod(canonical_path, mode) == -1) {
-            
+        if (chmod(canonical_path, mode) == -1) {   
             if (aretheyequal(canonical_path, "/tmp")) {
                 fprintf(stderr, "chmod: changing permissions of '%s': %s\n",
                     path_used_shell, strerror(errno));
