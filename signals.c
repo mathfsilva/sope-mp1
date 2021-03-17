@@ -102,3 +102,114 @@ int subscribe_SIGINT()
   }
   return 0;
 }
+
+void signals_handler(int signo){
+  switch(signo)
+  {
+    case 1:
+         if (write_SIGNAL_RECV("SIGHUP"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 3:
+         if (write_SIGNAL_RECV("SIGQUIT"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 10:
+         if (write_SIGNAL_RECV("SIGUSR1"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 11:
+         if (write_SIGNAL_RECV("SIGSEGV"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 12:
+         if (write_SIGNAL_RECV("SIGUSR2"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 13:
+         if (write_SIGNAL_RECV("SIGPIPE"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 14:
+         if (write_SIGNAL_RECV("SIGALRM"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 15:
+         if (write_SIGNAL_RECV("SIGTERM"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    case 17:
+         if (write_SIGNAL_RECV("SIGCHLD"))
+         {
+          perror("Failed to write to log file\n");
+         }
+    default:
+         break;
+  }
+}
+
+int subscribe_osignals(){
+  struct sigaction interruption;
+  interruption.sa_handler = signals_handler;
+  interruption.sa_flags = 0;
+  if (sigemptyset(&interruption.sa_mask))
+  {
+    perror("sigemptyset failed - subscribe_osignals\n");
+    return 1;
+  }
+
+  if (sigaction(SIGHUP, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGQUIT, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGUSR1, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGUSR2, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGSEGV, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGPIPE, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGALRM, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGTERM, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  if (sigaction(SIGCHLD, &interruption, NULL))
+  {
+    perror("sigaction failed - subscribe_osignals\n");
+    return 1;
+  }
+  return 0;
+}

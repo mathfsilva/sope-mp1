@@ -663,6 +663,19 @@ int main(int argc, char *argv[], char *envp[])
     if (subscribe_SIGINT())
     { //Ctrl+C interruption
         perror("Subscribe SIGINT failed\n");
+        if(write_PROC_EXIT(1))
+        {
+           return 1;
+        }
+        return 1;
+    }
+
+    if(subscribe_osignals()){
+        perror("Subscribe to Other signals (besides SIGINT) failed\n");
+        if(write_PROC_EXIT(1))
+        {
+           return 1;
+        }
         return 1;
     }
 
@@ -674,7 +687,7 @@ int main(int argc, char *argv[], char *envp[])
         
         if(write_PROC_EXIT(1))
         {
-        return 1;
+           return 1;
         }
         return 1;
     }
