@@ -292,7 +292,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
 
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options],
                             oldmode_letters)) {
-        
+        free(mode_str);
+        free(oldmode);
+        free(oldmode_letters);
+        free(mode_letters);
+        free(canonical_path);
         return 1;
     }
 
@@ -308,6 +312,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
 
         mode = strtol(argv[1 + no_options], 0, 8);
         if (getoldmode(argv[1 + no_options], argv[2 + no_options], oldmode)) {
+            free(mode_str);
+            free(oldmode);
+            free(oldmode_letters);
+            free(mode_letters);
+            free(canonical_path);
             return 1;
         }
 
@@ -318,11 +327,22 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
        */
         if (parse(argv[1 + no_options], argv[2 + no_options], &mode_u,
                     &mode_g, &mode_o, oldmode)) {
+            free(mode_str);
+            free(oldmode);
+            free(oldmode_letters);
+            free(mode_letters);
+            free(canonical_path);
             return 1;
         }
 
-        if (oldmode == NULL)
+        if (oldmode == NULL){
+            free(mode_str);
+            free(oldmode);
+            free(oldmode_letters);
+            free(mode_letters);
+            free(canonical_path);
             return 1;
+        }
 
         int modeu = 0, modeg = 0, modeo = 0;
 
@@ -357,6 +377,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                                     oldmode_letters, ")", msg3, mode_str, "(",
                                     mode_letters, ")") + 1;
             if (nbytes == -1) {
+                free(mode_str);
+                free(oldmode);
+                free(oldmode_letters);
+                free(mode_letters);
+                free(canonical_path);
                 return 1;
             }
             char *print = (char *)malloc(nbytes);
@@ -365,6 +390,12 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         msg, path_used_shell, msg2, oldmode, "(",
                         oldmode_letters, ")", msg3, mode_str, "(",
                         mode_letters, ")") == -1) {
+                free(mode_str);
+                free(oldmode);
+                free(oldmode_letters);
+                free(mode_letters);
+                free(print);
+                free(canonical_path);
                 return 1;
             }
             printf("%s\n", print);
@@ -389,6 +420,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                     // Think we only need to write if they are different
 
                     if (write_FILE_MODF(oldmode, mode_str, canonical_path)) {
+                        free(mode_str);
+                        free(oldmode);
+                        free(oldmode_letters);
+                        free(mode_letters);
+                        free(canonical_path);
                         return 1;
                     }
                     if (opts.c || opts.v) {
@@ -403,6 +439,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                                             mode_str, "(", mode_letters,
                                             ")") + 1;
                         if (nbytes == -1) {
+                            free(mode_str);
+                            free(oldmode);
+                            free(oldmode_letters);
+                            free(mode_letters);
+                            free(canonical_path);
                             return 1;
                         }
                         char *print = (malloc(nbytes));
@@ -411,6 +452,12 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                                     msg, path_used_shell, msg2, oldmode, "(",
                                     oldmode_letters, msg3, mode_str, "(",
                                     mode_letters, ")") == -1) {
+                            free(mode_str);
+                            free(oldmode);
+                            free(oldmode_letters);
+                            free(mode_letters);
+                            free(print);
+                            free(canonical_path);
                             return 1;
                         }
 
@@ -427,6 +474,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                                             path_used_shell, msg2, oldmode, "(",
                                             oldmode_letters, ")") + 1;
                         if (nbytes == -1) {
+                            free(mode_str);
+                            free(oldmode);
+                            free(oldmode_letters);
+                            free(mode_letters);
+                            free(canonical_path);
                             return 1;
                         }
                         char *print = (char *)malloc(nbytes);
@@ -434,6 +486,11 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         if (snprintf(print, nbytes, "%s%s%s%s%s%s%s\n", msg,
                                     path_used_shell, msg2, oldmode, "(",
                                     oldmode_letters, ")") == -1) {
+                            free(mode_str);
+                            free(oldmode);
+                            free(oldmode_letters);
+                            free(mode_letters);
+                            free(canonical_path);
                             return 1;
                         }
                         printf("%s\n", print);
@@ -506,6 +563,7 @@ int main(int argc, char *argv[], char *envp[]) {
 
     if (subscribe_SIGINT()) {
         // Ctrl+C interruption
+        free(global_file_path);
         perror("Subscribe SIGINT failed\n");
         if (write_PROC_EXIT(1)) {
            return 1;
@@ -514,6 +572,7 @@ int main(int argc, char *argv[], char *envp[]) {
     }
 
     if (subscribe_osignals()) {
+        free(global_file_path);
         perror("Subscribe to Other signals (besides SIGINT) failed\n");
         if (write_PROC_EXIT(1)) {
            return 1;
@@ -525,6 +584,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
     int result = checkLog(envp, reg);
     if (result == 1) {
+        free(reg);
+        free(global_file_path);
         if (write_PROC_EXIT(1)) {
            return 1;
         }
@@ -533,6 +594,8 @@ int main(int argc, char *argv[], char *envp[]) {
 
     if (result != -1) {
         if (getfd(reg)) {
+            free(reg);
+            free(global_file_path);
             if (write_PROC_EXIT(1)) {
                 return 1;
             }
@@ -547,12 +610,16 @@ int main(int argc, char *argv[], char *envp[]) {
     char t[sizet];
     if (snprintf(t, sizet, "%lld", 1000000LL * start.tv_sec
                 + start.tv_usec) == -1) {
+        free(reg);
+        free(global_file_path);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
         return 1;
     }
     if (setenv("XMOD_PARENT_PROCESS", t, false) == -1) {
+        free(reg);
+        free(global_file_path);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -560,6 +627,9 @@ int main(int argc, char *argv[], char *envp[]) {
     }
     char *s = getenv("XMOD_PARENT_PROCESS");
     if (s == NULL) {
+        free(reg);
+        free(global_file_path);
+        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -574,6 +644,9 @@ int main(int argc, char *argv[], char *envp[]) {
     // now-->because we only have one process)
     // eventHandler(0, argc, argv, reg,time_taken);
     if (write_PROC_CREATE(argv)) {
+        free(reg);
+        free(global_file_path);
+        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -586,6 +659,9 @@ int main(int argc, char *argv[], char *envp[]) {
         specified by file name to the permissions specified by permissions.
         So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
         printf("Not enough arguments\n");
+        free(reg);
+        free(global_file_path);
+        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -598,6 +674,9 @@ int main(int argc, char *argv[], char *envp[]) {
     opts.R = 0;
     int ops = 0;
     if (get_options(argc, argv, &opts, &ops)) {
+        free(reg);
+        free(global_file_path);
+        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -606,6 +685,9 @@ int main(int argc, char *argv[], char *envp[]) {
     // print_options(opts);
 
     if (xmod(argc, argv, opts, ops)) {
+        free(reg);
+        free(global_file_path);
+        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -614,6 +696,9 @@ int main(int argc, char *argv[], char *envp[]) {
 
     if (opts.R) {
         if (traverse(argc, argv, opts, ops) != 0) {
+            free(reg);
+            free(global_file_path);
+            free(s);
             if (write_PROC_EXIT(1)) {
                 return 1;
             }
@@ -624,6 +709,9 @@ int main(int argc, char *argv[], char *envp[]) {
 
     if (IMPOSSIBLE) {
         if (chmod(global_file_path, MODE) < 0) {
+            free(reg);
+            free(global_file_path);
+            free(s);
            if (write_PROC_EXIT(1)) {
             return 1;
            }
@@ -632,11 +720,15 @@ int main(int argc, char *argv[], char *envp[]) {
     }
 
     if (write_PROC_EXIT(0)) {
+        free(reg);
+        free(global_file_path);
+        free(s);
         return 1;
     }
 
     free(reg);
     free(global_file_path);
+    free(s);
     if (close(FD_LOG_FILE) == -1) {
         return 1;
     }
