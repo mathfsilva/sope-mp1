@@ -34,6 +34,7 @@ int traverse(int argc, char *argv[],options ops,int no_options)
     struct dirent *DIRECTORY;
     char *dir_name = argv[argc - 1];
     DIR *DP = NULL;
+    bool no_perms=false;
 
     if ((DP = opendir(dir_name)) == NULL)
     {
@@ -76,8 +77,8 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 {
                     return 1;
                 }
-                if (!(DIRECTORY->d_type == DT_LNK)){
-                    
+                if (!(DIRECTORY->d_type == DT_LNK))
+                {
                 if (xmod(argc, argv,ops,no_options))
                 {
                     perror("Failed xmod in traverse\n");
@@ -98,12 +99,12 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                //if(!IMPOSSIBLE)
-                //{
+                if(!no_perms)
+                {
                    if(ops.v){
                        printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
                     }
-                //}
+                }
             }
             if(!IMPOSSIBLE)
             {
