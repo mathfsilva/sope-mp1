@@ -378,7 +378,13 @@ int xmod(int argc, char *argv[],options opts, int no_options)
 
     //printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
 
-    char *file_name;
+    char *canonical_path = realpath(argv[argc-1], NULL); // pased to chmod()
+    if (canonical_path == NULL) {
+        perror("");
+        return 1;
+    }
+
+    char *path_used_shell = argv[argc-1]; // usefull for prints
     int mode;
     char *mode_str = (char *)malloc(4);
     perm_mode mode_u, mode_g, mode_o;
@@ -387,7 +393,6 @@ int xmod(int argc, char *argv[],options opts, int no_options)
     char *mode_letters = (char *)malloc(9);
 
     
-
 
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options], oldmode_letters))
     {
@@ -448,23 +453,22 @@ int xmod(int argc, char *argv[],options opts, int no_options)
     if (IMPOSSIBLE)
     {
 
-        fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc - 1], strerror(errno));
+        fprintf(stderr, "chmod: cannot access '%s': %s\n", path_used_shell, strerror(errno));
 
-        file_name = argv[argc - 1];
         if (opts.v)
         {
             char const *msg = "failed to change mode of '";
             char const *msg2 = "' from ";
             char const *msg3 = " to ";
 
-            size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, ")", msg3, mode_str, "(", mode_letters, ")");
+            size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, ")", msg3, mode_str, "(", mode_letters, ")");
             if (nbytes == -1)
             {
                 return 1;
             }
             char *print = (char *)malloc(nbytes);
 
-            if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, ")", msg3, mode_str, "(", mode_letters, ")") == -1)
+            if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, ")", msg3, mode_str, "(", mode_letters, ")") == -1)
             {
                 return 1;
             }
@@ -473,9 +477,9 @@ int xmod(int argc, char *argv[],options opts, int no_options)
     }
     else
     {
-        if (chmod(argv[argc - 1], mode) == -1)
+        if (chmod(canonical_path, mode) == -1)
         {
-            fprintf(stderr, "chmod: cannot access '%s': %s\n", argv[argc - 1], strerror(errno));
+            fprintf(stderr, "chmod: cannot access '%s': %s\n", path_used_shell, strerror(errno));
         }
         else
         { //FILE_MODF here (reason why went to get oldmode)
@@ -486,8 +490,8 @@ int xmod(int argc, char *argv[],options opts, int no_options)
             {
                 if (strcmp(mode_str, oldmode) != 0)
                 { //Think we only need to write if they are different
-                    file_name = argv[argc - 1];
-                    if (write_FILE_MODF(oldmode, mode_str, file_name))
+
+                    if (write_FILE_MODF(oldmode, mode_str, canonical_path))
                     {
                         return 1;
                     }
@@ -497,14 +501,14 @@ int xmod(int argc, char *argv[],options opts, int no_options)
                         char const *msg2 = "' changed from ";
                         char const *msg3 = ") to ";
 
-                        size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, msg3, mode_str, "(", mode_letters, ")");
+                        size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, msg3, mode_str, "(", mode_letters, ")");
                         if (nbytes == -1)
                         {
                             return 1;
                         }
                         char *print = (malloc(nbytes));
 
-                        if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, msg3, mode_str, "(", mode_letters, ")") == -1)
+                        if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, msg3, mode_str, "(", mode_letters, ")") == -1)
                         {
                             return 1;
                         }
@@ -514,20 +518,19 @@ int xmod(int argc, char *argv[],options opts, int no_options)
                 }
                 else
                 {
-                    file_name = argv[argc - 1];
                     if (opts.v)
                     {
                         char const *msg = "mode of '";
                         char const *msg2 = "' retained as ";
 
-                        size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, ")");
+                        size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, ")");
                         if (nbytes == -1)
                         {
                             return 1;
                         }
                         char *print = (char *)malloc(nbytes);
 
-                        if (snprintf(print, nbytes, "%s%s%s%s%s%s%s\n", msg, file_name, msg2, oldmode, "(", oldmode_letters, ")") == -1)
+                        if (snprintf(print, nbytes, "%s%s%s%s%s%s%s\n", msg, path_used_shell, msg2, oldmode, "(", oldmode_letters, ")") == -1)
                         {
                             return 1;
                         }
@@ -538,6 +541,7 @@ int xmod(int argc, char *argv[],options opts, int no_options)
         }
     }
 
+    free(canonical_path);
     return 0;
 }
 
@@ -604,30 +608,6 @@ int checkLog(char *envp[], char *reg)
         }
     }
     return -1;
-}
-
-int checkSymlink(int argc, char *argv[])
-{
-    //Symlink check.
-    struct stat buffer;
-    lstat(argv[argc - 1], &buffer);
-    if (S_ISLNK(buffer.st_mode))
-    {
-        char buf[PATH_MAX]; /* PATH_MAX includes the \0 so +1 is not required */
-        char *res = realpath(argv[argc - 1], buf);
-
-        if (res == NULL)
-        {
-            perror("Couldn't find the real path of a symlink.");
-            return 1;
-        }
-        else
-        {
-
-            memcpy(argv[argc - 1], buf, strlen(buf));
-        }
-    }
-    return 0;
 }
 
 int main(int argc, char *argv[], char *envp[])
@@ -733,15 +713,6 @@ int main(int argc, char *argv[], char *envp[])
                 specified by file name to the permissions specified by permissions.
                 So it's possible to have only 3 arguments--->xmod, permissions, file_name*/
         printf("Not enough arguments\n");
-        if (write_PROC_EXIT(1))
-        {
-            return 1;
-        }
-        return 1;
-    }
-
-    if (checkSymlink(argc, argv))
-    {
         if (write_PROC_EXIT(1))
         {
             return 1;
