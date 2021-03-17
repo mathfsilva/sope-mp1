@@ -547,7 +547,7 @@ int main(int argc, char *argv[], char *envp[]) {
     gettimeofday(&start, NULL);
     char t[64];
     if (snprintf(t, 64, "%lld", 1000000LL * start.tv_sec
-                + start.tv_usec == -1) {
+                + start.tv_usec) == -1) {
         if (write_PROC_EXIT(1)) {
             return 1;
         }
