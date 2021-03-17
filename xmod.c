@@ -472,7 +472,7 @@ int xmod(int argc, char *argv[],options opts, int no_options)
             }
         }
     }
-    
+
     free(mode_str);
     free(oldmode);
     free(oldmode_letters);

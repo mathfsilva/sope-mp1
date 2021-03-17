@@ -30,7 +30,7 @@ int traverse(int argc, char *argv[],options ops,int no_options)
         return 0;
     }
 
-    char path[1000];
+    char *path = malloc(1000*sizeof(char));
     struct dirent *DIRECTORY;
     char *dir_name = argv[argc - 1];
     DIR *DP = NULL;
@@ -67,7 +67,6 @@ int traverse(int argc, char *argv[],options ops,int no_options)
 
             int status;
             int waitpid_value;
-
             struct stat st_path;
             if (stat(path, &st_path) != 0)
             {
@@ -76,15 +75,16 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 {
                     return 1;
                 }
-                if (!(DIRECTORY->d_type == DT_LNK)){
-                    
+            }
+
+            if (IMPOSSIBLE) 
+            {
                 if (xmod(argc, argv,ops,no_options))
                 {
                     perror("Failed xmod in traverse\n");
                     return 1;
                 }
-                }
-                
+                continue;
             }
 
             if (DIRECTORY->d_type == DT_REG)
@@ -98,16 +98,15 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                //if(!IMPOSSIBLE)
-                //{
-                   if(ops.v){
+                if(!IMPOSSIBLE)
+                {
+                    if(ops.v){
                        printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
                     }
-                //}
+                }
             }
-            if(!IMPOSSIBLE)
-            {
-               if (DIRECTORY->d_type == DT_DIR)
+
+            if (DIRECTORY->d_type == DT_DIR)
             {
                 //printf("PID: %d found a dir in %s\n", getpid(), path);
 
@@ -182,8 +181,9 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 //printf("PID: %d found something %s\n", getpid(), path);
             }
         }
-        }
     }
+
+    free(path);
 
     if (closedir(DP) == -1)
     {
