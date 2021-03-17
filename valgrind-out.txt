@@ -1,0 +1,41 @@
+==3366946== Conditional jump or move depends on uninitialised value(s)
+==3366946==    at 0x483EC2D: strcat (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3366946==    by 0x10B835: write_PROC_CREATE (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946==    by 0x10B23F: main (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946== 
+==3366946== 
+==3366946== ---- Print suppression ? --- [Return/N/n/Y/y/C/c] ---- {
+   <insert_a_suppression_name_here>
+   Memcheck:Cond
+   fun:strcat
+   fun:write_PROC_CREATE
+   fun:main
+}
+==3366946== 19 bytes in 1 blocks are still reachable in loss record 1 of 2
+==3366946==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3366946==    by 0x10C740: traverse (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946==    by 0x10B3B2: main (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946== 
+==3366946== 
+==3366946== ---- Print suppression ? --- [Return/N/n/Y/y/C/c] ---- {
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:traverse
+   fun:main
+}
+==3366946== 21 bytes in 2 blocks are definitely lost in loss record 2 of 2
+==3366946==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==3366946==    by 0x10C740: traverse (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946==    by 0x10B3B2: main (in /home/diogolhc/Documents/sope/MP1/repo/xmod)
+==3366946== 
+==3366946== 
+==3366946== ---- Print suppression ? --- [Return/N/n/Y/y/C/c] ---- {
+   <insert_a_suppression_name_here>
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:traverse
+   fun:main
+}
