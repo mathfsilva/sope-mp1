@@ -1,4 +1,6 @@
-#include "traverse.h"
+#include "./traverse.h"
+#include "./file.h"
+#include "./xmod.h"
 
 
 int traverse(int argc, char *argv[], options ops, int no_options) {

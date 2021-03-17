@@ -1,5 +1,5 @@
-#ifndef XMOD_H
-#define XMOD_H
+#ifndef XMOD_H_
+#define XMOD_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,8 +15,6 @@
 #include <fcntl.h>
 #include <sys/time.h>
 
-#include "file.h"
-#include "signals.h"
 
 int nftot, nfmod;
 char *global_file_path;
@@ -40,4 +38,4 @@ typedef struct{
 
 int xmod(int argc, char *argv[],options opts,int no_options);
 
-#endif
+#endif // XMOD_H_

@@ -1,4 +1,4 @@
-#include "file.h"
+#include "./file.h"
 
 int getfd(char *reg) {
     FD_LOG_FILE = open(reg, O_WRONLY | O_SYNC | O_APPEND, 0600);

@@ -1,6 +1,6 @@
 //File.h
-#ifndef FILE_H
-#define FILE_H
+#ifndef FILE_H_
+#define FILE_H_
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,5 +25,4 @@ void calculate_time(long double *time_taken);
 int getfd(char*reg);
 
 
-
-#endif
+#endif  // FILE_H_

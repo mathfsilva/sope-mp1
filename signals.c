@@ -1,5 +1,7 @@
-#include "signals.h"
-
+#include "./signals.h"
+#include "./file.h"
+#include "./traverse.h"
+#include "./xmod.h"
 
 void sigint_handler(int signo) {
   if (write_SIGNAL_RECV("SIGINT")) {
