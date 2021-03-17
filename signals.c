@@ -57,7 +57,7 @@ void sigint_handler(int signo)
 
   if (PID_CURRENT_CHILD == 0)
   {
-    sleep(5);
+    //sleep(5);
     printf("Do you wish to end the program? (y/n)\n");
     char letter = getchar();
     int c;
