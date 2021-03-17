@@ -30,11 +30,11 @@ int traverse(int argc, char *argv[],options ops,int no_options)
         return 0;
     }
 
-    char path[1000];
+    //char *path = malloc(1000*sizeof(char));
     struct dirent *DIRECTORY;
     char *dir_name = argv[argc - 1];
     DIR *DP = NULL;
-    bool no_perms=false;
+    
 
     if ((DP = opendir(dir_name)) == NULL)
     {
@@ -58,17 +58,30 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
             //sleep(3);
 
-            strcpy(path, dir_name);
+            /*strcpy(path, dir_name);
             strcat(path, "/");
-            strcat(path, DIRECTORY->d_name);
+            strcat(path, DIRECTORY->d_name);*/
+
+            size_t nbytes = snprintf(NULL, 0, "%s%s%s", dir_name,"/", DIRECTORY->d_name) + 1;
+
+    if (nbytes == -1)
+    {
+        return 1;
+    }
+    char *path = malloc(nbytes);
+
+    if (snprintf(path, nbytes, "%s%s%s", dir_name,"/", DIRECTORY->d_name) == -1)
+    {
+        return 1;
+    }
             argv[argc - 1] = path;
+            printf("%s\n",path);
 
             // TODO do we need to check if it's a folder and if not change the mode of the file in the current process?
             // right now it's being done in a child process
 
             int status;
             int waitpid_value;
-
             struct stat st_path;
             if (stat(path, &st_path) != 0)
             {
@@ -77,15 +90,16 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 {
                     return 1;
                 }
-                if (!(DIRECTORY->d_type == DT_LNK))
-                {
+            }
+
+            if (IMPOSSIBLE) 
+            {
                 if (xmod(argc, argv,ops,no_options))
-                {
-                    perror("Failed xmod in traverse\n");
-                    return 1;
+               {
+                    //perror("Failed xmod in traverse\n");
+                    //return 1;
                 }
-                }
-                
+                continue;
             }
 
             if (DIRECTORY->d_type == DT_REG)
@@ -99,16 +113,15 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                if(!no_perms)
+                if(!IMPOSSIBLE)
                 {
-                   if(ops.v){
+                    if(ops.v){
                        printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
                     }
                 }
             }
-            if(!IMPOSSIBLE)
-            {
-               if (DIRECTORY->d_type == DT_DIR)
+
+            if (DIRECTORY->d_type == DT_DIR)
             {
                 //printf("PID: %d found a dir in %s\n", getpid(), path);
 
@@ -183,8 +196,9 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 //printf("PID: %d found something %s\n", getpid(), path);
             }
         }
-        }
     }
+
+   // free(path);
 
     if (closedir(DP) == -1)
     {

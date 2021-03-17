@@ -386,7 +386,6 @@ int xmod(int argc, char *argv[],options opts, int no_options)
     {
 
         fprintf(stderr, "chmod: cannot access '%s': %s\n", path_used_shell, strerror(errno));
-
         if (opts.v)
         {
             char const *msg = "failed to change mode of '";
@@ -472,7 +471,7 @@ int xmod(int argc, char *argv[],options opts, int no_options)
             }
         }
     }
-    
+
     free(mode_str);
     free(oldmode);
     free(oldmode_letters);
