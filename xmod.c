@@ -616,7 +616,12 @@ int main(int argc, char *argv[], char *envp[])
     PID_CURRENT_CHILD = 0;
     nftot = 0;
     nfmod = 0;
-    global_file_path = argv[argc - 1];
+    
+    global_file_path = realpath(argv[argc - 1], NULL);
+    if (global_file_path == NULL) {
+        perror("");
+        return 1;
+    }
 
     if (subscribe_SIGINT())
     { //Ctrl+C interruption
