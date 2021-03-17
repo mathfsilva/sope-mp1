@@ -36,7 +36,7 @@ int traverse(int argc, char *argv[]) {
     struct stat st_buf;
     if (stat (argv[argc - 1], &st_buf) != 0) {
         perror("Hoo\n");
-        return 1;
+        return -1;
     }
     
     if (! S_ISDIR (st_buf.st_mode)) { // if not a directory, traverse is done by default
@@ -51,7 +51,7 @@ int traverse(int argc, char *argv[]) {
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
         perror("Holo\n");
-        return 1;
+        return -1;
     }
 
 
@@ -85,16 +85,12 @@ int traverse(int argc, char *argv[]) {
             struct stat st_path;
             if (stat (path, &st_path) != 0) {
                 IMPOSSIBLE=true;
-                if(chmod(global_file_path,0777)<0){
-                    return 1;
-                }
+                chmod(global_file_path,0777);
             }
     
             if (DIRECTORY->d_type == DT_REG) { // if not a directory, traverse is done by default
                 //printf("PID: %d found a file in %s\n", getpid(), path);
-                if(xmod(argc, argv)){
-                    return 1;
-                }
+                xmod(argc, argv);
             }
             else if(DIRECTORY->d_type == DT_LNK){
                 printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
@@ -108,12 +104,8 @@ int traverse(int argc, char *argv[]) {
                 case 0: // child
                     if (execv(argv[0], argv) == -1) {
                         perror("Here\n");
-                        if(closedir(DP)==-1){
-                            //return 1;
-                        }
-                        if(write_PROC_EXIT(1)){
-                            //return 1;
-                        }
+                        closedir(DP);
+                        write_PROC_EXIT(1);
                         exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
                                 // já que seria no processo filho mas sem estar exec'd
                     }
@@ -121,10 +113,8 @@ int traverse(int argc, char *argv[]) {
 
                 case -1: // error
                     perror("Nope\n");
-                    if(closedir(DP)==-1){
-                        return 1;
-                    }
-                    return 1;
+                    closedir(DP);
+                    return -1;
 
                 default: // parent
                     PID_CURRENT_CHILD=pid;
@@ -137,18 +127,15 @@ int traverse(int argc, char *argv[]) {
                     if(WIFEXITED(status)){
                         int es=WEXITSTATUS(status);
                         //printf("Exit code is %d\n",es);
-                        if(write_PROC_EXIT(es)){
-                            return 1;
-                        }
+                        write_PROC_EXIT(es);
                         if(es != 0){
                             exit(es);
                         }
                     }
                     else{   
                         perror("I wish\n");
-                        if(closedir(DP)==-1){
-                            return 1;
-                        }
+                        closedir(DP);
+                        return -1;
                     }
                     
                     break;
@@ -160,9 +147,7 @@ int traverse(int argc, char *argv[]) {
 
     }
 
-    if(closedir(DP)==-1){
-        return 1;
-    }
+    closedir(DP);
 
     return 0;
 }

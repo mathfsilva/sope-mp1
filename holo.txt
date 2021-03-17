@@ -1,7 +1,7 @@
-0.017000 ; 4538 ; PROC_CREAT ; ./xmod -R -v 0700 hj 
-1.126000 ; 4538 ; FILE_MODF ; hj : 0777 : 0700
-4.050000 ; 4539 ; PROC_CREAT ; ./xmod -R -v 0700 hj/papi 
-5.295000 ; 4539 ; FILE_MODF ; hj/papi : 0777 : 0700
-7.688000 ; 4539 ; FILE_MODF ; hj/papi/test.txt : 0777 : 0700
-9.068000 ; 4539 ; PROC_EXIT ; 1
-10.016000 ; 4538 ; PROC_EXIT ; 1
+0.014000 ; 11868 ; PROC_CREAT ; ./xmod -R -v 0770 hj 
+1.357000 ; 11868 ; FILE_MODF ; hj : 0777 : 0770
+4.376000 ; 11869 ; PROC_CREAT ; ./xmod -R -v 0770 hj/papi 
+5.800000 ; 11869 ; FILE_MODF ; hj/papi : 0777 : 0770
+6.888000 ; 11869 ; FILE_MODF ; hj/papi/test.txt : 0777 : 0770
+7.683000 ; 11869 ; PROC_EXIT ; 1
+8.433000 ; 11868 ; PROC_EXIT ; 1
