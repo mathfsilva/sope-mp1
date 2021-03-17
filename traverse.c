@@ -76,10 +76,13 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 {
                     return 1;
                 }
+                if (!(DIRECTORY->d_type == DT_LNK)){
+                    
                 if (xmod(argc, argv,ops,no_options))
                 {
                     perror("Failed xmod in traverse\n");
                     return 1;
+                }
                 }
                 
             }
@@ -95,9 +98,12 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                if(ops.v){
-                   printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
-                }
+                //if(!IMPOSSIBLE)
+                //{
+                   if(ops.v){
+                       printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+                    }
+                //}
             }
             if(!IMPOSSIBLE)
             {

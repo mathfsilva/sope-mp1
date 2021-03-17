@@ -1,5 +1,2 @@
-0.016000 ; 18171 ; PROC_CREAT ; ./xmod -R -v 0777 test2 
-1.876000 ; 18171 ; FILE_MODF ; test2 : 0444 : 0777
-3.715000 ; 18171 ; FILE_MODF ; test2/dest_file.txt : 0755 : 0777
-4.750000 ; 18171 ; FILE_MODF ; test2/test.txt : 0644 : 0777
-5.661000 ; 18171 ; PROC_EXIT ; 0
+0.015000 ; 19382 ; PROC_CREAT ; ./xmod -R -v 0777 test_symlink 
+8.118000 ; 19382 ; PROC_EXIT ; 0

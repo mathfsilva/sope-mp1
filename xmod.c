@@ -768,9 +768,10 @@ int main(int argc, char *argv[], char *envp[])
         }
     }
     if (write_PROC_EXIT(0))
-    {
-        return 1;
-    }
+        {
+           return 1;
+        }
+
     free(reg);
     if (close(FD_LOG_FILE) == -1)
     {

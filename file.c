@@ -42,6 +42,10 @@ void calculate_time(long double *time_taken)
 
 int write_PROC_CREATE(char *argv[])
 {
+    if(FD_LOG_FILE==0)
+    {
+        return 0;
+    }
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
@@ -84,6 +88,10 @@ int write_PROC_CREATE(char *argv[])
 
 int write_PROC_EXIT(int exit_code)
 {
+    if(FD_LOG_FILE==0)
+    {
+        return 0;
+    }
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
@@ -112,6 +120,10 @@ int write_PROC_EXIT(int exit_code)
 
 int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name)
 {
+    if(FD_LOG_FILE==0)
+    {
+        return 0;
+    }
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
@@ -140,6 +152,10 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name)
 
 int write_SIGNAL_RECV(char *signal)
 {
+    if(FD_LOG_FILE==0)
+    {
+        return 0;
+    }
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
@@ -169,6 +185,10 @@ int write_SIGNAL_RECV(char *signal)
 
 int write_SIGNAL_SENT(char *signal, pid_t target_pid)
 {
+    if(FD_LOG_FILE==0)
+    {
+        return 0;
+    }
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
