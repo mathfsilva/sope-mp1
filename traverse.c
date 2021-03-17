@@ -42,23 +42,20 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             strcat(path, "/");
             strcat(path, DIRECTORY->d_name);*/
 
-            size_t nbytes = snprintf(NULL, 0, "%s%s%s", 
-            dir_name,"/", DIRECTORY->d_name) + 1;
+            size_t nbytes = snprintf(NULL, 0, "%s%s%s",
+            dir_name, "/", DIRECTORY->d_name) + 1;
 
-            if (nbytes == -1)
-            {
+            if (nbytes == -1) {
               return 1;
             }
             char *path = malloc(nbytes);
 
             if (snprintf(path, nbytes, "%s%s%s",
-             dir_name,"/", DIRECTORY->d_name) == -1)
-            {
+             dir_name, "/", DIRECTORY->d_name) == -1) {
                free(path);
                return 1;
             }
             argv[argc - 1] = path;
-            
 
             // TO SEE: Do we need to check if it's a folder and if not
             // change the mode of the file in the current process?

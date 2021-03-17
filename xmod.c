@@ -372,14 +372,12 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     } else {
         if (chmod(canonical_path, mode) == -1) {
             
-            if(aretheyequal(canonical_path,"/tmp")){
+            if (aretheyequal(canonical_path, "/tmp")) {
                 fprintf(stderr, "chmod: changing permissions of '%s': %s\n",
                     path_used_shell, strerror(errno));
-            }
-            else
-            {
-            fprintf(stderr, "chmod: cannot access '%s': %s\n",
-                    path_used_shell, strerror(errno));
+            } else {
+                fprintf(stderr, "chmod: cannot access '%s': %s\n",
+                        path_used_shell, strerror(errno));
             }
         } else {
             // FILE_MODF here (reason why went to get oldmode)
@@ -545,7 +543,7 @@ int main(int argc, char *argv[], char *envp[]) {
     // Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
-    int sizet=64;
+    int sizet = 64;
     char t[sizet];
     if (snprintf(t, sizet, "%lld", 1000000LL * start.tv_sec
                 + start.tv_usec) == -1) {

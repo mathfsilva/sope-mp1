@@ -58,7 +58,7 @@ int write_PROC_CREATE(char *argv[]) {
         strcat(str_final, argv[j]);
         strcat(str_final, " ");
     }
-    strcat(str_final,"\n");
+    strcat(str_final, "\n");
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
         return 1;
     }
@@ -106,7 +106,8 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name) {
     char const *msg = "FILE_MODF";
 
     size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %s : %s\n",
-                            time_taken, getpid(), msg, file_name, old_mode, new_mode) + 1;
+                            time_taken, getpid(), msg, file_name,
+                            old_mode, new_mode) + 1;
 
     if (nbytes == -1) {
         return 1;
