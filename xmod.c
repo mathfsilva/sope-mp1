@@ -26,28 +26,28 @@ void calculate_mode(perm_mode mode, int *val)
 
 void getnewmodeletters(char *p, char *newml)
 {
-    for (int i = 1; i < 4; i++)
+    for (int i = 0; i < 3; i++)
     {
-        int val = p[i] - '0';
+        int val = p[i+1] - '0';
 
         if ((val - 4) >= 0)
-            strcat(newml, "r");
+            newml[3*i] = 'r';
         else
-            strcat(newml, "-");
+            newml[3*i] = '-';
 
         val -= 4;
 
         if ((val - 2) >= 0)
-            strcat(newml, "w");
+            newml[3*i + 1] = 'w';
         else
-            strcat(newml, "-");
+            newml[3*i + 1] = '-';
 
         val -= 2;
 
         if ((val - 1) >= 0)
-            strcat(newml, "x");
+            newml[3*i + 2] = 'x';
         else
-            strcat(newml, "-");
+            newml[3*i + 2] = '-';
     }
 }
 
@@ -59,86 +59,21 @@ int getoldmodeletters(char *p, char *f, char *oldml)
         return 1;
     }
 
-    if (fs.st_mode & S_IRUSR)
-    {
-        strcat(oldml, "r");
-    }
-    else
-    {
-        strcat(oldml, "-");
+    int perms_mask[] = {S_IRUSR, S_IWUSR, S_IXUSR, S_IRGRP, S_IWGRP, S_IXGRP, S_IROTH, S_IWOTH, S_IXOTH};
+    char modes[] = {'r', 'w', 'x'};
+
+    for (int i = 0; i < 3; i++) // for ugo
+    {   
+        for (int j = 0; j < 3; j++) // for rwx in each ugo
+        {
+            if (fs.st_mode & perms_mask[3*i + j])
+                oldml[3*i + j] = modes[j];
+            else
+                oldml[3*i + j] = '-';
+
+        }
     }
 
-    if (fs.st_mode & S_IWUSR)
-    {
-        strcat(oldml, "w");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IXUSR)
-    {
-        strcat(oldml, "x");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IRGRP)
-    {
-        strcat(oldml, "r");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IWGRP)
-    {
-        strcat(oldml, "w");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IXGRP)
-    {
-        strcat(oldml, "x");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IROTH)
-    {
-        strcat(oldml, "r");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IWOTH)
-    {
-        strcat(oldml, "w");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
-
-    if (fs.st_mode & S_IXOTH)
-    {
-        strcat(oldml, "x");
-    }
-    else
-    {
-        strcat(oldml, "-");
-    }
     return 0;
 }
 
@@ -386,12 +321,11 @@ int xmod(int argc, char *argv[],options opts, int no_options)
 
     char *path_used_shell = argv[argc-1]; // usefull for prints
     int mode;
-    char *mode_str = (char *)malloc(4);
+    char *mode_str = (char *)malloc(5); mode_str[4] = '\0';
     perm_mode mode_u, mode_g, mode_o;
-    char *oldmode = (char *)malloc(5);
-    char *oldmode_letters = (char *)malloc(9);
-    char *mode_letters = (char *)malloc(9);
-
+    char *oldmode = (char *)malloc(5); oldmode[4] = '\0';
+    char *oldmode_letters = (char *)malloc(10); oldmode_letters[9] = '\0';
+    char *mode_letters = (char *)malloc(10); mode_letters[9] = '\0';
     
 
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options], oldmode_letters))
@@ -415,8 +349,6 @@ int xmod(int argc, char *argv[],options opts, int no_options)
             return 1;
         }
 
-        if (oldmode == NULL)
-            return 1;
     }
     else
     {
@@ -540,7 +472,11 @@ int xmod(int argc, char *argv[],options opts, int no_options)
             }
         }
     }
-
+    
+    free(mode_str);
+    free(oldmode);
+    free(oldmode_letters);
+    free(mode_letters);
     free(canonical_path);
     return 0;
 }
@@ -616,7 +552,12 @@ int main(int argc, char *argv[], char *envp[])
     PID_CURRENT_CHILD = 0;
     nftot = 0;
     nfmod = 0;
-    global_file_path = argv[argc - 1];
+
+    global_file_path = realpath(argv[argc - 1], NULL);
+    if (global_file_path == NULL) {
+        perror("");
+        return 1;
+    }
 
     if (subscribe_SIGINT())
     { //Ctrl+C interruption

@@ -1,2 +1,115 @@
+<<<<<<< HEAD
 0.015000 ; 19382 ; PROC_CREAT ; ./xmod -R -v 0777 test_symlink 
 8.118000 ; 19382 ; PROC_EXIT ; 0
+=======
+0.007000 ; 2092253 ; PROC_CREAT ; ./xmod -R -v 0777 test 
+5.854000 ; 2092253 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test : 0775 : 0777
+7.077000 ; 2092264 ; PROC_CREAT ; ./xmod -R -v 0777 test/a 
+7.923000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a : 0775 : 0777
+9.180000 ; 2092265 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/b 
+10.030000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b : 0775 : 0777
+11.567000 ; 2092271 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/b/bb 
+12.500000 ; 2092271 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bb : 0775 : 0777
+13.376000 ; 2092271 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bb/bb3.txt : 0775 : 0777
+14.223000 ; 2092271 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bb/bb2.txt : 0775 : 0777
+15.716000 ; 2092271 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bb/bb1.txt : 0775 : 0777
+17.202000 ; 2092271 ; PROC_EXIT ; 0
+18.100000 ; 2092265 ; SIGNAL_RECV ; SIGCHLD
+18.962000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b3.txt : 0775 : 0777
+19.832000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b4.txt : 0775 : 0777
+20.672000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b6.txt : 0775 : 0777
+21.494000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b5.txt : 0775 : 0777
+22.687000 ; 2092284 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/b/ba 
+23.559000 ; 2092284 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/ba : 0775 : 0777
+24.397000 ; 2092284 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/ba/ba1.txt : 0775 : 0777
+25.214000 ; 2092284 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/ba/ba2.txt : 0775 : 0777
+26.057000 ; 2092284 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/ba/ba3.txt : 0775 : 0777
+26.899000 ; 2092284 ; PROC_EXIT ; 0
+27.826000 ; 2092265 ; SIGNAL_RECV ; SIGCHLD
+29.172000 ; 2092293 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/b/bc 
+30.103000 ; 2092293 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bc : 0775 : 0777
+31.029000 ; 2092293 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bc/bc3.txt : 0775 : 0777
+31.913000 ; 2092293 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bc/bc1.txt : 0775 : 0777
+32.794000 ; 2092293 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/bc/bc2.txt : 0775 : 0777
+33.634000 ; 2092293 ; PROC_EXIT ; 0
+34.523000 ; 2092265 ; SIGNAL_RECV ; SIGCHLD
+35.466000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b1.txt : 0775 : 0777
+36.339000 ; 2092265 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/b/b2.txt : 0775 : 0777
+37.168000 ; 2092265 ; PROC_EXIT ; 0
+38.714000 ; 2092264 ; SIGNAL_RECV ; SIGCHLD
+40.246000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a2.txt : 0775 : 0777
+41.535000 ; 2092309 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/c 
+42.389000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c : 0775 : 0777
+43.261000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c5.txt : 0775 : 0777
+44.472000 ; 2092315 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/c/cb 
+45.314000 ; 2092315 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cb : 0775 : 0777
+46.169000 ; 2092315 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cb/cb2.txt : 0775 : 0777
+47.002000 ; 2092315 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cb/cb1.txt : 0775 : 0777
+47.848000 ; 2092315 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cb/cb3.txt : 0775 : 0777
+48.652000 ; 2092315 ; PROC_EXIT ; 0
+49.504000 ; 2092309 ; SIGNAL_RECV ; SIGCHLD
+50.720000 ; 2092324 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/c/cc 
+51.576000 ; 2092324 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cc : 0775 : 0777
+52.437000 ; 2092324 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cc/cc3.txt : 0775 : 0777
+53.276000 ; 2092324 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cc/cc1.txt : 0775 : 0777
+54.139000 ; 2092324 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/cc/cc2.txt : 0775 : 0777
+54.986000 ; 2092324 ; PROC_EXIT ; 0
+55.855000 ; 2092309 ; SIGNAL_RECV ; SIGCHLD
+56.745000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c2.txt : 0775 : 0777
+57.624000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c4.txt : 0775 : 0777
+58.923000 ; 2092337 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/c/ca 
+59.800000 ; 2092337 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/ca : 0775 : 0777
+60.681000 ; 2092337 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/ca/ca3.txt : 0775 : 0777
+62.175000 ; 2092337 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/ca/ca1.txt : 0775 : 0777
+63.670000 ; 2092337 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/ca/ca2.txt : 0775 : 0777
+64.513000 ; 2092337 ; PROC_EXIT ; 0
+65.416000 ; 2092309 ; SIGNAL_RECV ; SIGCHLD
+66.275000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c1.txt : 0775 : 0777
+67.135000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c3.txt : 0775 : 0777
+67.981000 ; 2092309 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/c/c6.txt : 0775 : 0777
+68.808000 ; 2092309 ; PROC_EXIT ; 0
+69.678000 ; 2092264 ; SIGNAL_RECV ; SIGCHLD
+70.541000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a3.txt : 0775 : 0777
+71.411000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a6.txt : 0775 : 0777
+72.625000 ; 2092355 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/d 
+73.458000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d : 0775 : 0777
+74.302000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d5.txt : 0775 : 0777
+75.473000 ; 2092359 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/d/dc 
+76.338000 ; 2092359 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/dc : 0775 : 0777
+77.186000 ; 2092359 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/dc/dc1.txt : 0775 : 0777
+78.013000 ; 2092359 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/dc/dc3.txt : 0775 : 0777
+78.855000 ; 2092359 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/dc/dc2.txt : 0775 : 0777
+79.672000 ; 2092359 ; PROC_EXIT ; 0
+80.564000 ; 2092355 ; SIGNAL_RECV ; SIGCHLD
+81.423000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d4.txt : 0775 : 0777
+82.270000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d2.txt : 0775 : 0777
+83.147000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d3.txt : 0775 : 0777
+85.060000 ; 2092375 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/d/db 
+86.546000 ; 2092375 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/db : 0775 : 0777
+87.429000 ; 2092375 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/db/db2.txt : 0775 : 0777
+88.287000 ; 2092375 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/db/db1.txt : 0775 : 0777
+89.141000 ; 2092375 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/db/db3.txt : 0775 : 0777
+89.985000 ; 2092375 ; PROC_EXIT ; 0
+90.910000 ; 2092355 ; SIGNAL_RECV ; SIGCHLD
+92.189000 ; 2092385 ; PROC_CREAT ; ./xmod -R -v 0777 test/a/d/da 
+93.031000 ; 2092385 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/da : 0775 : 0777
+93.885000 ; 2092385 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/da/da2.txt : 0775 : 0777
+94.704000 ; 2092385 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/da/da1.txt : 0775 : 0777
+95.527000 ; 2092385 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/da/da3.txt : 0775 : 0777
+96.408000 ; 2092385 ; PROC_EXIT ; 0
+97.262000 ; 2092355 ; SIGNAL_RECV ; SIGCHLD
+98.153000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d1.txt : 0775 : 0777
+99.011000 ; 2092355 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/d/d6.txt : 0775 : 0777
+99.863000 ; 2092355 ; PROC_EXIT ; 0
+100.828000 ; 2092264 ; SIGNAL_RECV ; SIGCHLD
+101.731000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/._.txt : 0775 : 0777
+102.616000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/..txt : 0775 : 0777
+103.470000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a5.txt : 0775 : 0777
+104.311000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a1.txt : 0775 : 0777
+105.219000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/+-_.txt : 0775 : 0777
+106.071000 ; 2092264 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/a/a4.txt : 0775 : 0777
+107.588000 ; 2092264 ; PROC_EXIT ; 0
+109.240000 ; 2092253 ; SIGNAL_RECV ; SIGCHLD
+110.167000 ; 2092253 ; FILE_MODF ; /home/diogolhc/Documents/sope/MP1/repo/test/dest_file.txt : 0775 : 0777
+111.051000 ; 2092253 ; PROC_EXIT ; 0
+>>>>>>> ce4ee83ba876ed35da88eec97e98541137f63e57
