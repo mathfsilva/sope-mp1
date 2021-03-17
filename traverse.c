@@ -46,14 +46,20 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             dir_name, "/", DIRECTORY->d_name) + 1;
 
             if (nbytes == -1) {
-              return 1;
+                if (closedir(DP) == -1) {
+                    return 1;
+                }
+                return 1;
             }
             char *path = malloc(nbytes);
 
             if (snprintf(path, nbytes, "%s%s%s",
              dir_name, "/", DIRECTORY->d_name) == -1) {
-               free(path);
-               return 1;
+                free(path);
+                if (closedir(DP) == -1) {
+                    return 1;
+                }
+                return 1;
             }
             argv[argc - 1] = path;
 
@@ -68,6 +74,9 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 IMPOSSIBLE = true;
                 if (chmod(global_file_path, 0777) < 0) {
                     free(path);
+                    if (closedir(DP) == -1) {
+                        return 1;
+                    }
                     return 1;
                 }
             }
@@ -76,6 +85,9 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
                     free(path);
+                    if (closedir(DP) == -1) {
+                        return 1;
+                    }
                     return 1;
                 }
                 continue;
@@ -87,6 +99,9 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
                     free(path);
+                    if (closedir(DP) == -1) {
+                        return 1;
+                    }
                     return 1;
                 }
             } else if (DIRECTORY->d_type == DT_LNK) {
@@ -149,10 +164,14 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                                     // return 1;
                                 }
                             free(path);
+                            if (closedir(DP) == -1) {
+                                return 1;
+                            }
                             exit(es);
                             }
                         } else {
                             perror("Bad status uppon waiting on child\n");
+                            free(path);
                             if (closedir(DP) == -1) {
                                 return 1;
                             }
