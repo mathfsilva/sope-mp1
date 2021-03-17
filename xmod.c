@@ -806,13 +806,15 @@ int main(int argc, char *argv[], char *envp[])
             return 1;
         }
     }
-    if (chmod(global_file_path, MODE) < 0)
-    {
-        if (write_PROC_EXIT(1))
+    if(IMPOSSIBLE){
+        if (chmod(global_file_path, MODE) < 0)
         {
+           if (write_PROC_EXIT(1))
+           {
             return 1;
-        }
+           }
         return 1;
+        }
     }
     if (write_PROC_EXIT(0))
     {
