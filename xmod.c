@@ -377,7 +377,6 @@ int get_options(int argc, char *argv[], options *opts, int *ret)
 int xmod(int argc, char *argv[])
 {
 
-
     //printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
 
     char *file_name;
@@ -412,14 +411,12 @@ int xmod(int argc, char *argv[])
 
     //print_options(opts);
 
-
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options], oldmode_letters))
     {
         return 1;
     }
 
     //Turn mode (when written in digits) to an octal number in order to call chmod function
-
     if (isdigit(argv[1 + no_options][0]))
     {
         mode_str[0] = argv[1 + no_options][0];
@@ -628,7 +625,7 @@ int checkLog(char *envp[], char *reg)
             return 0;
         }
     }
-    return 1;
+    return -1;
 }
 
 int checkSymlink(int argc, char *argv[])
@@ -670,15 +667,20 @@ int main(int argc, char *argv[], char *envp[])
     }
 
     char *reg = (char *)malloc(100); //should be enough right?
-    if (checkLog(envp, reg))
+
+    int result=checkLog(envp,reg);
+    if(result==1)
     {
-        if (write_PROC_EXIT(1))
+        
+        if(write_PROC_EXIT(1))
         {
-            return 1;
+        return 1;
         }
         return 1;
     }
 
+    if(result!=-1)
+    {
     if (getfd(reg))
     {
         if (write_PROC_EXIT(1))
@@ -686,6 +688,7 @@ int main(int argc, char *argv[], char *envp[])
             return 1;
         }
         return 1;
+    }
     }
 
     //Environment variable for initial instant
@@ -743,7 +746,6 @@ int main(int argc, char *argv[], char *envp[])
         {
             return 1;
         }
-        //PROC_EXIT here
         return 1;
     }
 
@@ -791,7 +793,6 @@ int main(int argc, char *argv[], char *envp[])
             return 1;
         }
     }
-
     if (chmod(global_file_path, MODE) < 0)
     {
         if (write_PROC_EXIT(1))
@@ -805,5 +806,9 @@ int main(int argc, char *argv[], char *envp[])
         return 1;
     }
     free(reg);
+    if (close(FD_LOG_FILE) == -1)
+    {
+        return 1;
+    }
     return 0;
 }

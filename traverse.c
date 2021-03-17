@@ -19,7 +19,6 @@
 int traverse(int argc, char *argv[])
 {
     struct stat st_buf;
-
     if (stat(argv[argc - 1], &st_buf) != 0)
     {
         perror("Stat from path returned != 0\n");
@@ -39,7 +38,6 @@ int traverse(int argc, char *argv[])
     if ((DP = opendir(dir_name)) == NULL)
     {
         //Couldn't open directory stream.
-
         perror("Could not open dir\n");
         return 1;
     }
@@ -64,8 +62,6 @@ int traverse(int argc, char *argv[])
             strcat(path, DIRECTORY->d_name);
             argv[argc - 1] = path;
 
-            printf("%s\n",path);
-
             // TODO do we need to check if it's a folder and if not change the mode of the file in the current process?
             // right now it's being done in a child process
 
@@ -73,7 +69,6 @@ int traverse(int argc, char *argv[])
             int waitpid_value;
 
             struct stat st_path;
-
             if (stat(path, &st_path) != 0)
             {
                 IMPOSSIBLE = true;
@@ -94,7 +89,7 @@ int traverse(int argc, char *argv[])
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                //printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+                printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
             else if (DIRECTORY->d_type == DT_DIR)
             {
@@ -105,8 +100,6 @@ int traverse(int argc, char *argv[])
                 switch (pid)
                 {
                 case 0: // child
-
-
                     if (execv(argv[0], argv) == -1)
                     {
                         perror("Execv failed\n");
@@ -124,7 +117,6 @@ int traverse(int argc, char *argv[])
                     break;
 
                 case -1: // error
-
                     perror("Process failed on creating child\n");
                     if (closedir(DP) == -1)
                     {
@@ -144,7 +136,6 @@ int traverse(int argc, char *argv[])
                     {
                         int es = WEXITSTATUS(status);
                         //printf("Exit code is %d\n",es);
-
                         if (write_PROC_EXIT(es))
                         {
                             return 1;
@@ -172,7 +163,6 @@ int traverse(int argc, char *argv[])
             }
         }
     }
-
 
     if (closedir(DP) == -1)
     {

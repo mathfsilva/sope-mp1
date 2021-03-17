@@ -7,7 +7,6 @@
 #include "file.h"
 extern struct timeval START_TIME;
 
-
 int getfd(char *reg)
 {
     FD_LOG_FILE = open(reg, O_WRONLY | O_SYNC | O_APPEND, 0600);
@@ -106,10 +105,7 @@ int write_PROC_EXIT(int exit_code)
     {
         return 1;
     }
-    if (close(FD_LOG_FILE) == -1)
-    {
-        return 1;
-    }
+    
     free(str_final);
     return 0;
 }
@@ -123,13 +119,11 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name)
 
     size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %s : %s\n", time_taken, getpid(), msg, file_name, old_mode, new_mode) + 1;
 
-
     if (nbytes == -1)
     {
         return 1;
     }
     char *str_final = malloc(nbytes);
-
 
     if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %s : %s\n", time_taken, getpid(), msg, file_name, old_mode, new_mode) == -1)
     {
@@ -138,7 +132,7 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name)
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1)
     {
-        return 1;
+        //return 1;
     }
     free(str_final);
     return 0;
