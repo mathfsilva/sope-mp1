@@ -58,6 +58,7 @@ int write_PROC_CREATE(char *argv[]) {
         strcat(str_final, argv[j]);
         strcat(str_final, " ");
     }
+    strcat(str_final,"\n");
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
         return 1;
     }
