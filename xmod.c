@@ -667,14 +667,8 @@ int main(int argc, char *argv[], char *envp[])
     }
 
     char *reg = (char *)malloc(100); //should be enough right?
-    if (checkLog(envp, reg))
-    {
-        if (write_PROC_EXIT(1))
-        {
-            return 1;
-        }
-        return 1;
-    }
+
+    checkLog(envp, reg);
 
     if (getfd(reg))
     {
