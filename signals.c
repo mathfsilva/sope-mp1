@@ -29,9 +29,11 @@ write_SIGNAL_SENT.
 #include "traverse.h"
 #include "xmod.h"
 
-void sigint_handler(int signo){
-  
-  if (write_SIGNAL_RECV("SIGINT")){
+void sigint_handler(int signo)
+{
+
+  if (write_SIGNAL_RECV("SIGINT"))
+  {
     perror("Failed to write to log file\n");
     write_PROC_EXIT(1);
     exit(1);
@@ -39,7 +41,8 @@ void sigint_handler(int signo){
 
   size_t nbytes = snprintf(NULL, 0, "%d ; %s ; %d ; %d\n", getpid(), global_file_path, nftot, nfmod) + 1;
 
-  if (nbytes < 0){
+  if (nbytes < 0)
+  {
     perror("Failed snprintf\n");
     write_PROC_EXIT(1);
     exit(1);
@@ -52,39 +55,48 @@ void sigint_handler(int signo){
   printf("%s", str_final);
   //printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
 
-  if (PID_CURRENT_CHILD == 0){
+  if (PID_CURRENT_CHILD == 0)
+  {
     sleep(5);
     printf("Do you wish to end the program? (y/n)\n");
     char letter = getchar();
     int c;
-    while ((c = getchar()) != '\n' && c != EOF) { }
+    while ((c = getchar()) != '\n' && c != EOF)
+    {
+    }
 
-    if(letter == 'y'){
+    if (letter == 'y')
+    {
       printf("Ending the program\n");
       write_PROC_EXIT(1);
       exit(1);
     }
-    else if(letter == 'n'){
+    else if (letter == 'n')
+    {
       printf("Continuing the program\n");
     }
-    else{
+    else
+    {
       printf("Bad input continuing the program\n");
     }
   }
   free(str_final);
 }
 
-int subscribe_SIGINT(){
+int subscribe_SIGINT()
+{
 
   //printf("Subscribed SIGINT signal\n");
   struct sigaction interruption;
   interruption.sa_handler = sigint_handler;
   interruption.sa_flags = 0;
-  if (sigemptyset(&interruption.sa_mask)){
+  if (sigemptyset(&interruption.sa_mask))
+  {
     perror("sigemptyset failed - subscribe_SIGINT\n");
     return 1;
   }
-  if(sigaction(SIGINT,&interruption,NULL)){
+  if (sigaction(SIGINT, &interruption, NULL))
+  {
     perror("sigaction failed - subscribe_SIGINT\n");
     return 1;
   }
