@@ -88,7 +88,7 @@ int write_PROC_CREATE(char *argv[]) {
         return 1;
     }
 
-    free(str_final);
+    free(str_final_w_path);
     return 0;
 }
 
