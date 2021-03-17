@@ -1,11 +1,4 @@
-// File.c
-#include <stdio.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/time.h>
 #include "file.h"
-extern struct timeval START_TIME;
 
 int getfd(char *reg) {
     FD_LOG_FILE = open(reg, O_WRONLY | O_SYNC | O_APPEND, 0600);
@@ -65,7 +58,6 @@ int write_PROC_CREATE(char *argv[]) {
         strcat(str_final, argv[j]);
         strcat(str_final, " ");
     }
-    strcat(str_final, "\n");
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
         return 1;
     }
@@ -126,7 +118,7 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name) {
     }
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
-        // return 1;
+        return 1;
     }
     free(str_final);
     return 0;
