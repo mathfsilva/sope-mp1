@@ -341,7 +341,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
 int xmod(int argc, char *argv[])
 {
 
-    printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
+    //printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
 
     char*file_name;
     int mode;
