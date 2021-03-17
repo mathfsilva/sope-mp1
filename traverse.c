@@ -45,7 +45,7 @@ int traverse(int argc, char *argv[]) {
 
         PID_CURRENT_CHILD = 0;
 
-        //printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
+        printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
 
         if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
             //Construct new path, to keep traversal.
@@ -75,8 +75,9 @@ int traverse(int argc, char *argv[]) {
             }
     
             if (DIRECTORY->d_type == DT_REG) { // if not a directory, traverse is done by default
-                //printf("PID: %d found a file in %s\n", getpid(), path);
+                printf("PID: %d found a file in %s\n", getpid(), path);
                 if(xmod(argc, argv)){
+                    perror("Failed xmod in traverse\n");
                     return 1;
                 }
             }
@@ -84,7 +85,7 @@ int traverse(int argc, char *argv[]) {
                 printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
             else if(DIRECTORY->d_type == DT_DIR){
-                //printf("PID: %d found a dir in %s\n", getpid(), path);
+                printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
@@ -137,6 +138,9 @@ int traverse(int argc, char *argv[]) {
                     
                     break;
                 }
+            }
+            else{
+                printf("PID: %d found something %s\n", getpid(), path);
             }
             
             
