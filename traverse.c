@@ -198,8 +198,6 @@ int traverse(int argc, char *argv[],options ops,int no_options)
         }
     }
 
-   // free(path);
-
     if (closedir(DP) == -1)
     {
         return 1;
