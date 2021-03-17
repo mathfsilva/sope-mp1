@@ -492,6 +492,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                             free(oldmode_letters);
                             free(mode_letters);
                             free(canonical_path);
+                            free(print);
                             return 1;
                         }
                         printf("%s\n", print);
