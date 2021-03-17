@@ -3,6 +3,7 @@
 #include "./file.h"
 #include "./signals.h"
 
+#define LOG_FILE_PATH_SIZE 200
 
 void calculate_mode(perm_mode mode, int *val) {
     *val += mode.r ? 4 : 0;
@@ -514,7 +515,7 @@ int checkLog(char *envp[], char *reg) {
     // Check if LOG_FILENAME was defined by user
     for (int j = 0; envp[j] != NULL; j++) {
         if (aretheyequal(envp[j], "LOG_FILENAME")) {
-            if (snprintf(reg, 100, "%s", getenv("LOG_FILENAME")) == -1) {
+            if (snprintf(reg, LOG_FILE_PATH_SIZE, "%s", getenv("LOG_FILENAME")) == -1) {
                 return 1;
             }
 
@@ -580,7 +581,7 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
     }
 
-    char *reg = (char *)malloc(100);  // should be enough right?
+    char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
 
     int result = checkLog(envp, reg);
     if (result == 1) {
