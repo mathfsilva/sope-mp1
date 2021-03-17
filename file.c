@@ -48,12 +48,8 @@ int write_PROC_CREATE(char *argv[]) {
 
     size_t size2 = sizeof(char *) + sizet + size + strlen(msg2);
     char *str_final = (char *)malloc(size2 * 2);
-    strcat(str_final, t);
-    strcat(str_final, " ; ");
-    strcat(str_final, pid);
-    strcat(str_final, " ; ");
-    strcat(str_final, msg2);
-    strcat(str_final, " ; ");
+
+    snprintf(str_final,size2,"%s%s%s%s%s%s",t," ; ",pid," ; ",msg2," ; ");
     for (int j = 0; argv[j] != NULL; j++) {
         strcat(str_final, argv[j]);
         strcat(str_final, " ");

@@ -292,6 +292,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
 
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options],
                             oldmode_letters)) {
+        
         return 1;
     }
 
