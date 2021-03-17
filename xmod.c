@@ -492,6 +492,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                             free(oldmode_letters);
                             free(mode_letters);
                             free(canonical_path);
+                            free(print);
                             return 1;
                         }
                         printf("%s\n", print);
@@ -630,7 +631,6 @@ int main(int argc, char *argv[], char *envp[]) {
     if (s == NULL) {
         free(reg);
         free(global_file_path);
-        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -647,7 +647,6 @@ int main(int argc, char *argv[], char *envp[]) {
     if (write_PROC_CREATE(argv)) {
         free(reg);
         free(global_file_path);
-        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -662,7 +661,6 @@ int main(int argc, char *argv[], char *envp[]) {
         printf("Not enough arguments\n");
         free(reg);
         free(global_file_path);
-        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -677,7 +675,6 @@ int main(int argc, char *argv[], char *envp[]) {
     if (get_options(argc, argv, &opts, &ops)) {
         free(reg);
         free(global_file_path);
-        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -688,7 +685,6 @@ int main(int argc, char *argv[], char *envp[]) {
     if (xmod(argc, argv, opts, ops)) {
         free(reg);
         free(global_file_path);
-        free(s);
         if (write_PROC_EXIT(1)) {
             return 1;
         }
@@ -699,7 +695,6 @@ int main(int argc, char *argv[], char *envp[]) {
         if (traverse(argc, argv, opts, ops) != 0) {
             free(reg);
             free(global_file_path);
-            free(s);
             if (write_PROC_EXIT(1)) {
                 return 1;
             }
@@ -712,7 +707,6 @@ int main(int argc, char *argv[], char *envp[]) {
         if (chmod(global_file_path, MODE) < 0) {
             free(reg);
             free(global_file_path);
-            free(s);
            if (write_PROC_EXIT(1)) {
             return 1;
            }
@@ -723,13 +717,11 @@ int main(int argc, char *argv[], char *envp[]) {
     if (write_PROC_EXIT(0)) {
         free(reg);
         free(global_file_path);
-        free(s);
         return 1;
     }
 
     free(reg);
     free(global_file_path);
-    free(s);
     if (close(FD_LOG_FILE) == -1) {
         return 1;
     }
