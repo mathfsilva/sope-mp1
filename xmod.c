@@ -341,7 +341,9 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
 int xmod(int argc, char *argv[])
 {
 
-    printf("%s\n",argv[argc-1]);
+
+    printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
+
     char*file_name;
     int mode;
     char *mode_str=(char*)malloc(4);
@@ -719,8 +721,10 @@ int main(int argc, char *argv[], char *envp[])
                 return 1;
         }
     }
-    if(chmod(global_file_path,MODE)<1){
+    if(chmod(global_file_path,MODE)<0){
+         printf("Holo\n");
          if(write_PROC_EXIT(1)){
+            
         return 1;
     }
         return 1;
