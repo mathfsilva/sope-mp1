@@ -107,10 +107,10 @@ int traverse(int argc, char *argv[])
                         {
                             //return 1;
                         }
-                        if (write_PROC_EXIT(1))
+                       /* if (write_PROC_EXIT(1))
                         {
                             //return 1;
-                        }
+                        }*/
                         exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
                                  // já que seria no processo filho mas sem estar exec'd
                     }
@@ -136,10 +136,10 @@ int traverse(int argc, char *argv[])
                     {
                         int es = WEXITSTATUS(status);
                         //printf("Exit code is %d\n",es);
-                        if (write_PROC_EXIT(es))
+                        /*if (write_PROC_EXIT(es))
                         {
                             return 1;
-                        }
+                        }*/
                         if (es != 0)
                         {
                             exit(es);
