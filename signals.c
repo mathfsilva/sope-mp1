@@ -21,8 +21,11 @@ void sigint_handler(int signo) {
 
   char *str_final = malloc(nbytes);
 
-  snprintf(str_final, nbytes, "%d ; %s ; %d ; %d\n",
-            getpid(), global_file_path, nftot, nfmod);
+  if(snprintf(str_final, nbytes, "%d ; %s ; %d ; %d\n",
+            getpid(), global_file_path, nftot, nfmod)==-1){
+              free(str_final);
+              exit(1);
+            }
 
   printf("%s", str_final);
   // printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
@@ -37,6 +40,7 @@ void sigint_handler(int signo) {
     if (letter == 'y') {
       printf("Ending the program\n");
       write_PROC_EXIT(1);
+      free(str_final);
       exit(1);
     } else if (letter == 'n') {
       printf("Continuing the program\n");
