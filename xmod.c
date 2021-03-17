@@ -612,7 +612,7 @@ int checkLog(char *envp[], char *reg)
 
 int main(int argc, char *argv[], char *envp[])
 {
-    IMPOSSIBLE = false;
+    IMPOSSIBLE=false;
     PID_CURRENT_CHILD = 0;
     nftot = 0;
     nfmod = 0;

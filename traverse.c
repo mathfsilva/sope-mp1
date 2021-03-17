@@ -76,6 +76,12 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                 {
                     return 1;
                 }
+                if (xmod(argc, argv,ops,no_options))
+                {
+                    perror("Failed xmod in traverse\n");
+                    return 1;
+                }
+                
             }
 
             if (DIRECTORY->d_type == DT_REG)
@@ -93,7 +99,9 @@ int traverse(int argc, char *argv[],options ops,int no_options)
                    printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
                 }
             }
-            else if (DIRECTORY->d_type == DT_DIR)
+            if(!IMPOSSIBLE)
+            {
+               if (DIRECTORY->d_type == DT_DIR)
             {
                 //printf("PID: %d found a dir in %s\n", getpid(), path);
 
@@ -165,8 +173,9 @@ int traverse(int argc, char *argv[],options ops,int no_options)
             }
             else
             {
-                printf("PID: %d found something %s\n", getpid(), path);
+                //printf("PID: %d found something %s\n", getpid(), path);
             }
+        }
         }
     }
 
