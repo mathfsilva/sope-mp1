@@ -83,13 +83,15 @@ int write_PROC_EXIT(int exit_code) {
     time_taken /= 1000;
     char const *final = "PROC_EXIT";
 
-    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %d\n", time_taken, getpid(), final, exit_code) + 1;
+    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %d\n",
+                            time_taken, getpid(), final, exit_code) + 1;
     if (nbytes == -1) {
         return 1;
     }
     char *str_final = malloc(nbytes);
 
-    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %d\n", time_taken, getpid(), final, exit_code) == -1) {
+    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %d\n",
+                time_taken, getpid(), final, exit_code) == -1) {
         return 1;
     }
 
@@ -110,14 +112,16 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name) {
     time_taken /= 1000;
     char const *msg = "FILE_MODF";
 
-    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %s : %s\n", time_taken, getpid(), msg, file_name, old_mode, new_mode) + 1;
+    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %s : %s\n",
+                            time_taken, getpid(), msg, file_name, old_mode, new_mode) + 1;
 
     if (nbytes == -1) {
         return 1;
     }
     char *str_final = malloc(nbytes);
 
-    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %s : %s\n", time_taken, getpid(), msg, file_name, old_mode, new_mode) == -1) {
+    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %s : %s\n",
+        time_taken, getpid(), msg, file_name, old_mode, new_mode) == -1) {
         return 1;
     }
 
@@ -138,14 +142,16 @@ int write_SIGNAL_RECV(char *signal) {
 
     char const *msg = "SIGNAL_RECV";
 
-    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s\n", time_taken, getpid(), msg, signal) + 1;
+    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s\n",
+                            time_taken, getpid(), msg, signal) + 1;
 
     if (nbytes == -1) {
         return 1;
     }
     char *str_final = malloc(nbytes);
 
-    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s\n", time_taken, getpid(), msg, signal) == -1) {
+    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s\n",
+                time_taken, getpid(), msg, signal) == -1) {
         return 1;
     }
 
@@ -165,14 +171,16 @@ int write_SIGNAL_SENT(char *signal, pid_t target_pid) {
     time_taken /= 1000;
     char const *msg = "SIGNAL_SENT";
 
-    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %d\n", time_taken, getpid(), msg, signal, target_pid) + 1;
+    size_t nbytes = snprintf(NULL, 0, "%Lf ; %d ; %s ; %s : %d\n",
+                            time_taken, getpid(), msg, signal, target_pid) + 1;
 
     if (nbytes == -1) {
         return 1;
     }
     char *str_final = malloc(nbytes);
 
-    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %d\n", time_taken, getpid(), msg, signal, target_pid) == -1) {
+    if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %d\n",
+                time_taken, getpid(), msg, signal, target_pid) == -1) {
         return 1;
     }
 
