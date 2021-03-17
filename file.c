@@ -60,6 +60,7 @@ int write_PROC_CREATE(char *argv[]) {
     }
     strcat(str_final,"\n");
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
+        free(str_final);
         return 1;
     }
 
@@ -85,10 +86,12 @@ int write_PROC_EXIT(int exit_code) {
 
     if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %d\n",
                 time_taken, getpid(), final, exit_code) == -1) {
+        free(str_final);
         return 1;
     }
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
+        free(str_final);
         return 1;
     }
 
@@ -115,10 +118,12 @@ int write_FILE_MODF(char *old_mode, char *new_mode, char *file_name) {
 
     if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %s : %s\n",
         time_taken, getpid(), msg, file_name, old_mode, new_mode) == -1) {
+        free(str_final);
         return 1;
     }
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
+        free(str_final);
         return 1;
     }
     free(str_final);
@@ -145,10 +150,12 @@ int write_SIGNAL_RECV(char *signal) {
 
     if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s\n",
                 time_taken, getpid(), msg, signal) == -1) {
+        free(str_final);
         return 1;
     }
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
+        free(str_final);
         return 1;
     }
     free(str_final);
@@ -174,10 +181,12 @@ int write_SIGNAL_SENT(char *signal, pid_t target_pid) {
 
     if (snprintf(str_final, nbytes, "%Lf ; %d ; %s ; %s : %d\n",
                 time_taken, getpid(), msg, signal, target_pid) == -1) {
+        free(str_final);
         return 1;
     }
 
     if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
+        free(str_final);
         return 1;
     }
     free(str_final);
