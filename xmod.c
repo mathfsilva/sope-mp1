@@ -606,9 +606,9 @@ int main(int argc, char *argv[], char *envp[]) {
     // Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
-    int sizet = 64;
-    char t[sizet];
-    if (snprintf(t, sizet, "%lld", 1000000LL * start.tv_sec
+    const int kSizet = 64;
+    char t[kSizet];
+    if (snprintf(t, kSizet, "%lld", 1000000LL * start.tv_sec
                 + start.tv_usec) == -1) {
         free(reg);
         free(global_file_path);
@@ -636,7 +636,7 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
     }
 
-    long time = atol(s);
+    int64_t time = atol(s);
     START_TIME.tv_sec = time / (1000000LL);
     START_TIME.tv_usec = time % (1000000LL);
 

@@ -34,19 +34,19 @@ int write_PROC_CREATE(char *argv[]) {
     long double time_taken = 0;
     calculate_time(&time_taken);
     time_taken /= 1000;
-    static int sizet = 32;
-    char t[sizet];
+    const int kSizet = 32;
+    char t[kSizet];
     char const *msg2 = "PROC_CREAT";
-    static int size = 20;
-    char pid[size];
-    if (snprintf(pid, size, "%d", getpid()) == -1) {
+    const int kSize = 20;
+    char pid[kSize];
+    if (snprintf(pid, kSize, "%d", getpid()) == -1) {
         return 1;
     }
-    if (snprintf(t, sizet, "%Lf", time_taken) == -1) {
+    if (snprintf(t, kSizet, "%Lf", time_taken) == -1) {
         return 1;
     }
 
-    size_t size2 = sizeof(char *) + sizet + size + strlen(msg2);
+    size_t size2 = sizeof(char *) + kSizet + kSize + strlen(msg2);
     char *str_final = (char *)malloc(size2 * 2);
 
     snprintf(str_final,size2,"%s%s%s%s%s%s",t," ; ",pid," ; ",msg2," ; ");
