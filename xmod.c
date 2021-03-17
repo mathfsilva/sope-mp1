@@ -375,6 +375,7 @@ int xmod(int argc, char *argv[])
     //print_options(opts);
 
     if(getoldmodeletters(argv[1+no_options], argv[2+no_options],oldmode_letters)){
+        printf("Getoldmodeletters\n");
         return 1;
     }
 
@@ -392,6 +393,7 @@ int xmod(int argc, char *argv[])
 
         mode = strtol(argv[1+no_options], 0, 8);
         if(getoldmode(argv[1+no_options], argv[2+no_options],oldmode)){
+            printf("ERROR\n");
             return 1;
         }
         
@@ -466,6 +468,7 @@ int xmod(int argc, char *argv[])
            if(strcmp(mode_str,oldmode)!=0){ //Think we only need to write if they are different
                 file_name=argv[argc-1];
                 if(write_FILE_MODF(oldmode,mode_str,file_name)){
+                    printf("Ehwor\n");
                     return 1;
                 }
                 if(opts.c || opts.v){
@@ -475,6 +478,7 @@ int xmod(int argc, char *argv[])
 
                     size_t nbytes=snprintf(NULL,0,"%s%s%s%s%s%s%s%s%s%s%s\n",msg,file_name,msg2,oldmode,"(",oldmode_letters,msg3,mode_str,"(",mode_letters,")");
                     if(nbytes==-1){
+                        printf("DUP\n");
                         return 1;
                     }
                     char* print=(malloc(nbytes));
@@ -722,7 +726,6 @@ int main(int argc, char *argv[], char *envp[])
         }
     }
     if(chmod(global_file_path,MODE)<0){
-         printf("Holo\n");
          if(write_PROC_EXIT(1)){
             
         return 1;
