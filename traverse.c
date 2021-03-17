@@ -16,28 +16,13 @@
 #include "file.h"
 #include "xmod.h"
 
-
-/*xmod(file_dir) //assuming -R option
-    chmod(file_dir)
-    if (file_dir is dir)
-        for (fd in file_dir)
-            if (fd is dir)
-                fork()
-                parent:
-                    waits for child
-                child:
-                    exec xmod(fd2)
-            else if (fd is file)
-                chmod(fd2)
-      end cycle
-*/
-
 int traverse(int argc, char *argv[]) {
     struct stat st_buf;
     if (stat (argv[argc - 1], &st_buf) != 0) {
-        perror("Hoo\n");
-        return -1;
-    }
+
+        perror("Stat from path returned != 0\n");
+        return 1;
+        }
     
     if (! S_ISDIR (st_buf.st_mode)) { // if not a directory, traverse is done by default
         return 0;
@@ -50,8 +35,9 @@ int traverse(int argc, char *argv[]) {
 
     if ((DP = opendir(dir_name)) == NULL) {
         //Couldn't open directory stream.
-        perror("Holo\n");
-        return -1;
+
+        perror("Could not open dir\n");
+        return 1;
     }
 
 
@@ -76,6 +62,8 @@ int traverse(int argc, char *argv[]) {
             strcat(path, DIRECTORY->d_name);
             argv[argc-1] = path;
 
+            printf("%s\n",path);
+
             // TODO do we need to check if it's a folder and if not change the mode of the file in the current process?
             // right now it's being done in a child process
 
@@ -89,32 +77,40 @@ int traverse(int argc, char *argv[]) {
             }
     
             if (DIRECTORY->d_type == DT_REG) { // if not a directory, traverse is done by default
-                //printf("PID: %d found a file in %s\n", getpid(), path);
+                printf("PID: %d found a file in %s\n", getpid(), path);
                 xmod(argc, argv);
             }
             else if(DIRECTORY->d_type == DT_LNK){
                 printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
             else if(DIRECTORY->d_type == DT_DIR){
-                printf("PID: %d found a dir in %s\n", getpid(), path);
+                //printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
                 switch (pid) {
                 case 0: // child
                     if (execv(argv[0], argv) == -1) {
-                        perror("Here\n");
-                        closedir(DP);
-                        write_PROC_EXIT(1);
+
+                        perror("Execv failed\n");
+                        if(closedir(DP)==-1){
+                            //return 1;
+                        }
+                        if(write_PROC_EXIT(1)){
+                            //return 1;
+                        }
                         exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
                                 // já que seria no processo filho mas sem estar exec'd
                     }
                     break;
 
                 case -1: // error
-                    perror("Nope\n");
-                    closedir(DP);
-                    return -1;
+
+                    perror("Process failed on creating child\n");
+                    if(closedir(DP)==-1){
+                        return 1;
+                    }
+                    return 1;
 
                 default: // parent
                     PID_CURRENT_CHILD=pid;
@@ -133,9 +129,11 @@ int traverse(int argc, char *argv[]) {
                         }
                     }
                     else{   
-                        perror("I wish\n");
-                        closedir(DP);
-                        return -1;
+
+                        perror("Bad status uppon waiting on child\n");
+                        if(closedir(DP)==-1){
+                            return 1;
+                        }
                     }
                     
                     break;

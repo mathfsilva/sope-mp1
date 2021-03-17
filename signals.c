@@ -29,42 +29,21 @@ write_SIGNAL_SENT.
 #include "traverse.h"
 #include "xmod.h"
 
-void signals_handler(int signo)
-{
-    //int pg=getpgrp();
-    printf("%d\n",getppid());
-    //kill(getppid(),SIGSTP); 
-    /*write_SIGNAL_RECV("SIGINT");
-    write_SIGNAL_SENT("SIGSTOP",getppid());*/
- 
-    bool valid=false;
-    printf("Value\n");
-    while(!valid){
-    printf("Are you sure you want to terminate this program?\n");
-    char answer;
-    scanf("%s",&answer);
-    if(answer=='N' || answer=='n'){
-        valid=true;
-        //kill(getppid(),SIGCONT); 
-        //write_SIGNAL_SENT("SIGCONT");
-
-    }
-    else if(answer=='Y' || answer=='y'){
-        valid=true;
-        kill(getpid(),SIGTERM);
-        //write_SIGNAL_SENT(signal="SIGTERM");
-        //write_PROC_EXIT(exit status=1);
-        //writes lines here
-        exit(1);
-    }
-  }
-}
-
 void sigint_handler(int signo){
   
-  write_SIGNAL_RECV("SIGINT");
+  if (write_SIGNAL_RECV("SIGINT")){
+    perror("Failed to write to log file\n");
+    write_PROC_EXIT(1);
+    exit(1);
+  }
 
   size_t nbytes = snprintf(NULL, 0, "%d ; %s ; %d ; %d\n", getpid(), global_file_path, nftot, nfmod) + 1;
+
+  if (nbytes < 0){
+    perror("Failed snprintf\n");
+    write_PROC_EXIT(1);
+    exit(1);
+  }
 
   char *str_final = malloc(nbytes);
 
@@ -95,14 +74,19 @@ void sigint_handler(int signo){
   free(str_final);
 }
 
-void subscribe_SIGINT(){
+int subscribe_SIGINT(){
 
   //printf("Subscribed SIGINT signal\n");
   struct sigaction interruption;
   interruption.sa_handler = sigint_handler;
   interruption.sa_flags = 0;
-  sigemptyset(&interruption.sa_mask);
-
-  sigaction(SIGINT,&interruption,NULL);
-
+  if (sigemptyset(&interruption.sa_mask)){
+    perror("sigemptyset failed - subscribe_SIGINT\n");
+    return 1;
+  }
+  if(sigaction(SIGINT,&interruption,NULL)){
+    perror("sigaction failed - subscribe_SIGINT\n");
+    return 1;
+  }
+  return 0;
 }

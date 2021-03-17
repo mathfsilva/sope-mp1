@@ -341,6 +341,7 @@ int get_options(int argc, char *argv[], options* opts,int*ret){
 int xmod(int argc, char *argv[])
 {
 
+    printf("%s\n",argv[argc-1]);
     char*file_name;
     int mode;
     char *mode_str=(char*)malloc(4);
@@ -608,7 +609,10 @@ int main(int argc, char *argv[], char *envp[])
     nfmod = 0;
     global_file_path = argv[argc-1];
 
-    subscribe_SIGINT(); //Ctrl+C interruption
+    if (subscribe_SIGINT()){ //Ctrl+C interruption
+        perror("Subscribe SIGINT failed\n");
+        return 1;
+    }
 
     char *reg=(char*)malloc(100); //should be enough right?
     if(checkLog(envp,reg)){
