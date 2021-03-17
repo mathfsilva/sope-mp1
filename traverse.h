@@ -1,5 +1,5 @@
-#ifndef TRAVERSE_H
-#define TRAVERSE_H
+#ifndef TRAVERSE_H_
+#define TRAVERSE_H_
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -13,12 +13,10 @@
 #include <ftw.h>
 #include <stdbool.h>
 
-#include "file.h"
-#include "xmod.h"
-
+#include "./xmod.h"
 
 pid_t PID_CURRENT_CHILD;
 bool IMPOSSIBLE;
 int traverse(int argc, char *argv[],options opts,int no_options);
 
-#endif
+#endif // TRAVERSE_H_

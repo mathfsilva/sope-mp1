@@ -1,5 +1,7 @@
-#include "traverse.h"
-#include "xmod.h"
+#include "./xmod.h"
+#include "./traverse.h"
+#include "./file.h"
+#include "./signals.h"
 
 
 void calculate_mode(perm_mode mode, int *val) {
