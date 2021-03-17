@@ -14,7 +14,6 @@
 
 #include "file.h"
 #include "signals.h"
-#include "macros.h"
 #include "traverse.h"
 #include "xmod.h"
 
@@ -374,7 +373,7 @@ int get_options(int argc, char *argv[], options *opts, int *ret)
     return 0;
 }
 
-int xmod(int argc, char *argv[])
+int xmod(int argc, char *argv[],options opts, int no_options)
 {
 
     //printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
@@ -387,29 +386,8 @@ int xmod(int argc, char *argv[])
     char *oldmode_letters = (char *)malloc(9);
     char *mode_letters = (char *)malloc(9);
 
-    options opts;
+    
 
-    opts.c = 0;
-    opts.v = 0;
-    opts.R = 0;
-
-    int no_options = 0;
-    if (get_options(argc, argv, &opts, &no_options))
-    {
-        return 1;
-    }
-
-    if (no_options == -1)
-    {
-        perror("Error occurred while reading options\n");
-        if (write_PROC_EXIT(1))
-        {
-            return 1;
-        }
-        return 1;
-    }
-
-    //print_options(opts);
 
     if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options], oldmode_letters))
     {
@@ -771,15 +749,6 @@ int main(int argc, char *argv[], char *envp[])
         return 1;
     }
 
-    if (xmod(argc, argv))
-    {
-        if (write_PROC_EXIT(1))
-        {
-            return 1;
-        }
-        return 1;
-    }
-
     options opts;
     opts.c = 0;
     opts.v = 0;
@@ -795,9 +764,18 @@ int main(int argc, char *argv[], char *envp[])
     }
     //print_options(opts);
 
+     if (xmod(argc, argv,opts,ops))
+    {
+        if (write_PROC_EXIT(1))
+        {
+            return 1;
+        }
+        return 1;
+    }
+
     if (opts.R)
     {
-        if (traverse(argc, argv,opts) != 0)
+        if (traverse(argc, argv,opts,ops) != 0)
         {
             if (write_PROC_EXIT(1))
             {
@@ -806,6 +784,8 @@ int main(int argc, char *argv[], char *envp[])
             return 1;
         }
     }
+
+
     if(IMPOSSIBLE){
         if (chmod(global_file_path, MODE) < 0)
         {

@@ -16,7 +16,7 @@
 #include "file.h"
 #include "xmod.h"
 
-int traverse(int argc, char *argv[],options ops)
+int traverse(int argc, char *argv[],options ops,int no_options)
 {
     struct stat st_buf;
     if (stat(argv[argc - 1], &st_buf) != 0)
@@ -81,7 +81,7 @@ int traverse(int argc, char *argv[],options ops)
             if (DIRECTORY->d_type == DT_REG)
             { // if not a directory, traverse is done by default
                 //printf("PID: %d found a file in %s\n", getpid(), path);
-                if (xmod(argc, argv))
+                if (xmod(argc, argv,ops,no_options))
                 {
                     perror("Failed xmod in traverse\n");
                     return 1;
