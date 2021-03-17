@@ -1,34 +1,5 @@
-// Signals.c
-/*Okay so here's the plan (I think):
-  1.In main, call function to subscribe SIGINT interruptions->using example ssignal as a
-base. struct sigaction new; new.sa_handler=signal_handler; (function that handles signals)
-  2.In signal_handler:
-    2.1.Program receives SIGINT-->call file function write_SIGNAL_RECV;
-    2.2.Writes lines mentioned by teacher in Tratamento de sinais--->Important for recursion?
-    2.3.Program sends SIGSTOP to process group (try to send signals to everyone, thinking
-with recursion (parent & children) in mind), using kill or killpg.-->call file function
-write_SIGNAL_SENT.
-    Sidenote: use getpgrp() or getpgid() to get process group id
-    2.4.Asks user if they wish to terminate program.
-    2.5.If yes:
-        2.5.1. Send SIGTERM or SIGQUIT to process group-->call write_SIGNAL_SENT
-    2.6.If no:
-        2.6.1. Send SIGCONT to process group-->call write_SIGNAL_SENT
-
-  Think this is it...
-*/
-
-#include <stdio.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include "file.h"
-#include "traverse.h"
 #include "signals.h"
-#include "xmod.h"
+
 
 void sigint_handler(int signo) {
   if (write_SIGNAL_RECV("SIGINT")) {
