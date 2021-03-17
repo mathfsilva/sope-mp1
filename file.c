@@ -50,17 +50,45 @@ int write_PROC_CREATE(char *argv[]) {
     char *str_final = (char *)malloc(size2 * 2);
 
     snprintf(str_final,size2,"%s%s%s%s%s%s",t," ; ",pid," ; ",msg2," ; ");
-    for (int j = 0; argv[j] != NULL; j++) {
-        strcat(str_final, argv[j]);
-        strcat(str_final, " ");
+
+    char *path_final;
+    char *path1;
+    char *path2;
+
+    size_t n_total_bytes = snprintf(NULL, 0, "%s", argv[0]) + 1;
+    path_final = malloc(n_total_bytes);
+    snprintf(path_final, n_total_bytes, "%s", argv[0]);
+
+    for (int j = 1; argv[j] != NULL; j++) {
+
+        path1 = malloc(n_total_bytes);
+        snprintf(path1, n_total_bytes, "%s", path_final);
+
+        size_t nbytes = snprintf(NULL, 0, "%s", argv[j]) + 1;
+        path2 = malloc(nbytes);
+        snprintf(path2, nbytes, "%s", argv[j]);
+
+        n_total_bytes = snprintf(NULL, 0, "%s %s", path1, path2) + 1;
+        path_final = malloc(n_total_bytes + 1);
+        snprintf(path_final, n_total_bytes, "%s %s", path1, path2);
     }
-    strcat(str_final, "\n");
-    if (write(FD_LOG_FILE, str_final, strlen(str_final)) == -1) {
-        free(str_final);
+
+    free(path1);
+    free(path2);
+
+    size_t nbytes_final = snprintf(NULL, 0, "%s%s\n", str_final, path_final) + 1;
+    char *str_final_w_path = malloc(nbytes_final);
+    snprintf(str_final_w_path, nbytes_final, "%s%s\n", str_final, path_final);
+
+    free(str_final);
+    free(path_final);
+
+    if (write(FD_LOG_FILE, str_final_w_path, strlen(str_final_w_path)) == -1) {
+        free(str_final_w_path);
         return 1;
     }
 
-    free(str_final);
+    free(str_final_w_path);
     return 0;
 }
 
