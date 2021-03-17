@@ -797,7 +797,7 @@ int main(int argc, char *argv[], char *envp[])
 
     if (opts.R)
     {
-        if (traverse(argc, argv) != 0)
+        if (traverse(argc, argv,opts) != 0)
         {
             if (write_PROC_EXIT(1))
             {

@@ -16,7 +16,7 @@
 #include "file.h"
 #include "xmod.h"
 
-int traverse(int argc, char *argv[])
+int traverse(int argc, char *argv[],options ops)
 {
     struct stat st_buf;
     if (stat(argv[argc - 1], &st_buf) != 0)
@@ -89,7 +89,9 @@ int traverse(int argc, char *argv[])
             }
             else if (DIRECTORY->d_type == DT_LNK)
             {
-                printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+                if(ops.v){
+                   printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+                }
             }
             else if (DIRECTORY->d_type == DT_DIR)
             {
