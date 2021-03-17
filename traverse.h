@@ -13,7 +13,6 @@
 #include <ftw.h>
 #include <stdbool.h>
 
-#include "traverse.h"
 #include "file.h"
 #include "xmod.h"
 

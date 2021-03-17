@@ -1,21 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <string.h>
-#include <limits.h>
-#include <fcntl.h>
-#include <sys/time.h>
-
-#include "file.h"
-#include "signals.h"
 #include "traverse.h"
 #include "xmod.h"
+
 
 void calculate_mode(perm_mode mode, int *val) {
     *val += mode.r ? 4 : 0;
@@ -546,8 +531,9 @@ int main(int argc, char *argv[], char *envp[]) {
     // Environment variable for initial instant
     struct timeval start;
     gettimeofday(&start, NULL);
-    char t[64];
-    if (snprintf(t, 64, "%lld", 1000000LL * start.tv_sec
+    int sizet=64;
+    char t[sizet];
+    if (snprintf(t, sizet, "%lld", 1000000LL * start.tv_sec
                 + start.tv_usec) == -1) {
         if (write_PROC_EXIT(1)) {
             return 1;
