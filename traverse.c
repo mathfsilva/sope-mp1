@@ -16,51 +16,53 @@
 #include "file.h"
 #include "xmod.h"
 
-int traverse(int argc, char *argv[]) {
+int traverse(int argc, char *argv[])
+{
     struct stat st_buf;
-    if (stat (argv[argc - 1], &st_buf) != 0) {
 
+    if (stat(argv[argc - 1], &st_buf) != 0)
+    {
         perror("Stat from path returned != 0\n");
         return 1;
-        }
-    
-    if (! S_ISDIR (st_buf.st_mode)) { // if not a directory, traverse is done by default
+    }
+
+    if (!S_ISDIR(st_buf.st_mode))
+    { // if not a directory, traverse is done by default
         return 0;
     }
-    
+
     char path[1000];
     struct dirent *DIRECTORY;
-    char *dir_name = argv[argc-1];
+    char *dir_name = argv[argc - 1];
     DIR *DP = NULL;
 
-    if ((DP = opendir(dir_name)) == NULL) {
+    if ((DP = opendir(dir_name)) == NULL)
+    {
         //Couldn't open directory stream.
 
         perror("Could not open dir\n");
         return 1;
     }
 
-
-
     //readdir() returns NULL if we've reached the end.
-    while ((DIRECTORY = readdir(DP)) != NULL) {
+    while ((DIRECTORY = readdir(DP)) != NULL)
+    {
 
         PID_CURRENT_CHILD = 0;
 
-        printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
+        //printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
 
-        if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0) {
+        if (strcmp(DIRECTORY->d_name, ".") != 0 && strcmp(DIRECTORY->d_name, "..") != 0)
+        {
             //Construct new path, to keep traversal.
-            
 
-            
             //printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
             //sleep(3);
 
             strcpy(path, dir_name);
             strcat(path, "/");
             strcat(path, DIRECTORY->d_name);
-            argv[argc-1] = path;
+            argv[argc - 1] = path;
 
             printf("%s\n",path);
 
@@ -71,88 +73,111 @@ int traverse(int argc, char *argv[]) {
             int waitpid_value;
 
             struct stat st_path;
-            if (stat (path, &st_path) != 0) {
-                IMPOSSIBLE=true;
-                chmod(global_file_path,0777);
-            }
-    
-            if (DIRECTORY->d_type == DT_REG) { // if not a directory, traverse is done by default
-                printf("PID: %d found a file in %s\n", getpid(), path);
 
-                if(xmod(argc, argv)){
+            if (stat(path, &st_path) != 0)
+            {
+                IMPOSSIBLE = true;
+                if (chmod(global_file_path, 0777) < 0)
+                {
+                    return 1;
+                }
+            }
+
+            if (DIRECTORY->d_type == DT_REG)
+            { // if not a directory, traverse is done by default
+                //printf("PID: %d found a file in %s\n", getpid(), path);
+                if (xmod(argc, argv))
+                {
                     perror("Failed xmod in traverse\n");
                     return 1;
                 }
             }
-            else if(DIRECTORY->d_type == DT_LNK){
-                printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
+            else if (DIRECTORY->d_type == DT_LNK)
+            {
+                //printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
             }
-            else if(DIRECTORY->d_type == DT_DIR){
-                printf("PID: %d found a dir in %s\n", getpid(), path);
+            else if (DIRECTORY->d_type == DT_DIR)
+            {
+                //printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
-                switch (pid) {
+                switch (pid)
+                {
                 case 0: // child
-                    if (execv(argv[0], argv) == -1) {
 
+
+                    if (execv(argv[0], argv) == -1)
+                    {
                         perror("Execv failed\n");
-                        if(closedir(DP)==-1){
+                        if (closedir(DP) == -1)
+                        {
                             //return 1;
                         }
-                        if(write_PROC_EXIT(1)){
+                        if (write_PROC_EXIT(1))
+                        {
                             //return 1;
                         }
                         exit(1); // TODO aqui tem que se ver melhor pois return  não parece fazer sentido
-                                // já que seria no processo filho mas sem estar exec'd
+                                 // já que seria no processo filho mas sem estar exec'd
                     }
                     break;
 
                 case -1: // error
 
                     perror("Process failed on creating child\n");
-                    if(closedir(DP)==-1){
+                    if (closedir(DP) == -1)
+                    {
                         return 1;
                     }
                     return 1;
 
                 default: // parent
-                    PID_CURRENT_CHILD=pid;
+                    PID_CURRENT_CHILD = pid;
 
-                    do{
+                    do
+                    {
                         waitpid_value = waitpid(pid, &status, 0);
-                    }
-                    while(waitpid_value == -1 && errno == EINTR); //TODO more verifications might be needed
+                    } while (waitpid_value == -1 && errno == EINTR); //TODO more verifications might be needed
 
-                    if(WIFEXITED(status)){
-                        int es=WEXITSTATUS(status);
+                    if (WIFEXITED(status))
+                    {
+                        int es = WEXITSTATUS(status);
                         //printf("Exit code is %d\n",es);
-                        write_PROC_EXIT(es);
-                        if(es != 0){
+
+                        if (write_PROC_EXIT(es))
+                        {
+                            return 1;
+                        }
+                        if (es != 0)
+                        {
                             exit(es);
                         }
                     }
-                    else{   
-
+                    else
+                    {
                         perror("Bad status uppon waiting on child\n");
-                        if(closedir(DP)==-1){
+                        if (closedir(DP) == -1)
+                        {
                             return 1;
                         }
                     }
-                    
+
                     break;
                 }
             }
-            else{
+            else
+            {
                 printf("PID: %d found something %s\n", getpid(), path);
             }
-            
-            
         }
-
     }
 
-    closedir(DP);
+
+    if (closedir(DP) == -1)
+    {
+        return 1;
+    }
 
     return 0;
 }
