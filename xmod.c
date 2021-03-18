@@ -379,8 +379,8 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             char const *msg3 = " to ";
 
             size_t nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s%s\n",
-                                    msg, path_used_shell, msg2, oldmode, "(",
-                                    oldmode_letters, ")", msg3, mode_str, "(",
+                                    msg, path_used_shell, msg2, oldmode, " (",
+                                    oldmode_letters, ")", msg3, mode_str, " (",
                                     mode_letters, ")") + 1;
             if (nbytes == -1) {
                 free(mode_str);
@@ -393,8 +393,8 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             char *print = (char *)malloc(nbytes);
 
             if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s%s\n",
-                        msg, path_used_shell, msg2, oldmode, "(",
-                        oldmode_letters, ")", msg3, mode_str, "(",
+                        msg, path_used_shell, msg2, oldmode, " (",
+                        oldmode_letters, ")", msg3, mode_str, " (",
                         mode_letters, ")") == -1) {
                 free(mode_str);
                 free(oldmode);
