@@ -440,8 +440,8 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         size_t nbytes;
                         nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s%s%s%s%s\n",
                                             msg, path_used_shell, msg2, oldmode,
-                                            "(", oldmode_letters, msg3,
-                                            mode_str, "(", mode_letters,
+                                            " (", oldmode_letters, msg3,
+                                            mode_str, " (", mode_letters,
                                             ")") + 1;
                         if (nbytes == -1) {
                             free(mode_str);
@@ -454,8 +454,8 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         char *print = (malloc(nbytes));
 
                         if (snprintf(print, nbytes, "%s%s%s%s%s%s%s%s%s%s%s\n",
-                                    msg, path_used_shell, msg2, oldmode, "(",
-                                    oldmode_letters, msg3, mode_str, "(",
+                                    msg, path_used_shell, msg2, oldmode, " (",
+                                    oldmode_letters, msg3, mode_str, " (",
                                     mode_letters, ")") == -1) {
                             free(mode_str);
                             free(oldmode);
@@ -476,7 +476,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
 
                         size_t nbytes;
                         nbytes = snprintf(NULL, 0, "%s%s%s%s%s%s%s\n", msg,
-                                            path_used_shell, msg2, oldmode, "(",
+                                            path_used_shell, msg2, oldmode, " (",
                                             oldmode_letters, ")") + 1;
                         if (nbytes == -1) {
                             free(mode_str);
@@ -489,7 +489,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         char *print = (char *)malloc(nbytes);
 
                         if (snprintf(print, nbytes, "%s%s%s%s%s%s%s\n", msg,
-                                    path_used_shell, msg2, oldmode, "(",
+                                    path_used_shell, msg2, oldmode, " (",
                                     oldmode_letters, ")") == -1) {
                             free(mode_str);
                             free(oldmode);
