@@ -519,6 +519,15 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     return 0;
 }
 
+int checkVar(char *envp[]){
+    for (int j = 0; envp[j] != NULL; j++) {
+        if (aretheyequal(envp[j], "XMOD_PARENT_PROCESS")) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
 
 int checkLog(char *envp[], char *reg) {
     // Check if LOG_FILENAME was defined by user
@@ -588,6 +597,8 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
     }
 
+    if(checkVar(envp)==0)
+    {
     char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
 
     int result = checkLog(envp, reg);
@@ -609,6 +620,7 @@ int main(int argc, char *argv[], char *envp[]) {
             }
             return 1;
         }
+    }
     }
 
     // Environment variable for initial instant
