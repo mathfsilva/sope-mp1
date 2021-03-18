@@ -16,24 +16,29 @@ void getnewmodeletters(char *p, char *newml) {
         int val = p[i+1] - '0';
 
         if ((val - 4) >= 0)
-            newml[3*i] = 'r';
+        {
+             newml[3*i] = 'r';
+             val-=4;
+        }
         else
             newml[3*i] = '-';
 
-        val -= 4;
-
         if ((val - 2) >= 0)
+        {
             newml[3*i + 1] = 'w';
+            val-=2;
+        }
         else
             newml[3*i + 1] = '-';
 
-        val -= 2;
 
         if ((val - 1) >= 0)
             newml[3*i + 2] = 'x';
         else
             newml[3*i + 2] = '-';
     }
+
+    
 }
 
 int getoldmodeletters(char *p, char *f, char *oldml) {
