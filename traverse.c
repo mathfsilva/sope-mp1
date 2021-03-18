@@ -22,7 +22,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
     if ((DP = opendir(dir_name)) == NULL) {
         // Couldn't open directory stream.
         perror("Could not open dir\n");
-        free(DIRECTORY);
         return 1;
     }
 
@@ -47,7 +46,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             dir_name, "/", DIRECTORY->d_name) + 1;
 
             if (nbytes == -1) {
-                free(DIRECTORY);
                 if (closedir(DP) == -1) {
                     return 1;
                 }
@@ -58,7 +56,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             if (snprintf(path, nbytes, "%s%s%s",
              dir_name, "/", DIRECTORY->d_name) == -1) {
                 free(path);
-                free(DIRECTORY);
                 if (closedir(DP) == -1) {
                     return 1;
                 }
@@ -77,7 +74,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 IMPOSSIBLE = true;
                 if (chmod(global_file_path, 0777) < 0) {
                     free(path);
-                    free(DIRECTORY);
                     if (closedir(DP) == -1) {
                         return 1;
                     }
@@ -89,7 +85,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
                     free(path);
-                    free(DIRECTORY);
                     if (closedir(DP) == -1) {
                         return 1;
                     }
@@ -104,7 +99,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
                     free(path);
-                    free(DIRECTORY);
                     if (closedir(DP) == -1) {
                         return 1;
                     }
@@ -135,7 +129,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                                 // return 1;
                             }
                             free(path);
-                            free(DIRECTORY);
                             exit(1);
                             // TO SEE: aqui tem que se ver melhor pois return
                             // não parece fazer sentido já que seria no
@@ -145,7 +138,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                     case -1:
                     // error
                         perror("Process failed on creating child\n");
-                        free(DIRECTORY);
                         if (closedir(DP) == -1) {
                             free(path);
                             return 1;
@@ -172,7 +164,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                                     // return 1;
                                 }
                             free(path);
-                            free(DIRECTORY);
                             if (closedir(DP) == -1) {
                                 return 1;
                             }
@@ -181,7 +172,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                         } else {
                             perror("Bad status uppon waiting on child\n");
                             free(path);
-                            free(DIRECTORY);
                             if (closedir(DP) == -1) {
                                 return 1;
                             }
@@ -191,11 +181,9 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             } /*else {
                 // printf("PID: %d found something %s\n", getpid(), path);
             }*/
-            free(DIRECTORY);
             free(path);
         }
     }
-    free(DIRECTORY);
     if (closedir(DP) == -1) {
         return 1;
     }
