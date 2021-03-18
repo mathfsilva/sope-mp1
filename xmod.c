@@ -291,16 +291,19 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     char *oldmode_letters = (char *)malloc(10); oldmode_letters[9] = '\0';
     char *mode_letters = (char *)malloc(10); mode_letters[9] = '\0';
 
-    if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options],
+    if(opts.c || opts.v)
+    {
+        if (getoldmodeletters(argv[1 + no_options], argv[2 + no_options],
                             oldmode_letters)) {
-        free(mode_str);
-        free(oldmode);
-        free(oldmode_letters);
-        free(mode_letters);
-        free(canonical_path);
-        return 1;
+            free(mode_str);
+            free(oldmode);
+            free(oldmode_letters);
+            free(mode_letters);
+            free(canonical_path);
+            return 1;
+        }
     }
-
+ 
     // Turn mode (when written in digits) to an octal number in order
     // to call chmod function
     if (isdigit(argv[1 + no_options][0])) {
@@ -309,7 +312,6 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
         mode_str[2] = argv[1 + no_options][2];
         mode_str[3] = argv[1 + no_options][3];
 
-        getnewmodeletters(mode_str, mode_letters);
 
         mode = strtol(argv[1 + no_options], 0, 8);
         if (getoldmode(argv[1 + no_options], argv[2 + no_options], oldmode)) {
@@ -356,19 +358,22 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
         mode_str[2] = modeg + '0';
         mode_str[3] = modeo + '0';
 
-        getnewmodeletters(mode_str, mode_letters);
-
+        
         mode = strtol(mode_str, 0, 8);
     }
 
     nftot++;
+    if(opts.c || opts.v)
+    {
+        getnewmodeletters(mode_str, mode_letters);
+    }
 
 
     if (IMPOSSIBLE) {
         fprintf(stderr, "chmod: cannot access '%s': %s\n",
                 path_used_shell, strerror(errno));
 
-        if (opts.v) {
+        if (opts.v || opts.c) {
             char const *msg = "failed to change mode of '";
             char const *msg2 = "' from ";
             char const *msg3 = " to ";
@@ -525,8 +530,7 @@ int checkLog(char *envp[], char *reg) {
             if (access(reg, F_OK) == 0) {
                 // When file exists->Truncate it
 
-                char *s = getenv("XMOD_PARENT_PROCESS");
-                if (s == NULL) {
+                
                     fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
                     if (fd == -1) {
                         return 1;
@@ -534,7 +538,7 @@ int checkLog(char *envp[], char *reg) {
                     if (close(fd) == -1) {
                         return 1;
                     }
-                }
+
             } else {
                 // If file doesn't exist->Create a new one
                 fd = open(reg, O_CREAT | O_EXCL, 0644);
