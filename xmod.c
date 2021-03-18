@@ -399,7 +399,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                 free(canonical_path);
                 return 1;
             }
-            printf("%s\n", print);
+            printf("%s", print);
             free(print);
         }
     } else {
@@ -462,7 +462,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                             return 1;
                         }
 
-                        printf("%s\n", print);
+                        printf("%s", print);
                         free(print);
                     }
                 } else {
@@ -495,7 +495,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                             free(print);
                             return 1;
                         }
-                        printf("%s\n", print);
+                        printf("%s", print);
                         free(print);
                     }
                 }
