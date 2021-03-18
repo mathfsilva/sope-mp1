@@ -90,6 +90,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                     }
                     return 1;
                 }
+                free(path);
                 continue;
             }
 
