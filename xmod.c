@@ -519,16 +519,6 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     return 0;
 }
 
-int checkVar(char *envp[]){
-    for (int j = 0; envp[j] != NULL; j++) {
-        if (aretheyequal(envp[j], "XMOD_PARENT_PROCESS")) {
-            return 1;
-        }
-    }
-    return 0;
-}
-
-
 int checkLog(char *envp[], char *reg) {
     // Check if LOG_FILENAME was defined by user
     for (int j = 0; envp[j] != NULL; j++) {
@@ -542,6 +532,8 @@ int checkLog(char *envp[], char *reg) {
             if (access(reg, F_OK) == 0) {
                 // When file exists->Truncate it
 
+                char *s = getenv("XMOD_PARENT_PROCESS");
+                if (s == NULL) {
                     fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
                     if (fd == -1) {
                         return 1;
@@ -549,7 +541,7 @@ int checkLog(char *envp[], char *reg) {
                     if (close(fd) == -1) {
                         return 1;
                     }
-
+                }
             } else {
                 // If file doesn't exist->Create a new one
                 fd = open(reg, O_CREAT | O_EXCL, 0644);
@@ -596,12 +588,8 @@ int main(int argc, char *argv[], char *envp[]) {
         }
         return 1;
     }
- 
-     char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
-     
-    if(checkVar(envp)==0)
-    {
-    
+
+    char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
 
     int result = checkLog(envp, reg);
     if (result == 1) {
@@ -622,7 +610,6 @@ int main(int argc, char *argv[], char *envp[]) {
             }
             return 1;
         }
-    }
     }
 
     // Environment variable for initial instant
