@@ -30,6 +30,8 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
     while ((DIRECTORY = readdir(DP)) != NULL) {
         PID_CURRENT_CHILD = 0;
 
+        sleep(1);
+        
         // printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
 
         if (strcmp(DIRECTORY->d_name, ".") != 0
@@ -119,8 +121,8 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
                 switch (pid) {
                     case 0:
-                    printf("Go to sleep\n");
-                    sleep(3);
+                    //printf("Go to sleep\n");
+                    //sleep(3);
                     // child
                         if (execv(argv[0], argv) == -1) {
                             perror("Execv failed\n");

@@ -31,7 +31,7 @@ void sigint_handler(int signo) {
   // printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
 
   if (PID_CURRENT_CHILD == 0) {
-    // sleep(5);
+    usleep(100000);
     printf("Do you wish to end the program? (y/n)\n");
     char letter = getchar();
     int c;
