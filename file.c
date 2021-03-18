@@ -61,6 +61,7 @@ int write_PROC_CREATE(char *argv[]) {
         free(str_final);
         return 1;
     }
+
     char *path_final = malloc(n_total_bytes);
     if(snprintf(path_final, n_total_bytes, "%s", argv[0])==-1)
     {
@@ -107,7 +108,16 @@ int write_PROC_CREATE(char *argv[]) {
             free(path2);
             return 1;
         }
-        char* path_final = malloc(n_total_bytes + 1);
+
+        //free(path_final);
+        //path_final = malloc(n_total_bytes);
+        if ((path_final = realloc(path_final, n_total_bytes)) == NULL){
+            free(str_final);
+            free(path_final);
+            free(path1);
+            free(path2);
+            return 1;
+        }
         if(snprintf(path_final, n_total_bytes, "%s %s", path1, path2)==-1)
         {
             free(str_final);
@@ -118,9 +128,8 @@ int write_PROC_CREATE(char *argv[]) {
         }
         free(path1);
         free(path2);
-        free(path_final);
+        
     }
-
     
 
     size_t nbytes_final = snprintf(NULL, 0, "%s%s\n", str_final, path_final) + 1;
