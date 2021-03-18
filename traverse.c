@@ -21,7 +21,8 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
     if ((DP = opendir(dir_name)) == NULL) {
         // Couldn't open directory stream.
-        perror("Could not open dir\n");
+        fprintf(stderr, "chmod: cannot read directory '%s': %s\n",
+                        dir_name, strerror(errno));
         return 1;
     }
 
@@ -118,6 +119,8 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
                 switch (pid) {
                     case 0:
+                    printf("Go to sleep\n");
+                    sleep(3);
                     // child
                         if (execv(argv[0], argv) == -1) {
                             perror("Execv failed\n");

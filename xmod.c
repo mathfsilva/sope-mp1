@@ -371,7 +371,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
 
     if (IMPOSSIBLE) {
         fprintf(stderr, "chmod: cannot access '%s': %s\n",
-                path_used_shell, strerror(errno));
+             canonical_path, strerror(errno));
 
         if (opts.v || opts.c) {
             char const *msg = "failed to change mode of '";
@@ -418,10 +418,9 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             }
         } else {
             // FILE_MODF here (reason why went to get oldmode)
-
+            
             MODE = mode;
             nfmod++;
-            if (mode_str[1] != '0') {
                 if (strcmp(mode_str, oldmode) != 0) {
                     // Think we only need to write if they are different
 
@@ -504,7 +503,6 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
                         free(print);
                     }
                 }
-            }
         }
     }
 
@@ -530,7 +528,6 @@ int checkLog(char *envp[], char *reg) {
             if (access(reg, F_OK) == 0) {
                 // When file exists->Truncate it
 
-                
                     fd = open(reg, O_CREAT | O_TRUNC | O_WRONLY, 0600);
                     if (fd == -1) {
                         return 1;
