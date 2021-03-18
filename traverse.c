@@ -110,9 +110,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                        printf("neither symbolic link \'%s\' nor referent has been changed\n", path);
                     }
                 }
-            }
-
-            if (DIRECTORY->d_type == DT_DIR) {
+            } else if (DIRECTORY->d_type == DT_DIR) {
                 // printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
