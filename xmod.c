@@ -596,10 +596,12 @@ int main(int argc, char *argv[], char *envp[]) {
         }
         return 1;
     }
-
+ 
+     char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
+     
     if(checkVar(envp)==0)
     {
-    char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
+    
 
     int result = checkLog(envp, reg);
     if (result == 1) {
