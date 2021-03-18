@@ -112,7 +112,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                 }
             }
 
-            else if (DIRECTORY->d_type == DT_DIR) {
+            if (DIRECTORY->d_type == DT_DIR) {
                 // printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
@@ -134,15 +134,15 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                             // não parece fazer sentido já que seria no
                             // processo filho mas sem estar exec'd
                         }
+                        free(path);
                         break;
                     case -1:
                     // error
+                        free(path);
                         perror("Process failed on creating child\n");
                         if (closedir(DP) == -1) {
-                            free(path);
                             return 1;
                         }
-                        free(path);
                         return 1;
                     default:
                     // parent
@@ -178,12 +178,14 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                         }
                         break;
                 }
-            } /*else {
+            } else {
                 // printf("PID: %d found something %s\n", getpid(), path);
-            }*/
+            }
             free(path);
         }
     }
+
+
     if (closedir(DP) == -1) {
         return 1;
     }
