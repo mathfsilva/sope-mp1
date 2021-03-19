@@ -112,6 +112,7 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
 
     struct stat fs;
     if (stat(f, &fs) == -1) {
+        printf("hj\n");
         return 1;
     }
     // Gets current permission
@@ -139,6 +140,7 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
     oldmode_str[1] = old_u + '0';
     oldmode_str[2] = old_g + '0';
     oldmode_str[3] = old_o + '0';
+    printf("%s\n",oldmode_str);
 
     // Let's consider letters option first (u+w)
     // User
@@ -147,6 +149,7 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
 
     perm_mode *modes[3];
 
+    printf("%s\n",p);
     switch (p[0]) {
         case 'u':
             modes[0] = mode_u;
@@ -161,6 +164,7 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
             modes[0] = mode_u;
             modes[1] = mode_g;
             modes[2] = mode_o;
+            break;
         default:
             return 1;
             break;
@@ -190,6 +194,7 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
                     modes[i]->x = add_or_equal;
                     break;
                 default:
+                    printf("hi\n");
                     return 1;
                     break;
             }
@@ -351,6 +356,7 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             free(canonical_path);
             return 1;
         }
+        
 
         int modeu = 0, modeg = 0, modeo = 0;
 
