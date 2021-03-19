@@ -139,7 +139,6 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
     oldmode_str[1] = old_u + '0';
     oldmode_str[2] = old_g + '0';
     oldmode_str[3] = old_o + '0';
-    printf("%s\n",oldmode_str);
 
     // Let's consider letters option first (u+w)
     // User
