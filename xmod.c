@@ -112,7 +112,6 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
 
     struct stat fs;
     if (stat(f, &fs) == -1) {
-        printf("hj\n");
         return 1;
     }
     // Gets current permission
@@ -149,7 +148,6 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
 
     perm_mode *modes[3];
 
-    printf("%s\n",p);
     switch (p[0]) {
         case 'u':
             modes[0] = mode_u;
