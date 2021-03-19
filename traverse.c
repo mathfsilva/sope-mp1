@@ -28,22 +28,11 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
     // readdir() returns NULL if we've reached the end.
     while ((DIRECTORY = readdir(DP)) != NULL) {
-        PID_CURRENT_CHILD = 0;
-
-        sleep(1);
-        
-        // printf("PID: %d new dir name is: %s\n", getpid(), DIRECTORY->d_name);
+        PID_CURRENT_CHILD = 0;      
 
         if (strcmp(DIRECTORY->d_name, ".") != 0
             && strcmp(DIRECTORY->d_name, "..") != 0) {
             // Construct new path, to keep traversal.
-
-            // printf("Taking a nap zZzZzZZZzZzZzZzZzZz\n");
-            // sleep(3);
-
-             /*strcpy(path, dir_name);
-            strcat(path, "/");
-            strcat(path, DIRECTORY->d_name);*/
 
             size_t nbytes = snprintf(NULL, 0, "%s%s%s",
             dir_name, "/", DIRECTORY->d_name) + 1;
@@ -66,10 +55,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
             }
             argv[argc - 1] = path;
 
-            // TO SEE: Do we need to check if it's a folder and if not
-            // change the mode of the file in the current process?
-            // right now it's being done in a child process
-
+          
             int status;
             int waitpid_value;
             struct stat st_path;
@@ -99,7 +85,6 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
             if (DIRECTORY->d_type == DT_REG) {
                 // if not a directory, traverse is done by default
-                // printf("PID: %d found a file in %s\n", getpid(), path);
                 if (xmod(argc, argv, ops, no_options)) {
                     perror("Failed xmod in traverse\n");
                     free(path);
@@ -115,28 +100,21 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                     }
                 }
             } else if (DIRECTORY->d_type == DT_DIR) {
-                // printf("PID: %d found a dir in %s\n", getpid(), path);
 
                 pid_t pid = fork();
 
                 switch (pid) {
                     case 0:
-                    //printf("Go to sleep\n");
-                    //sleep(3);
-                    // child
+                     // child
                         if (execv(argv[0], argv) == -1) {
                             perror("Execv failed\n");
                             if (closedir(DP) == -1) {
-                                // return 1;
                             }
                             if (write_PROC_EXIT(1)) {
-                                // return 1;
                             }
                             free(path);
                             exit(1);
-                            // TO SEE: aqui tem que se ver melhor pois return
-                            // não parece fazer sentido já que seria no
-                            // processo filho mas sem estar exec'd
+                            
                         }
                         free(path);
                         break;
@@ -159,13 +137,9 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
 
                         if (WIFEXITED(status)) {
                             int es = WEXITSTATUS(status);
-                            // printf("Exit code is %d\n",es);
-                            /*if (write_PROC_EXIT(es)) {
-                                return 1;
-                            }*/
+                            
                             if (es != 0) {
                                 if (write_PROC_EXIT(es)) {
-                                    // return 1;
                                 }
                             free(path);
                             if (closedir(DP) == -1) {
@@ -182,9 +156,7 @@ int traverse(int argc, char *argv[], options ops, int no_options) {
                         }
                         break;
                 }
-            } else {
-                // printf("PID: %d found something %s\n", getpid(), path);
-            }
+            } 
             free(path);
         }
     }

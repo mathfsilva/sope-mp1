@@ -28,7 +28,6 @@ void sigint_handler(int signo) {
             }
 
   printf("%s", str_final);
-  // printf("My current Childs pid is: %d\n", PID_CURRENT_CHILD);
 
   if (PID_CURRENT_CHILD == 0) {
     usleep(100000);
@@ -52,7 +51,6 @@ void sigint_handler(int signo) {
 }
 
 int subscribe_SIGINT() {
-  // printf("Subscribed SIGINT signal\n");
   struct sigaction interruption;
   interruption.sa_handler = sigint_handler;
   interruption.sa_flags = 0;

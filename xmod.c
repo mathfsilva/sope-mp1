@@ -206,17 +206,10 @@ int parse(char *p, char *f, perm_mode *mode_u, perm_mode *mode_g,
     return 0;
 }
 
-void print_options(options opts) {
-    printf("Option v: %d\n", opts.v);
-    printf("Option c: %d\n", opts.c);
-    printf("Option R: %d\n", opts.R);
-}
-
 int get_options(int argc, char *argv[], options *opts, int *ret) {
     int i;
 
     if (argc < 3) {
-        // not needed
         perror("Too few args\n");
         return 1;
     }
@@ -226,7 +219,6 @@ int get_options(int argc, char *argv[], options *opts, int *ret) {
             perror("Too few args\n");
             return 1;
         }
-        // for(int j = 1; argv[i][j] != '\0'; j++){
         int j = 1;
         switch (argv[i][j]) {
             case 'c':
@@ -267,7 +259,6 @@ int get_options(int argc, char *argv[], options *opts, int *ret) {
             return 1;
         }
     }
-    // printf("Done reading options\n");
     return 0;
 }
 
@@ -282,9 +273,7 @@ bool aretheyequal(char *env, char const *arg) {
 }
 
 int xmod(int argc, char *argv[], options opts, int no_options) {
-    // printf("XMOD of %d given path is %s\n", getpid(), argv[argc-1]);
     char *canonical_path = realpath(argv[argc-1], NULL);
-    // passed to chmod()
     if (canonical_path == NULL) {
         perror("");
         return 1;
@@ -601,7 +590,7 @@ int main(int argc, char *argv[], char *envp[]) {
         return 1;
     }
 
-    char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  // should be enough right?
+    char *reg = (char *)malloc(LOG_FILE_PATH_SIZE);  
 
     int result = checkLog(envp, reg);
     if (result == 1) {
@@ -660,9 +649,6 @@ int main(int argc, char *argv[], char *envp[]) {
     START_TIME.tv_sec = time / (1000000LL);
     START_TIME.tv_usec = time % (1000000LL);
 
-    // It's gonna have a PROC_CREAT here (only PROC_CREAT right
-    // now-->because we only have one process)
-    // eventHandler(0, argc, argv, reg,time_taken);
     if (write_PROC_CREATE(argv)) {
         free(reg);
         free(global_file_path);
@@ -699,7 +685,6 @@ int main(int argc, char *argv[], char *envp[]) {
         }
         return 1;
     }
-    // print_options(opts);
 
     if (xmod(argc, argv, opts, ops)) {
         free(reg);

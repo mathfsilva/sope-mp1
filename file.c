@@ -17,8 +17,6 @@ void calculate_time(long double *time_taken) {
     temp_diff.tv_sec = end.tv_sec - START_TIME.tv_sec;
     temp_diff.tv_usec = end.tv_usec - START_TIME.tv_usec;
 
-    /* Using while instead of if below makes the code slightly more robust. */
-
     while (temp_diff.tv_usec < 0) {
         temp_diff.tv_usec += 1000000;
         temp_diff.tv_sec -= 1;
@@ -109,8 +107,6 @@ int write_PROC_CREATE(char *argv[]) {
             return 1;
         }
 
-        //free(path_final);
-        //path_final = malloc(n_total_bytes);
         if ((path_final = realloc(path_final, n_total_bytes)) == NULL){
             free(str_final);
             free(path_final);
