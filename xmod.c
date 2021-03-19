@@ -426,10 +426,10 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
             // FILE_MODF here (reason why went to get oldmode)
             
             MODE = mode;
-            nfmod++;
+            
                 if (strcmp(mode_str, oldmode) != 0) {
                     // Think we only need to write if they are different
-
+                    nfmod++;
                     if (write_FILE_MODF(oldmode, mode_str, canonical_path)) {
                         free(mode_str);
                         free(oldmode);
