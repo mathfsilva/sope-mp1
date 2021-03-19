@@ -314,6 +314,15 @@ int xmod(int argc, char *argv[], options opts, int no_options) {
     // Turn mode (when written in digits) to an octal number in order
     // to call chmod function
     if (isdigit(argv[1 + no_options][0])) {
+        if(strlen(argv[1+no_options])!=4)
+        {
+            free(mode_str);
+            free(oldmode);
+            free(oldmode_letters);
+            free(mode_letters);
+            free(canonical_path);
+            return 1;
+        }
         mode_str[0] = argv[1 + no_options][0];
         mode_str[1] = argv[1 + no_options][1];
         mode_str[2] = argv[1 + no_options][2];
